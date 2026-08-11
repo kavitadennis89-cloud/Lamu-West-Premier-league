@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lamu West Premier League - Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Lamu West Premier League - Admin Panel</h1>
+
+  <form id="teamForm">
+    <input type="text" id="name" placeholder="Team Name" required>
+    <input type="number" id="played" placeholder="Played" required>
+    <input type="number" id="wins" placeholder="Wins" required>
+    <input type="number" id="draws" placeholder="Draws" required>
+    <input type="number" id="losses" placeholder="Losses" required>
+    <input type="number" id="goalsFor" placeholder="Goals For" required>
+    <input type="number" id="goalsAgainst" placeholder="Goals Against" required>
+    <input type="number" id="points" placeholder="Points" required>
+
+    <button type="submit">Save Team</button>
+  </form>
+
+  <hr>
+
+  <div id="teamsList"></div>
+
+  <script type="module" src="admin.js"></script>
+
+</body>
+</html>

@@ -1,33 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lamu West Premier League - Admin</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-  <h1>Lamu West Premier League - Admin Panel</h1>
+const firebaseConfig = {
+  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+  authDomain: "lamu-west-premier-league.firebaseapp.com",
+  projectId: "lamu-west-premier-league",
+  storageBucket: "lamu-west-premier-league.firebasestorage.app",
+  messagingSenderId: "280853181931",
+  appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
+  measurementId: "G-HQ04SZWBBB"
+};
 
-  <form id="teamForm">
-    <input type="text" id="name" placeholder="Team Name" required>
-    <input type="number" id="played" placeholder="Played" required>
-    <input type="number" id="wins" placeholder="Wins" required>
-    <input type="number" id="draws" placeholder="Draws" required>
-    <input type="number" id="losses" placeholder="Losses" required>
-    <input type="number" id="goalsFor" placeholder="Goals For" required>
-    <input type="number" id="goalsAgainst" placeholder="Goals Against" required>
-    <input type="number" id="points" placeholder="Points" required>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    <button type="submit">Save Team</button>
-  </form>
+const form = document.getElementById("teamForm");
+const teamsList = document.getElementById("teamsList");
 
-  <hr>
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  <div id="teamsList"></div>
+  const team = {
+    name: document.getElementById("name").value,
+    played: Number(document.getElementById("played").value),
+    wins: Number(document.getElementById("wins").value),
+    draws: Number(document.getElementById("draws").value),
+    losses: Number(document.getElementById("losses").value),
+    goalsFor: Number(document.getElementById("goalsFor").value),
+    goalsAgainst: Number(document.getElementById("goalsAgainst").value),
+    points: Number(document.getElementById("points").value)
+  };
 
-  <script type="module" src="admin.js"></script>
+  await addDoc(collection(db, "teams"), team);
 
-</body>
-</html>
+  alert("Team saved successfully!");
+  form.reset();
+  loadTeams();
+});
+
+async function loadTeams() {
+  teamsList.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "teams"));
+
+  querySnapshot.forEach((doc) => {
+    const team = doc.data();
+
+    teamsList.innerHTML += `
+      <p><strong>${team.name}</strong> - ${team.points} pts</p>
+    `;
+  });
+}
+
+loadTeams();

@@ -5,167 +5,159 @@
 
   <meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Lamu West Premier League</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
-  <style>
+</head>
 
-    * {
-      box-sizing: border-box;
-    }
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f7f6;
-      color: #17221f;
-    }
+<body>
 
-    header {
-      background: linear-gradient(135deg, #075e3d, #0b8f5b);
-      color: white;
-      text-align: center;
-      padding: 45px 20px;
-    }
 
-    .logo {
-      font-size: 48px;
-    }
+  <header>
 
-    header h1 {
-      margin: 10px 0 5px;
-      font-size: 32px;
-    }
+    <h1>
+      🏆 Lamu West Premier League
+    </h1>
 
-    header p {
-      margin: 0;
-      opacity: 0.9;
-    }
+    <p>
+      Official League Website
+    </p>
 
-    nav {
-      background: white;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
+  </header>
 
-    nav a {
-      text-decoration: none;
-      color: #075e3d;
-      font-weight: bold;
-      padding: 10px 14px;
-      border-radius: 8px;
-    }
 
-    nav a:hover {
-      background: #075e3d;
-      color: white;
-    }
+  <!-- NAVIGATION -->
 
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px;
-    }
+  <nav>
 
-    .welcome {
-      background: white;
-      text-align: center;
-      padding: 30px 20px;
-      border-radius: 14px;
-      margin-bottom: 22px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
+    <a href="index.html">
+      🏠 Home
+    </a>
 
-    .welcome h2 {
-      color: #075e3d;
-      margin-top: 0;
-    }
+    <a href="index.html#standings">
+      🏆 Standings
+    </a>
 
-    section {
-      background: white;
-      padding: 22px;
-      margin-bottom: 22px;
-      border-radius: 14px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-      overflow-x: auto;
-    }
+    <a href="fixtures.html">
+      📅 Fixtures
+    </a>
 
-    section h2 {
-      color: #075e3d;
-      border-bottom: 2px solid #e5ece8;
-      padding-bottom: 12px;
-    }
+    <a href="index.html#latestResults">
+      ⚽ Results
+    </a>
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 650px;
-    }
+    <a href="index.html#topScorers">
+      🥇 Top Scorers
+    </a>
 
-    th {
-      background: #075e3d;
-      color: white;
-      padding: 12px 8px;
-    }
+    <a href="https://kavitadennis89-cloud.github.io/Lamu-West-Premier-league/team.html">
+      👥 Team Profiles
+    </a>
 
-    td {
-      padding: 11px 8px;
-      text-align: center;
-      border-bottom: 1px solid #e5e9e7;
-    }
+    <a href="admin.html">
+      🔐 Admin Panel
+    </a>
 
-    td a {
-      color: #075e3d;
-      text-decoration: none;
-    }
+  </nav>
 
-    #fixturesList,
-    #resultsList,
-    #scorersList {
-      min-height: 40px;
-    }
 
-    footer {
-      background: #073b29;
-      color: white;
-      text-align: center;
-      padding: 25px 15px;
-      margin-top: 30px;
-    }
+  <!-- LEAGUE STANDINGS -->
 
-    @media (max-width: 600px) {
+  <section id="standings">
 
-      header h1 {
-        font-size: 25px;
-      }
+    <h2>
+      League Standings
+    </h2>
 
-      .logo {
-        font-size: 40px;
-      }
+    <table>
 
-      nav a {
-        font-size: 13px;
-        padding: 8px 10px;
-      }
+      <tr>
 
-      main {
-        padding: 12px;
-      }
+        <th>Pos</th>
+        <th>Club</th>
+        <th>P</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>GF</th>
+        <th>GA</th>
+        <th>GD</th>
+        <th>Pts</th>
 
-      section {
-        padding: 16px;
-      }
+      </tr>
 
-    }
+    </table>
 
-  </
+  </section>
+
+
+  <!-- UPCOMING FIXTURES -->
+
+  <section id="upcomingFixtures">
+
+    <h2>
+      📅 Upcoming Fixtures
+    </h2>
+
+  </section>
+
+
+  <!-- MATCH RESULTS -->
+
+  <section id="latestResults">
+
+    <h2>
+      ⚽ Match Results
+    </h2>
+
+    <div id="resultsList">
+
+      <p>
+        Loading results...
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- TOP SCORERS -->
+
+  <section id="topScorers">
+
+    <h2>
+      🥇 Top Scorers
+    </h2>
+
+    <div id="scorersList">
+
+      <p>
+        Loading top scorers...
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- JAVASCRIPT -->
+
+  <script
+    type="module"
+    src="script.js?v=12">
+  </script>
+
+
+</body>
+
+</html>

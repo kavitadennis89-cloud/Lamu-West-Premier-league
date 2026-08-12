@@ -1,391 +1,217 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+<!DOCTYPE html>
+<html lang="en">
 
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  addDoc
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+<head>
 
+  <meta charset="UTF-8">
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
-  authDomain: "lamu-west-premier-league.firebaseapp.com",
-  projectId: "lamu-west-premier-league",
-  storageBucket: "lamu-west-premier-league.firebasestorage.app",
-  messagingSenderId: "280853181931",
-  appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
-  measurementId: "G-HQ04SZWBBB"
-};
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
+  <title>Admin - Match Results</title>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  <style>
 
+    body {
 
-const fixtureSelect = document.getElementById("fixtureSelect");
-const homeGoals = document.getElementById("homeGoals");
-const awayGoals = document.getElementById("awayGoals");
-const saveResult = document.getElementById("saveResult");
+      font-family:
+        Arial,
+        sans-serif;
 
+      background:
+        #f4f6f8;
 
-let fixtures = [];
-let teams = [];
+      margin:
+        0;
 
-
-// ==========================
-// LOAD FIXTURES
-// ==========================
-
-async function loadFixtures() {
-
-  try {
-
-    const snapshot = await getDocs(
-      collection(db, "fixtures")
-    );
-
-    console.log(
-      "FIXTURES FROM FIREBASE:",
-      snapshot.size
-    );
-
-    fixtures = [];
-
-    fixtureSelect.innerHTML =
-      '<option value="">Select Fixture</option>';
-
-    snapshot.forEach((fixtureDoc) => {
-
-      const data = fixtureDoc.data();
-
-      const fixture = {
-        id: fixtureDoc.id,
-        ...data
-      };
-
-      fixtures.push(fixture);
-
-      const option = document.createElement("option");
-
-      option.value = fixture.id;
-
-      option.textContent =
-        fixture.date +
-        " — " +
-        fixture.homeTeam +
-        " vs " +
-        fixture.awayTeam;
-
-      fixtureSelect.appendChild(option);
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Error loading fixtures:",
-      error
-    );
-
-    alert(
-      "Could not load fixtures: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-// ==========================
-// LOAD TEAMS
-// ==========================
-
-async function loadTeams() {
-
-  try {
-
-    const snapshot = await getDocs(
-      collection(db, "teams")
-    );
-
-    teams = [];
-
-    snapshot.forEach((teamDoc) => {
-
-      const data = teamDoc.data();
-
-      teams.push({
-        id: teamDoc.id,
-        ...data
-      });
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Error loading teams:",
-      error
-    );
-
-  }
-
-}
-
-
-// ==========================
-// SAVE RESULT
-// ==========================
-
-saveResult.addEventListener(
-  "click",
-  async () => {
-
-    const fixtureId =
-      fixtureSelect.value;
-
-    const homeScore =
-      Number(homeGoals.value);
-
-    const awayScore =
-      Number(awayGoals.value);
-
-
-    if (!fixtureId) {
-
-      alert("Please select a fixture.");
-
-      return;
+      padding:
+        20px;
 
     }
 
 
-    if (
-      homeGoals.value === "" ||
-      awayGoals.value === ""
-    ) {
+    .container {
 
-      alert("Please enter both scores.");
+      max-width:
+        500px;
 
-      return;
+      margin:
+        auto;
 
-    }
+      background:
+        white;
 
+      padding:
+        25px;
 
-    if (
-      homeScore < 0 ||
-      awayScore < 0
-    ) {
+      border-radius:
+        12px;
 
-      alert("Goals cannot be negative.");
-
-      return;
-
-    }
-
-
-    const fixture =
-      fixtures.find(
-        item => item.id === fixtureId
-      );
-
-
-    if (!fixture) {
-
-      alert("Fixture not found.");
-
-      return;
+      box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.1);
 
     }
 
 
-    const home =
-      teams.find(
-        team =>
-          team.name === fixture.homeTeam
-      );
+    h1 {
 
+      text-align:
+        center;
 
-    const away =
-      teams.find(
-        team =>
-          team.name === fixture.awayTeam
-      );
-
-
-    if (!home || !away) {
-
-      alert(
-        "Could not find teams."
-      );
-
-      return;
+      margin-bottom:
+        25px;
 
     }
 
 
-    let homeWon = 0;
-    let homeDraw = 0;
-    let homeLost = 0;
+    label {
 
-    let awayWon = 0;
-    let awayDraw = 0;
-    let awayLost = 0;
+      display:
+        block;
 
-    let homePoints = 0;
-    let awayPoints = 0;
+      margin-top:
+        15px;
 
+      margin-bottom:
+        6px;
 
-    if (homeScore > awayScore) {
-
-      homeWon = 1;
-      awayLost = 1;
-
-      homePoints = 3;
-
-    } else if (homeScore < awayScore) {
-
-      awayWon = 1;
-      homeLost = 1;
-
-      awayPoints = 3;
-
-    } else {
-
-      homeDraw = 1;
-      awayDraw = 1;
-
-      homePoints = 1;
-      awayPoints = 1;
+      font-weight:
+        bold;
 
     }
 
 
-    const homeUpdate = {
+    select,
+    input,
+    button {
 
-      played:
-        Number(home.played || 0) + 1,
+      width:
+        100%;
 
-      won:
-        Number(home.won || 0) + homeWon,
+      padding:
+        12px;
 
-      draw:
-        Number(home.draw || 0) + homeDraw,
+      box-sizing:
+        border-box;
 
-      lost:
-        Number(home.lost || 0) + homeLost,
+      border-radius:
+        6px;
 
-      goalsFor:
-        Number(home.goalsFor || 0) + homeScore,
+      border:
+        1px solid #ccc;
 
-      goalsAgainst:
-        Number(home.goalsAgainst || 0) + awayScore,
-
-      points:
-        Number(home.points || 0) + homePoints
-
-    };
-
-
-    const awayUpdate = {
-
-      played:
-        Number(away.played || 0) + 1,
-
-      won:
-        Number(away.won || 0) + awayWon,
-
-      draw:
-        Number(away.draw || 0) + awayDraw,
-
-      lost:
-        Number(away.lost || 0) + awayLost,
-
-      goalsFor:
-        Number(away.goalsFor || 0) + awayScore,
-
-      goalsAgainst:
-        Number(away.goalsAgainst || 0) + homeScore,
-
-      points:
-        Number(away.points || 0) + awayPoints
-
-    };
-
-
-    try {
-
-      await updateDoc(
-        doc(db, "teams", home.id),
-        homeUpdate
-      );
-
-
-      await updateDoc(
-        doc(db, "teams", away.id),
-        awayUpdate
-      );
-
-
-      await addDoc(
-        collection(db, "results"),
-        {
-
-          fixtureId: fixture.id,
-
-          homeTeam: home.name,
-
-          awayTeam: away.name,
-
-          homeGoals: homeScore,
-
-          awayGoals: awayScore,
-
-          createdAt: new Date()
-
-        }
-      );
-
-
-      alert(
-        "Match result saved successfully! ⚽🔥"
-      );
-
-
-      fixtureSelect.value = "";
-
-      homeGoals.value = "";
-
-      awayGoals.value = "";
-
-
-      await loadFixtures();
-
-    } catch (error) {
-
-      console.error(
-        "Error saving result:",
-        error
-      );
-
-      alert(
-        "Error saving result: " +
-        error.message
-      );
+      font-size:
+        16px;
 
     }
 
-  }
-);
+
+    button {
+
+      margin-top:
+        25px;
+
+      background:
+        #111;
+
+      color:
+        white;
+
+      border:
+        none;
+
+      cursor:
+        pointer;
+
+      font-weight:
+        bold;
+
+    }
 
 
-// ==========================
-// START
-// ==========================
+    button:hover {
 
-loadTeams();
-loadFixtures();
+      background:
+        #333;
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <div class="container">
+
+
+    <h1>
+      ⚽ Enter Match Result
+    </h1>
+
+
+    <label for="fixtureSelect">
+      Select Fixture
+    </label>
+
+
+    <select id="fixtureSelect">
+
+      <option value="">
+        Select Fixture
+      </option>
+
+    </select>
+
+
+    <label for="homeGoals">
+      Home Goals
+    </label>
+
+
+    <input
+      type="number"
+      id="homeGoals"
+      min="0"
+      placeholder="Enter goals"
+    >
+
+
+    <label for="awayGoals">
+      Away Goals
+    </label>
+
+
+    <input
+      type="number"
+      id="awayGoals"
+      min="0"
+      placeholder="Enter goals"
+    >
+
+
+    <button id="saveResult">
+      Save Result
+    </button>
+
+
+  </div>
+
+
+  <script
+    type="module"
+    src="results.js?v=10">
+  </script>
+
+
+</body>
+
+</html>
+
+
+

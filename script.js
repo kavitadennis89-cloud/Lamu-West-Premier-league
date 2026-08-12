@@ -27,74 +27,162 @@ const db = getFirestore(app);
 
 async function loadTeams() {
 
-  const snapshot = await getDocs(collection(db, "teams"));
+  try {
 
-  const teams = [];
+    const snapshot = await getDocs(collection(db, "teams"));
 
-  snapshot.forEach((teamDoc) => {
+    const teams = [];
 
-    const data = teamDoc.data();
+    snapshot.forEach((teamDoc) => {
 
-    teams.push({
-      name: data.name || "Unknown Team",
-      played: Number(data.played || 0),
-      won: Number(data.won || data.wins || 0),
-      draw: Number(data.draw || data.draws || 0),
-      lost: Number(data.lost || data.losses || 0),
-      goalsFor: Number(data.goalsFor || 0),
-      goalsAgainst: Number(data.goalsAgainst || 0),
-      points: Number(data.points || 0)
+      const data = teamDoc.data();
+
+      teams.push({
+        name: data.name || "Unknown Team",
+        played: Number(data.played || 0),
+        won: Number(data.won || data.wins || 0),
+        draw: Number(data.draw || data.draws || 0),
+        lost: Number(data.lost || data.losses || 0),
+        points: Number(data.points || 0),
+        goalsFor: Number(data.goalsFor || 0),
+        goalsAgainst: Number(data.goalsAgainst || 0)
+      });
+
     });
 
-  });
+
+    teams.sort((a, b) => {
+
+      if (b.points !== a.points) {
+        return b.points - a.points;
+      }
+
+      const aGD = a.goalsFor - a.goalsAgainst;
+      const bGD = b.goalsFor - b.goalsAgainst;
+
+      return bGD - aGD;
+
+    });
 
 
-  teams.sort((a, b) => {
+    const table = document.querySelector("table");
 
-    if (b.points !== a.points) {
-      return b.points - a.points;
-    }
-
-    const aGD = a.goalsFor - a.goalsAgainst;
-    const bGD = b.goalsFor - b.goalsAgainst;
-
-    return bGD - aGD;
-
-  });
+    if (!table) return;
 
 
-  const table = document.querySelector("table");
-
-  table.innerHTML = `
-    <tr>
-      <th>Pos</th>
-      <th>Club</th>
-      <th>P</th>
-      <th>W</th>
-      <th>D</th>
-      <th>L</th>
-      <th>Pts</th>
-    </tr>
-  `;
-
-
-  teams.forEach((team, index) => {
-
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${team.name}</td>
-      <td>${team.played}</td>
-      <td>${team.won}</td>
-      <td>${team.draw}</td>
-      <td>${team.lost}</td>
-      <td>${team.points}</td>
+    table.innerHTML = `
+      <tr>
+        <th>Pos</th>
+        <th>Club</th>
+        <th>P</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>Pts</th>
+      </tr>
     `;
 
-    table.appendChild(row);
 
-  });
+    teams.forEach((team, index) => {
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${team.name}</td>
+        <td>${team.played}</td>
+        <td>${team.won}</td>
+        <td>${team.draw}</td>
+        <td>${team.lost}</td>
+        <td>${team.points}</td>
+      `;
+
+      table.appendChild(row);
+
+    });
+
+  } catch (error) {
+
+    console.error("Error loading teams:", error);
+
+  }
+
+}
+
+
+// ==========================
+// UPCOMING FIXTURES
+// ==========================
+
+async function loadFixtures() {
+
+  try {
+
+    const snapshot = await getDocs(
+      collection(db, "fixtures")
+    );
+
+
+    const sections = document.querySelectorAll("section");
+
+    let fixturesSection = null;
+
+
+    sections.forEach((section) => {
+
+      const heading = section.querySelector("h2");
+
+      if (
+        heading &&
+        heading.textContent.includes("Upcoming Fixtures")
+      ) {
+        fixturesSection = section;
+      }
+
+    });
+
+
+    if (!fixturesSection) return;
+
+
+    fixturesSection.innerHTML = `
+      <h2>📅 Upcoming Fixtures</h2>
+    `;
+
+
+    if (snapshot.empty) {
+
+      fixturesSection.innerHTML +=
+        "<p>No fixtures added yet.</p>";
+
+      return;
+
+    }
+
+
+    snapshot.forEach((fixtureDoc) => {
+
+      const fixture = fixtureDoc.data();
+
+      const match = document.createElement("p");
+
+      match.innerHTML = `
+        📅 <strong>${fixture.date}</strong>
+        —
+        ${fixture.homeTeam}
+        vs
+        ${fixture.awayTeam}
+      `;
+
+      fixturesSection.appendChild(match);
+
+    });
+
+  } catch (error) {
+
+    console.error("Error loading fixtures:", error);
+
+  }
 
 }
 
@@ -105,42 +193,35 @@ async function loadTeams() {
 
 async function loadResults() {
 
-  const snapshot = await getDocs(collection(db, "results"));
-
-  const sections = document.querySelectorAll("section");
-
-  let resultsSection = null;
-
-  sections.forEach((section) => {
-
-    const heading = section.querySelector("h2");
-
-    if (heading && heading.textContent.includes("Latest Results")) {
-      resultsSection = section;
-    }
-
-  });
-
-
-  if (!resultsSection) return;
-
-
-  async function loadResults() {
   try {
-    const snapshot = await getDocs(collection(db, "results"));
 
-    const resultsList = document.getElementById("resultsList");
+    const snapshot = await getDocs(
+      collection(db, "results")
+    );
+
+
+    const resultsList =
+      document.getElementById("resultsList");
+
 
     if (!resultsList) return;
 
+
     resultsList.innerHTML = "";
 
+
     if (snapshot.empty) {
-      resultsList.innerHTML = "<p>No matches played yet.</p>";
+
+      resultsList.innerHTML =
+        "<p>No matches played yet.</p>";
+
       return;
+
     }
 
+
     snapshot.forEach((resultDoc) => {
+
       const result = resultDoc.data();
 
       const match = document.createElement("p");
@@ -154,44 +235,14 @@ async function loadResults() {
       `;
 
       resultsList.appendChild(match);
+
     });
 
   } catch (error) {
+
     console.error("Error loading results:", error);
-  }
-  }
-
-
-  if (snapshot.empty) {
-
-    const message = document.createElement("p");
-
-    message.textContent = "No matches played yet.";
-
-    resultsSection.appendChild(message);
-
-    return;
 
   }
-
-
-  snapshot.forEach((resultDoc) => {
-
-    const result = resultDoc.data();
-
-    const match = document.createElement("p");
-
-    match.innerHTML = `
-      ⚽ <strong>${result.homeTeam}</strong>
-      ${result.homeGoals}
-      -
-      ${result.awayGoals}
-      <strong>${result.awayTeam}</strong>
-    `;
-
-    resultsSection.appendChild(match);
-
-  });
 
 }
 
@@ -201,4 +252,5 @@ async function loadResults() {
 // ==========================
 
 loadTeams();
+loadFixtures();
 loadResults();

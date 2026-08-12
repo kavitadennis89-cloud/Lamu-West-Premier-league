@@ -291,19 +291,19 @@ td a {
   }
 
 }
-/* =========================
-   FOOTER
-========================= */
+/* FOOTER */
 
 footer {
+  width: 100%;
   background: #006400;
   color: white;
-  text-align: center;
+  text-align: center !important;
   padding: 30px 15px;
   margin-top: 40px;
+  display: block;
 }
 
 footer p {
   margin: 8px 0;
-  font-weight: bold;
+  text-align: center !important;
 }

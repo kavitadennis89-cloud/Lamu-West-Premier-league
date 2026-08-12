@@ -31,8 +31,7 @@ const db = getFirestore(app);
 
 function showError(message) {
 
-  const box =
-    document.getElementById("adminError");
+  const box = document.getElementById("adminError");
 
   if (box) {
 
@@ -64,17 +63,15 @@ function showError(message) {
 
 async function getTeams() {
 
-  const snapshot =
-    await getDocs(
-      collection(db, "teams")
-    );
+  const snapshot = await getDocs(
+    collection(db, "teams")
+  );
 
   const teams = [];
 
   snapshot.forEach((teamDoc) => {
 
-    const data =
-      teamDoc.data();
+    const data = teamDoc.data();
 
     teams.push({
 
@@ -100,14 +97,11 @@ async function getTeams() {
 async function loadTeams() {
 
   const list =
-    document.getElementById(
-      "teamsList"
-    );
+    document.getElementById("teamsList");
 
   try {
 
-    const teams =
-      await getTeams();
+    const teams = await getTeams();
 
     list.innerHTML = "";
 
@@ -124,12 +118,27 @@ async function loadTeams() {
 
       list.innerHTML += `
 
-        <p>
-          ⚽
-          <strong>
-            ${team.name}
-          </strong>
-        </p>
+        <div style="
+          margin-bottom:15px;
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        ">
+
+          <p>
+            ⚽
+            <strong>
+              ${team.name}
+            </strong>
+          </p>
+
+          <button
+            onclick="deleteTeam('${team.id}')"
+          >
+            🗑️ Delete Team
+          </button>
+
+        </div>
 
       `;
 
@@ -150,6 +159,88 @@ async function loadTeams() {
   }
 
 }
+
+
+// ==========================================
+// DELETE TEAM
+// ==========================================
+
+window.deleteTeam =
+  async function(teamId) {
+
+    try {
+
+      const teams =
+        await getTeams();
+
+      const team =
+        teams.find(
+          (item) =>
+            item.id === teamId
+        );
+
+      if (!team) {
+
+        alert(
+          "Team not found."
+        );
+
+        return;
+
+      }
+
+
+      const answer =
+        confirm(
+          "Are you sure you want to delete " +
+          team.name +
+          "?\n\nThis action cannot be undone."
+        );
+
+
+      if (!answer) {
+
+        return;
+
+      }
+
+
+      await deleteDoc(
+        doc(
+          db,
+          "teams",
+          teamId
+        )
+      );
+
+
+      alert(
+        team.name +
+        " deleted successfully! 🗑️"
+      );
+
+
+      await loadTeams();
+
+      await loadFixtureTeams();
+
+      await loadScorerTeams();
+
+    } catch (error) {
+
+      alert(
+        "Error deleting team: " +
+        error.message
+      );
+
+      showError(
+        "Delete Team: " +
+        error.message
+      );
+
+    }
+
+  };
 
 
 // ==========================================
@@ -683,291 +774,5 @@ window.editFixture =
             newDate,
 
           homeTeam:
-            newHome,
-
-          awayTeam:
-            newAway
-
-        }
-      );
-
-
-      alert(
-        "Fixture updated successfully! ✅"
-      );
-
-
-      await loadFixtures();
-
-    } catch (error) {
-
-      alert(
-        "Error editing fixture: " +
-        error.message
-      );
-
-      showError(
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ==========================================
-// DELETE FIXTURE
-// ==========================================
-
-window.deleteFixture =
-  async function(fixtureId) {
-
-    try {
-
-      const answer =
-        confirm(
-          "Are you sure you want to delete this fixture?"
-        );
-
-
-      if (!answer) {
-        return;
-      }
-
-
-      await deleteDoc(
-        doc(
-          db,
-          "fixtures",
-          fixtureId
-        )
-      );
-
-
-      alert(
-        "Fixture deleted successfully! 🗑️"
-      );
-
-
-      await loadFixtures();
-
-    } catch (error) {
-
-      alert(
-        "Error deleting fixture: " +
-        error.message
-      );
-
-      showError(
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ==========================================
-// ADD TOP SCORER
-// ==========================================
-
-document
-  .getElementById("scorerForm")
-  .addEventListener(
-    "submit",
-    async function(event) {
-
-      event.preventDefault();
-
-
-      const playerName =
-        document.getElementById(
-          "playerName"
-        ).value.trim();
-
-
-      const team =
-        document.getElementById(
-          "scorerTeam"
-        ).value;
-
-
-      const goals =
-        Number(
-          document.getElementById(
-            "playerGoals"
-          ).value
-        );
-
-
-      if (
-        !playerName ||
-        !team
-      ) {
-
-        alert(
-          "Please enter player name and select team."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        await addDoc(
-          collection(db, "scorers"),
-          {
-
-            playerName:
-              playerName,
-
-            team:
-              team,
-
-            goals:
-              goals
-
-          }
-        );
-
-
-        alert(
-          "Top scorer saved successfully! 🥇"
-        );
-
-
-        event.target.reset();
-
-
-        await loadScorers();
-
-      } catch (error) {
-
-        alert(
-          "Error saving scorer: " +
-          error.message
-        );
-
-        showError(
-          error.message
-        );
-
-      }
-
-    }
-  );
-
-
-// ==========================================
-// LOAD SCORERS
-// ==========================================
-
-async function loadScorers() {
-
-  const list =
-    document.getElementById(
-      "scorersList"
-    );
-
-  try {
-
-    const snapshot =
-      await getDocs(
-        collection(db, "scorers")
-      );
-
-
-    list.innerHTML = "";
-
-
-    if (snapshot.empty) {
-
-      list.innerHTML =
-        "<p>No scorers added yet.</p>";
-
-      return;
-
-    }
-
-
-    snapshot.forEach((scorerDoc) => {
-
-      const data =
-        scorerDoc.data();
-
-
-      list.innerHTML += `
-
-        <p>
-
-          🥇
-
-          <strong>
-            ${data.playerName || ""}
-          </strong>
-
-          —
-
-          ${data.team || ""}
-
-          —
-
-          <strong>
-            ${data.goals || 0}
-            goals
-          </strong>
-
-        </p>
-
-      `;
-
-    });
-
-  } catch (error) {
-
-    list.innerHTML =
-      "<p>Error loading scorers.</p>";
-
-    showError(
-      "Scorers: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-// ==========================================
-// START ADMIN
-// ==========================================
-
-async function startAdmin() {
-
-  try {
-
-    await loadTeams();
-
-    await loadFixtureTeams();
-
-    await loadScorerTeams();
-
-    await loadFixtures();
-
-    await loadScorers();
-
-  } catch (error) {
-
-    showError(
-      error.message
-    );
-
-  }
-
-}
-
-
-startAdmin();
+            new
          

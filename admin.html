@@ -30,6 +30,10 @@
   <div id="adminError"></div>
 
 
+  <!-- =====================================
+       ADD TEAM
+  ====================================== -->
+
   <h2>⚽ Add Team</h2>
 
   <form id="teamForm">
@@ -100,23 +104,169 @@
   <hr>
 
 
+  <!-- =====================================
+       TEAMS
+  ====================================== -->
+
   <h2>⚽ Teams</h2>
 
   <div id="teamsList">
-    <p>Loading teams...</p>
+
+    <p>
+      Loading teams...
+    </p>
+
   </div>
 
 
   <hr>
 
 
-  <h2>📅 Add Fixture</h2>
+  <!-- =====================================
+       PLAYER MANAGEMENT
+  ====================================== -->
+
+  <h2>
+    👤 Add Player
+  </h2>
+
+
+  <form id="playerForm">
+
+
+    <input
+      type="text"
+      id="playerNameAdmin"
+      placeholder="Player Name"
+      required
+    >
+
+
+    <label>
+      Team
+    </label>
+
+
+    <select
+      id="playerTeam"
+      required
+    >
+
+      <option value="">
+        Select Team
+      </option>
+
+    </select>
+
+
+    <input
+      type="number"
+      id="playerNumber"
+      placeholder="Jersey Number"
+      min="1"
+      max="99"
+      required
+    >
+
+
+    <label>
+      Position
+    </label>
+
+
+    <select
+      id="playerPosition"
+      required
+    >
+
+      <option value="">
+        Select Position
+      </option>
+
+      <option value="GK">
+        GK - Goalkeeper
+      </option>
+
+      <option value="DEF">
+        DEF - Defender
+      </option>
+
+      <option value="MID">
+        MID - Midfielder
+      </option>
+
+      <option value="FWD">
+        FWD - Forward
+      </option>
+
+    </select>
+
+
+    <label>
+
+      <input
+        type="checkbox"
+        id="playerStarting"
+      >
+
+      Starting XI
+
+    </label>
+
+
+    <label>
+
+      <input
+        type="checkbox"
+        id="playerCaptain"
+      >
+
+      Captain ⭐
+
+    </label>
+
+
+    <button type="submit">
+      Save Player
+    </button>
+
+
+  </form>
+
+
+  <h2>
+    👥 Players
+  </h2>
+
+
+  <div id="playersList">
+
+    <p>
+      Loading players...
+    </p>
+
+  </div>
+
+
+  <hr>
+
+
+  <!-- =====================================
+       ADD FIXTURE
+  ====================================== -->
+
+  <h2>
+    📅 Add Fixture
+  </h2>
+
 
   <form id="fixtureForm">
+
 
     <label>
       Home Team
     </label>
+
 
     <select
       id="fixtureHome"
@@ -134,6 +284,7 @@
       Away Team
     </label>
 
+
     <select
       id="fixtureAway"
       required
@@ -150,6 +301,7 @@
       Match Date
     </label>
 
+
     <input
       type="date"
       id="fixtureDate"
@@ -161,25 +313,45 @@
       Save Fixture
     </button>
 
+
   </form>
 
 
   <hr>
 
 
-  <h2>📅 Fixtures</h2>
+  <!-- =====================================
+       FIXTURES
+  ====================================== -->
+
+  <h2>
+    📅 Fixtures
+  </h2>
+
 
   <div id="fixturesList">
-    <p>Loading fixtures...</p>
+
+    <p>
+      Loading fixtures...
+    </p>
+
   </div>
 
 
   <hr>
 
 
-  <h2>🥇 Add Top Scorer</h2>
+  <!-- =====================================
+       ADD TOP SCORER
+  ====================================== -->
+
+  <h2>
+    🥇 Add Top Scorer
+  </h2>
+
 
   <form id="scorerForm">
+
 
     <input
       type="text"
@@ -190,46 +362,4 @@
 
 
     <label>
-      Team
-    </label>
-
-    <select
-      id="scorerTeam"
-      required
-    >
-
-      <option value="">
-        Select Team
-      </option>
-
-    </select>
-
-
-    <input
-      type="number"
-      id="playerGoals"
-      placeholder="Goals"
-      min="0"
-      required
-    >
-
-
-    <button type="submit">
-      Save Top Scorer
-    </button>
-
-  </form>
-
-
-  <h2>🥇 Top Scorers</h2>
-
-  <div id="scorersList">
-    <p>Loading top scorers...</p>
-  </div>
-
-
-  <script type="module" src="./admin.js"></script>
-
-</body>
-
-</html>
+     

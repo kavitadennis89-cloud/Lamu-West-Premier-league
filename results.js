@@ -32,18 +32,18 @@ let teams = [];
 async function loadTeams() {
   try {
     const snapshot = await getDocs(collection(db, "teams"));
-alert("Teams found: " + snapshot.size);
+
 
     teams = [];
 
     homeTeam.innerHTML = '<option value="">Select Home Team</option>';
     awayTeam.innerHTML = '<option value="">Select Away Team</option>';
 
-    snapshot.forEach((document) => {
-      const team = {
-        id: document.id,
-        ...document.data()
-      };
+    snapshot.forEach((teamDoc) => {
+  const team = {
+    id: teamDoc.id,
+    ...teamDoc.data()
+  };
 
       teams.push(team);
 

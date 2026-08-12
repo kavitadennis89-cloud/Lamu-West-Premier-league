@@ -171,7 +171,7 @@ async function loadFixtureTeams() {
 
 const fixtureForm =
   document.getElementById("fixtureForm");
-
+console.log("FIXTURE FORM FOUND:", fixtureForm);
 
 fixtureForm.addEventListener("submit", async (e) => {
 

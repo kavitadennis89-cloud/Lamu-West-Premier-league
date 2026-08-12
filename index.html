@@ -5,22 +5,216 @@
 
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Lamu West Premier League</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f6;
+      color: #17221f;
+    }
+
+    header {
+      background: linear-gradient(135deg, #075e3d, #0b8f5b);
+      color: white;
+      text-align: center;
+      padding: 45px 20px 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    header .league-badge {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    header p {
+      margin: 10px 0 0;
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    nav {
+      background: white;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      padding: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #075e3d;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      background: #075e3d;
+      color: white;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .welcome {
+      background: white;
+      border-radius: 14px;
+      padding: 28px 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .welcome h2 {
+      margin-top: 0;
+      color: #075e3d;
+      font-size: 26px;
+    }
+
+    .welcome p {
+      color: #596662;
+      margin-bottom: 0;
+    }
+
+    section {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    section h2 {
+      margin-top: 0;
+      color: #075e3d;
+      border-bottom: 2px solid #e8efec;
+      padding-bottom: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th {
+      background: #075e3d;
+      color: white;
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    td {
+      padding: 11px 8px;
+      border-bottom: 1px solid #e5e9e7;
+      text-align: center;
+    }
+
+    tr:hover td {
+      background: #f1f8f5;
+    }
+
+    #resultsList,
+    #scorersList {
+      min-height: 50px;
+    }
+
+    .info-card {
+      background: #f5faf7;
+      border-left: 4px solid #0b8f5b;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      background: #073b29;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 30px;
+    }
+
+    footer p {
+      margin: 5px 0;
+    }
+
+    .footer-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 32px 15px;
+      }
+
+      header h1 {
+        font-size: 25px;
+      }
+
+      header .league-badge {
+        font-size: 40px;
+      }
+
+      nav {
+        padding: 10px;
+      }
+
+      nav a {
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      main {
+        padding: 12px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      section h2 {
+        font-size: 20px;
+      }
+
+    }
+
+  </style>
 
 </head>
 
 
 <body>
+
 
   <!-- ========================== -->
   <!-- HEADER -->
@@ -28,8 +222,12 @@
 
   <header>
 
+    <div class="league-badge">
+      ⚽🏆
+    </div>
+
     <h1>
-      🏆 Lamu West Premier League
+      Lamu West Premier League
     </h1>
 
     <p>
@@ -43,14 +241,7 @@
   <!-- NAVIGATION -->
   <!-- ========================== -->
 
-  <nav style="
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    justify-content:center;
-    padding:15px;
-    margin-bottom:20px;
-  ">
+  <nav>
 
     <a href="index.html">
       🏠 Home
@@ -75,91 +266,144 @@
   </nav>
 
 
-  <!-- ========================== -->
-  <!-- LEAGUE TABLE -->
-  <!-- ========================== -->
-
-  <section id="standings">
-
-    <h2>
-      League Standings
-    </h2>
-
-    <table>
-
-      <tr>
-
-        <th>Pos</th>
-        <th>Club</th>
-        <th>P</th>
-        <th>W</th>
-        <th>D</th>
-        <th>L</th>
-        <th>GF</th>
-        <th>GA</th>
-        <th>GD</th>
-        <th>Pts</th>
-
-      </tr>
-
-    </table>
-
-  </section>
+  <main>
 
 
-  <!-- ========================== -->
-  <!-- UPCOMING FIXTURES -->
-  <!-- ========================== -->
+    <!-- ========================== -->
+    <!-- WELCOME -->
+    <!-- ========================== -->
 
-  <section id="upcomingFixtures">
+    <div class="welcome">
 
-    <h2>
-      📅 Upcoming Fixtures
-    </h2>
-
-  </section>
-
-
-  <!-- ========================== -->
-  <!-- MATCH RESULTS -->
-  <!-- ========================== -->
-
-  <section id="latestResults">
-
-    <h2>
-      ⚽ Match Results
-    </h2>
-
-    <div id="resultsList">
+      <h2>
+        Welcome to Lamu West Premier League
+      </h2>
 
       <p>
-        Loading results...
+        Follow league standings, fixtures, match results and top scorers
+        all in one place.
       </p>
 
     </div>
 
-  </section>
+
+    <!-- ========================== -->
+    <!-- LEAGUE TABLE -->
+    <!-- ========================== -->
+
+    <section id="standings">
+
+      <h2>
+        🏆 League Standings
+      </h2>
+
+      <table>
+
+        <tr>
+
+          <th>Pos</th>
+          <th>Club</th>
+          <th>P</th>
+          <th>W</th>
+          <th>D</th>
+          <th>L</th>
+          <th>GF</th>
+          <th>GA</th>
+          <th>GD</th>
+          <th>Pts</th>
+
+        </tr>
+
+      </table>
+
+    </section>
+
+
+    <!-- ========================== -->
+    <!-- UPCOMING FIXTURES -->
+    <!-- ========================== -->
+
+    <section id="upcomingFixtures">
+
+      <h2>
+        📅 Upcoming Fixtures
+      </h2>
+
+      <div id="fixturesList">
+
+        <p>
+          Loading fixtures...
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================== -->
+    <!-- MATCH RESULTS -->
+    <!-- ========================== -->
+
+    <section id="latestResults">
+
+      <h2>
+        ⚽ Match Results
+      </h2>
+
+      <div id="resultsList">
+
+        <p>
+          Loading results...
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================== -->
+    <!-- TOP SCORERS -->
+    <!-- ========================== -->
+
+    <section id="topScorers">
+
+      <h2>
+        🥇 Top Scorers
+      </h2>
+
+      <div id="scorersList">
+
+        <p>
+          Loading top scorers...
+        </p>
+
+      </div>
+
+    </section>
+
+
+  </main>
 
 
   <!-- ========================== -->
-  <!-- TOP SCORERS -->
+  <!-- FOOTER -->
   <!-- ========================== -->
 
-  <section id="topScorers">
+  <footer>
 
-    <h2>
-      🥇 Top Scorers
-    </h2>
+    <p class="footer-title">
+      ⚽ Lamu West Premier League
+    </p>
 
-    <div id="scorersList">
+    <p>
+      Official League Website
+    </p>
 
-      <p>
-        Loading top scorers...
-      </p>
+    <p>
+      © 2026 Lamu West Premier League. All rights reserved.
+    </p>
 
-    </div>
-
-  </section>
+  </footer>
 
 
   <!-- ========================== -->
@@ -174,4 +418,4 @@
 
 </body>
 
-  </html>
+</html>

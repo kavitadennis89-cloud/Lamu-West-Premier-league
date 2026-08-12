@@ -25,59 +25,114 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-const homeTeam = document.getElementById("homeTeam");
-const awayTeam = document.getElementById("awayTeam");
-const homeGoals = document.getElementById("homeGoals");
-const awayGoals = document.getElementById("awayGoals");
-const saveResult = document.getElementById("saveResult");
+// ==========================
+// ELEMENTS
+// ==========================
 
+const fixtureSelect =
+  document.getElementById("fixtureSelect");
+
+const homeGoals =
+  document.getElementById("homeGoals");
+
+const awayGoals =
+  document.getElementById("awayGoals");
+
+const saveResult =
+  document.getElementById("saveResult");
+
+
+let fixtures = [];
 
 let teams = [];
 
+
+// ==========================
+// LOAD FIXTURES
+// ==========================
+
+async function loadFixtures() {
+
+  try {
+
+    const snapshot =
+      await getDocs(collection(db, "fixtures"));
+
+
+    fixtures = [];
+
+
+    fixtureSelect.innerHTML =
+      '<option value="">Select Fixture</option>';
+
+
+    snapshot.forEach((fixtureDoc) => {
+
+      const fixture = {
+        id: fixtureDoc.id,
+        ...fixtureDoc.data()
+      };
+
+
+      fixtures.push(fixture);
+
+
+      const option =
+        document.createElement("option");
+
+
+      option.value = fixture.id;
+
+
+      option.textContent =
+        `${fixture.date} — ${fixture.homeTeam} vs ${fixture.awayTeam}`;
+
+
+      fixtureSelect.appendChild(option);
+
+    });
+
+
+    console.log("Fixtures loaded:", fixtures);
+
+  } catch (error) {
+
+    console.error(
+      "Error loading fixtures:",
+      error
+    );
+
+    alert(
+      "Could not load fixtures: " +
+      error.message
+    );
+
+  }
+
+}
+
+
+// ==========================
+// LOAD TEAMS
+// ==========================
 
 async function loadTeams() {
 
   try {
 
-    const snapshot = await getDocs(collection(db, "teams"));
+    const snapshot =
+      await getDocs(collection(db, "teams"));
+
 
     teams = [];
-
-    homeTeam.innerHTML =
-      '<option value="">Select Home Team</option>';
-
-    awayTeam.innerHTML =
-      '<option value="">Select Away Team</option>';
 
 
     snapshot.forEach((teamDoc) => {
 
-      const teamData = teamDoc.data();
-
-      const team = {
+      teams.push({
         id: teamDoc.id,
-        ...teamData
-      };
-
-      teams.push(team);
-
-
-      const homeOption = document.createElement("option");
-
-      homeOption.value = team.id;
-
-      homeOption.textContent = team.name;
-
-      homeTeam.appendChild(homeOption);
-
-
-      const awayOption = document.createElement("option");
-
-      awayOption.value = team.id;
-
-      awayOption.textContent = team.name;
-
-      awayTeam.appendChild(awayOption);
+        ...teamDoc.data()
+      });
 
     });
 
@@ -86,200 +141,165 @@ async function loadTeams() {
 
   } catch (error) {
 
-    console.error("Error loading teams:", error);
+    console.error(
+      "Error loading teams:",
+      error
+    );
 
-    alert("Could not load teams: " + error.message);
+    alert(
+      "Could not load teams: " +
+      error.message
+    );
 
   }
 
 }
 
 
-saveResult.addEventListener("click", async () => {
+// ==========================
+// SAVE RESULT
+// ==========================
 
-  const homeId = homeTeam.value;
-  const awayId = awayTeam.value;
+saveResult.addEventListener(
+  "click",
+  async () => {
 
-  const homeScore = Number(homeGoals.value);
-  const awayScore = Number(awayGoals.value);
+    const fixtureId =
+      fixtureSelect.value;
 
 
-  if (!homeId || !awayId) {
+    const homeScore =
+      Number(homeGoals.value);
 
-    alert("Please select both teams.");
 
-    return;
+    const awayScore =
+      Number(awayGoals.value);
 
-  }
 
+    // Check fixture
 
-  if (homeId === awayId) {
+    if (!fixtureId) {
 
-    alert("A team cannot play against itself.");
+      alert("Please select a fixture.");
 
-    return;
+      return;
 
-  }
+    }
 
 
-  if (homeGoals.value === "" || awayGoals.value === "") {
+    // Check scores
 
-    alert("Please enter both scores.");
+    if (
+      homeGoals.value === "" ||
+      awayGoals.value === ""
+    ) {
 
-    return;
+      alert("Please enter both scores.");
 
-  }
+      return;
 
+    }
 
-  if (homeScore < 0 || awayScore < 0) {
 
-    alert("Goals cannot be negative.");
+    if (
+      homeScore < 0 ||
+      awayScore < 0
+    ) {
 
-    return;
+      alert("Goals cannot be negative.");
 
-  }
+      return;
 
+    }
 
-  const home = teams.find(team => team.id === homeId);
-  const away = teams.find(team => team.id === awayId);
 
+    // Find fixture
 
-  if (!home || !away) {
+    const fixture =
+      fixtures.find(
+        item => item.id === fixtureId
+      );
 
-    alert("Team not found.");
 
-    return;
+    if (!fixture) {
 
-  }
+      alert("Fixture not found.");
 
+      return;
 
-  let homeWon = 0;
-  let homeDraw = 0;
-  let homeLost = 0;
+    }
 
-  let awayWon = 0;
-  let awayDraw = 0;
-  let awayLost = 0;
 
-  let homePoints = 0;
-  let awayPoints = 0;
+    // Find teams
 
+    const home =
+      teams.find(
+        team =>
+          team.name === fixture.homeTeam
+      );
 
-  if (homeScore > awayScore) {
 
-    homeWon = 1;
-    awayLost = 1;
-    homePoints = 3;
+    const away =
+      teams.find(
+        team =>
+          team.name === fixture.awayTeam
+      );
 
-  } else if (homeScore < awayScore) {
 
-    awayWon = 1;
-    homeLost = 1;
-    awayPoints = 3;
+    if (!home || !away) {
 
-  } else {
+      alert(
+        "Could not find teams for this fixture."
+      );
 
-    homeDraw = 1;
-    awayDraw = 1;
-    homePoints = 1;
-    awayPoints = 1;
+      return;
 
-  }
+    }
 
 
-  const homeUpdate = {
+    // ==========================
+    // CALCULATE RESULT
+    // ==========================
 
-    played: Number(home.played || 0) + 1,
+    let homeWon = 0;
+    let homeDraw = 0;
+    let homeLost = 0;
 
-    won: Number(home.won || 0) + homeWon,
+    let awayWon = 0;
+    let awayDraw = 0;
+    let awayLost = 0;
 
-    draw: Number(home.draw || 0) + homeDraw,
+    let homePoints = 0;
+    let awayPoints = 0;
 
-    lost: Number(home.lost || 0) + homeLost,
 
-    goalsFor: Number(home.goalsFor || 0) + homeScore,
+    if (homeScore > awayScore) {
 
-    goalsAgainst:
-      Number(home.goalsAgainst || 0) + awayScore,
+      homeWon = 1;
+      awayLost = 1;
 
-    points:
-      Number(home.points || 0) + homePoints
+      homePoints = 3;
 
-  };
+    }
 
+    else if (homeScore < awayScore) {
 
-  const awayUpdate = {
+      awayWon = 1;
+      homeLost = 1;
 
-    played: Number(away.played || 0) + 1,
+      awayPoints = 3;
 
-    won: Number(away.won || 0) + awayWon,
+    }
 
-    draw: Number(away.draw || 0) + awayDraw,
+    else {
 
-    lost: Number(away.lost || 0) + awayLost,
+      homeDraw = 1;
+      awayDraw = 1;
 
-    goalsFor:
-      Number(away.goalsFor || 0) + awayScore,
+      homePoints = 1;
+      awayPoints = 1;
 
-    goalsAgainst:
-      Number(away.goalsAgainst || 0) + homeScore,
+    }
 
-    points:
-      Number(away.points || 0) + awayPoints
 
-  };
-
-
-  try {
-
-    await updateDoc(
-      doc(db, "teams", homeId),
-      homeUpdate
-    );
-
-
-    await updateDoc(
-      doc(db, "teams", awayId),
-      awayUpdate
-    );
-
-
-    await addDoc(collection(db, "results"), {
-
-      homeTeam: home.name,
-
-      awayTeam: away.name,
-
-      homeGoals: homeScore,
-
-      awayGoals: awayScore,
-
-      createdAt: new Date()
-
-    });
-
-
-    alert("Match result saved successfully! ⚽🔥");
-
-
-    homeTeam.value = "";
-    awayTeam.value = "";
-
-    homeGoals.value = "";
-    awayGoals.value = "";
-
-
-    await loadTeams();
-
-  } catch (error) {
-
-    console.error("Error saving result:", error);
-
-    alert("Error saving result: " + error.message);
-
-  }
-
-});
-
-
-loadTeams();
+    // =========================

@@ -132,14 +132,11 @@ async function loadFixtures() {
         collection(db, "fixtures")
       );
 
-
     const resultSnapshot =
       await getDocs(
         collection(db, "results")
       );
 
-
-    // Get IDs of fixtures already played
 
     const playedFixtureIds = new Set();
 
@@ -162,7 +159,6 @@ async function loadFixtures() {
 
     const sections =
       document.querySelectorAll("section");
-
 
     let fixturesSection = null;
 
@@ -203,8 +199,6 @@ async function loadFixtures() {
         fixtureDoc.data();
 
 
-      // Skip fixture if already played
-
       if (
         playedFixtureIds.has(
           fixtureDoc.id
@@ -221,7 +215,6 @@ async function loadFixtures() {
 
       const match =
         document.createElement("p");
-
 
       match.innerHTML = `
         📅 <strong>${fixture.date}</strong>
@@ -328,9 +321,121 @@ async function loadResults() {
 
 
 // ==========================
+// TOP SCORERS
+// ==========================
+
+async function loadScorers() {
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "scorers")
+      );
+
+
+    const sections =
+      document.querySelectorAll("section");
+
+    let scorersSection = null;
+
+
+    sections.forEach((section) => {
+
+      const heading =
+        section.querySelector("h2");
+
+      if (
+        heading &&
+        heading.textContent.includes(
+          "Top Scorers"
+        )
+      ) {
+
+        scorersSection = section;
+
+      }
+
+    });
+
+
+    if (!scorersSection) return;
+
+
+    scorersSection.innerHTML = `
+      <h2>🥇 Top Scorers</h2>
+    `;
+
+
+    if (snapshot.empty) {
+
+      scorersSection.innerHTML +=
+        "<p>No goals scored yet.</p>";
+
+      return;
+
+    }
+
+
+    const scorers = [];
+
+
+    snapshot.forEach((scorerDoc) => {
+
+      const scorer =
+        scorerDoc.data();
+
+      scorers.push(scorer);
+
+    });
+
+
+    scorers.sort((a, b) => {
+
+      return Number(b.goals || 0) -
+             Number(a.goals || 0);
+
+    });
+
+
+    scorers.forEach((scorer, index) => {
+
+      const player =
+        document.createElement("p");
+
+      player.innerHTML = `
+        🥅 <strong>${index + 1}.</strong>
+        ${scorer.playerName}
+        —
+        ${scorer.team}
+        —
+        <strong>${scorer.goals} goals</strong>
+      `;
+
+      scorersSection.appendChild(player);
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Error loading top scorers:",
+      error
+    );
+
+  }
+
+}
+
+
+// ==========================
 // START
 // ==========================
 
 loadTeams();
+
 loadFixtures();
+
 loadResults();
+
+loadScorers();

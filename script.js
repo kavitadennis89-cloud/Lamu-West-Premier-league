@@ -23,6 +23,274 @@ const db = getFirestore(app);
 
 
 // ==========================================
+// QUICK LEAGUE STATS
+// ==========================================
+
+async function loadQuickStats() {
+
+  try {
+
+    const teamSnapshot =
+      await getDocs(
+        collection(db, "teams")
+      );
+
+
+    const resultSnapshot =
+      await getDocs(
+        collection(db, "results")
+      );
+
+
+    // --------------------------------------
+    // TEAMS
+    // --------------------------------------
+
+    const totalTeams =
+      teamSnapshot.size;
+
+
+    // --------------------------------------
+    // MATCHES & GOALS
+    // --------------------------------------
+
+    const totalMatches =
+      resultSnapshot.size;
+
+
+    let totalGoals = 0;
+
+
+    resultSnapshot.forEach((resultDoc) => {
+
+      const result =
+        resultDoc.data();
+
+
+      const homeScore =
+        Number(
+          result.homeScore ??
+          result.homeGoals ??
+          0
+        );
+
+
+      const awayScore =
+        Number(
+          result.awayScore ??
+          result.awayGoals ??
+          0
+        );
+
+
+      totalGoals +=
+        homeScore + awayScore;
+
+    });
+
+
+    // --------------------------------------
+    // FIND LEAGUE LEADER
+    // --------------------------------------
+
+    const teams = [];
+
+
+    teamSnapshot.forEach((teamDoc) => {
+
+      const data =
+        teamDoc.data();
+
+
+      const goalsFor =
+        Number(
+          data.goalsFor || 0
+        );
+
+
+      const goalsAgainst =
+        Number(
+          data.goalsAgainst || 0
+        );
+
+
+      teams.push({
+
+        name:
+          data.name ||
+          "Unknown Team",
+
+        points:
+          Number(
+            data.points || 0
+          ),
+
+        goalDifference:
+          goalsFor -
+          goalsAgainst,
+
+        goalsFor:
+          goalsFor
+
+      });
+
+    });
+
+
+    teams.sort((a, b) => {
+
+      if (b.points !== a.points) {
+
+        return (
+          b.points -
+          a.points
+        );
+
+      }
+
+
+      if (
+        b.goalDifference !==
+        a.goalDifference
+      ) {
+
+        return (
+          b.goalDifference -
+          a.goalDifference
+        );
+
+      }
+
+
+      return (
+        b.goalsFor -
+        a.goalsFor
+      );
+
+    });
+
+
+    const leagueLeader =
+      teams.length > 0
+        ? teams[0].name
+        : "—";
+
+
+    // --------------------------------------
+    // DISPLAY STATS
+    // --------------------------------------
+
+    const sections =
+      document.querySelectorAll("section");
+
+
+    /*
+      Section order on homepage:
+
+      0 = Welcome
+      1 = League Overview
+      2 = Standings
+      3 = Fixtures
+      4 = Results
+      5 = Top Scorers
+    */
+
+    const statsSection =
+      sections[1];
+
+
+    if (!statsSection) {
+      return;
+    }
+
+
+    const cards =
+      statsSection.querySelectorAll(
+        "div > div"
+      );
+
+
+    if (cards.length >= 4) {
+
+      // Teams
+
+      const teamNumber =
+        cards[0].querySelector(
+          "strong"
+        );
+
+
+      if (teamNumber) {
+
+        teamNumber.textContent =
+          totalTeams;
+
+      }
+
+
+      // Matches
+
+      const matchNumber =
+        cards[1].querySelector(
+          "strong"
+        );
+
+
+      if (matchNumber) {
+
+        matchNumber.textContent =
+          totalMatches;
+
+      }
+
+
+      // Goals
+
+      const goalNumber =
+        cards[2].querySelector(
+          "strong"
+        );
+
+
+      if (goalNumber) {
+
+        goalNumber.textContent =
+          totalGoals;
+
+      }
+
+
+      // League Leader
+
+      const leaderName =
+        cards[3].querySelector(
+          "strong"
+        );
+
+
+      if (leaderName) {
+
+        leaderName.textContent =
+          leagueLeader;
+
+      }
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Quick stats error:",
+      error
+    );
+
+  }
+
+}
+
+
+// ==========================================
 // LEAGUE STANDINGS
 // ==========================================
 
@@ -453,16 +721,16 @@ async function loadResults() {
 
       const homeScore =
         Number(
-          result.homeScore ||
-          result.homeGoals ||
+          result.homeScore ??
+          result.homeGoals ??
           0
         );
 
 
       const awayScore =
         Number(
-          result.awayScore ||
-          result.awayGoals ||
+          result.awayScore ??
+          result.awayGoals ??
           0
         );
 
@@ -676,6 +944,8 @@ async function loadTopScorers() {
 async function loadWebsite() {
 
   await loadTeams();
+
+  await loadQuickStats();
 
   await loadFixtures();
 

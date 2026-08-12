@@ -125,9 +125,41 @@ async function loadResults() {
   if (!resultsSection) return;
 
 
-  const oldResults = resultsSection.querySelectorAll("p");
+  async function loadResults() {
+  try {
+    const snapshot = await getDocs(collection(db, "results"));
 
-  oldResults.forEach((p) => p.remove());
+    const resultsList = document.getElementById("resultsList");
+
+    if (!resultsList) return;
+
+    resultsList.innerHTML = "";
+
+    if (snapshot.empty) {
+      resultsList.innerHTML = "<p>No matches played yet.</p>";
+      return;
+    }
+
+    snapshot.forEach((resultDoc) => {
+      const result = resultDoc.data();
+
+      const match = document.createElement("p");
+
+      match.innerHTML = `
+        ⚽ <strong>${result.homeTeam}</strong>
+        ${result.homeGoals}
+        -
+        ${result.awayGoals}
+        <strong>${result.awayTeam}</strong>
+      `;
+
+      resultsList.appendChild(match);
+    });
+
+  } catch (error) {
+    console.error("Error loading results:", error);
+  }
+  }
 
 
   if (snapshot.empty) {

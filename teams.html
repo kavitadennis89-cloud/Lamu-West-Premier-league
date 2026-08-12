@@ -49,15 +49,14 @@
     #teamsList {
       display: grid;
       grid-template-columns:
-        repeat(auto-fit, minmax(230px, 1fr));
-
+        repeat(auto-fit, minmax(240px, 1fr));
       gap: 18px;
     }
 
     .team-card {
       background: white;
       border-radius: 12px;
-      padding: 25px 18px;
+      padding: 22px 18px;
       text-align: center;
 
       box-shadow:
@@ -71,13 +70,47 @@
     }
 
     .team-icon {
-      font-size: 45px;
-      margin-bottom: 10px;
+      font-size: 42px;
+      margin-bottom: 8px;
     }
 
     .team-card h3 {
       color: #075e3d;
-      margin: 10px 0;
+      margin: 8px 0 15px;
+    }
+
+    .team-stats {
+      display: grid;
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 5px;
+
+      margin: 15px 0;
+    }
+
+    .stat {
+      background: #f2f5f3;
+      padding: 8px 3px;
+      border-radius: 6px;
+    }
+
+    .stat strong {
+      display: block;
+      color: #075e3d;
+      font-size: 16px;
+    }
+
+    .stat span {
+      font-size: 11px;
+      color: #666;
+    }
+
+    .team-points {
+      font-size: 18px;
+      font-weight: bold;
+      color: #075e3d;
+      margin: 12px 0;
     }
 
     .team-card a {
@@ -93,8 +126,6 @@
       border-radius: 7px;
 
       font-weight: bold;
-
-      margin-top: 8px;
     }
 
     .team-card a:hover {
@@ -175,6 +206,8 @@
   </main>
 
 
+  <!-- FIREBASE -->
+
   <script type="module">
 
     import {
@@ -247,11 +280,29 @@
         }
 
 
+        const teams = [];
+
+
         snapshot.forEach((teamDoc) => {
 
           const team =
             teamDoc.data();
 
+
+          teams.push(team);
+
+        });
+
+
+        teams.sort((a, b) => {
+
+          return Number(b.points || 0) -
+                 Number(a.points || 0);
+
+        });
+
+
+        teams.forEach((team) => {
 
           const card =
             document.createElement("div");
@@ -265,6 +316,34 @@
             "Unknown Team";
 
 
+          const played =
+            Number(team.played || 0);
+
+          const won =
+            Number(
+              team.won ||
+              team.wins ||
+              0
+            );
+
+          const draw =
+            Number(
+              team.draw ||
+              team.draws ||
+              0
+            );
+
+          const lost =
+            Number(
+              team.lost ||
+              team.losses ||
+              0
+            );
+
+          const points =
+            Number(team.points || 0);
+
+
           card.innerHTML = `
 
             <div class="team-icon">
@@ -274,6 +353,34 @@
             <h3>
               ${name}
             </h3>
+
+            <div class="team-stats">
+
+              <div class="stat">
+                <strong>${played}</strong>
+                <span>P</span>
+              </div>
+
+              <div class="stat">
+                <strong>${won}</strong>
+                <span>W</span>
+              </div>
+
+              <div class="stat">
+                <strong>${draw}</strong>
+                <span>D</span>
+              </div>
+
+              <div class="stat">
+                <strong>${lost}</strong>
+                <span>L</span>
+              </div>
+
+            </div>
+
+            <div class="team-points">
+              🏆 ${points} Points
+            </div>
 
             <a href="team.html?team=${encodeURIComponent(name)}">
               View Team Profile
@@ -310,4 +417,4 @@
 
 </body>
 
-  </html>
+</html>

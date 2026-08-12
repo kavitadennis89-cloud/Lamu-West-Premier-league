@@ -53,7 +53,8 @@ for (const team of teams) {
   });
 }
 
-alert("✅ Teams added successfully!");
+const snapshot = await getDocs(collection(db, "teams"));
+alert("Total teams: " + snapshot.size);
 </script>
 
 </body>

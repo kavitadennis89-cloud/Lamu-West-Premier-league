@@ -22,6 +22,10 @@
 
 <body>
 
+  <!-- ========================== -->
+  <!-- HEADER -->
+  <!-- ========================== -->
+
   <header>
 
     <h1>
@@ -36,31 +40,71 @@
 
 
   <!-- ========================== -->
+  <!-- NAVIGATION -->
+  <!-- ========================== -->
+
+  <nav style="
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    padding:15px;
+    margin-bottom:20px;
+  ">
+
+    <a href="index.html">
+      🏠 Home
+    </a>
+
+    <a href="#standings">
+      🏆 Standings
+    </a>
+
+    <a href="#upcomingFixtures">
+      📅 Fixtures
+    </a>
+
+    <a href="#latestResults">
+      ⚽ Results
+    </a>
+
+    <a href="#topScorers">
+      🥇 Top Scorers
+    </a>
+
+  </nav>
+
+
+  <!-- ========================== -->
   <!-- LEAGUE TABLE -->
   <!-- ========================== -->
 
-  <h2>
-    League Standings
-  </h2>
+  <section id="standings">
 
-  <table>
+    <h2>
+      League Standings
+    </h2>
 
-    <tr>
+    <table>
 
-      <th>Pos</th>
-      <th>Club</th>
-      <th>P</th>
-      <th>W</th>
-      <th>D</th>
-      <th>L</th>
-      <th>GF</th>
-      <th>GA</th>
-      <th>GD</th>
-      <th>Pts</th>
+      <tr>
 
-    </tr>
+        <th>Pos</th>
+        <th>Club</th>
+        <th>P</th>
+        <th>W</th>
+        <th>D</th>
+        <th>L</th>
+        <th>GF</th>
+        <th>GA</th>
+        <th>GD</th>
+        <th>Pts</th>
 
-  </table>
+      </tr>
+
+    </table>
+
+  </section>
 
 
   <!-- ========================== -->
@@ -118,6 +162,10 @@
   </section>
 
 
+  <!-- ========================== -->
+  <!-- JAVASCRIPT -->
+  <!-- ========================== -->
+
   <script
     type="module"
     src="script.js?v=12">
@@ -126,4 +174,4 @@
 
 </body>
 
-</html>
+  </html>

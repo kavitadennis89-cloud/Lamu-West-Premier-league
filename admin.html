@@ -27,9 +27,8 @@
   </h1>
 
 
-  <!-- ========================== -->
-  <!-- ADD TEAM -->
-  <!-- ========================== -->
+  <div id="adminError"></div>
+
 
   <h2>⚽ Add Team</h2>
 
@@ -101,33 +100,21 @@
   <hr>
 
 
-  <!-- ========================== -->
-  <!-- TEAMS -->
-  <!-- ========================== -->
-
   <h2>⚽ Teams</h2>
 
   <div id="teamsList">
-
-    <p>
-      Loading teams...
-    </p>
-
+    <p>Loading teams...</p>
   </div>
 
 
   <hr>
 
 
-  <!-- ========================== -->
-  <!-- ADD FIXTURE -->
-  <!-- ========================== -->
-
   <h2>📅 Add Fixture</h2>
 
   <form id="fixtureForm">
 
-    <label for="fixtureHome">
+    <label>
       Home Team
     </label>
 
@@ -143,7 +130,7 @@
     </select>
 
 
-    <label for="fixtureAway">
+    <label>
       Away Team
     </label>
 
@@ -159,7 +146,7 @@
     </select>
 
 
-    <label for="fixtureDate">
+    <label>
       Match Date
     </label>
 
@@ -170,10 +157,7 @@
     >
 
 
-    <button
-      type="submit"
-      id="saveFixture"
-    >
+    <button type="submit">
       Save Fixture
     </button>
 
@@ -183,27 +167,15 @@
   <hr>
 
 
-  <!-- ========================== -->
-  <!-- FIXTURES -->
-  <!-- ========================== -->
-
   <h2>📅 Fixtures</h2>
 
   <div id="fixturesList">
-
-    <p>
-      No fixtures added yet.
-    </p>
-
+    <p>Loading fixtures...</p>
   </div>
 
 
   <hr>
 
-
-  <!-- ========================== -->
-  <!-- TOP SCORERS -->
-  <!-- ========================== -->
 
   <h2>🥇 Add Top Scorer</h2>
 
@@ -217,7 +189,7 @@
     >
 
 
-    <label for="scorerTeam">
+    <label>
       Team
     </label>
 
@@ -252,18 +224,14 @@
   <h2>🥇 Top Scorers</h2>
 
   <div id="scorersList">
-
-    <p>
-      No scorers added yet.
-    </p>
-
+    <p>Loading top scorers...</p>
   </div>
 
 
   <script
     type="module"
-    src="admin.js?v=5"
-  ></script>
+    src="admin.js?v=5">
+  </script>
 
 </body>
 

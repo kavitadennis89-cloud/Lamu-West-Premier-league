@@ -123,16 +123,12 @@
 
 
   <!-- =====================================
-       PLAYER MANAGEMENT
+       ADD PLAYER
   ====================================== -->
 
-  <h2>
-    👤 Add Player
-  </h2>
-
+  <h2>👤 Add Player</h2>
 
   <form id="playerForm">
-
 
     <input
       type="text"
@@ -141,11 +137,9 @@
       required
     >
 
-
     <label>
       Team
     </label>
-
 
     <select
       id="playerTeam"
@@ -172,7 +166,6 @@
     <label>
       Position
     </label>
-
 
     <select
       id="playerPosition"
@@ -230,14 +223,10 @@
       Save Player
     </button>
 
-
   </form>
 
 
-  <h2>
-    👥 Players
-  </h2>
-
+  <h2>👥 Players</h2>
 
   <div id="playersList">
 
@@ -255,18 +244,13 @@
        ADD FIXTURE
   ====================================== -->
 
-  <h2>
-    📅 Add Fixture
-  </h2>
-
+  <h2>📅 Add Fixture</h2>
 
   <form id="fixtureForm">
-
 
     <label>
       Home Team
     </label>
-
 
     <select
       id="fixtureHome"
@@ -284,7 +268,6 @@
       Away Team
     </label>
 
-
     <select
       id="fixtureAway"
       required
@@ -301,7 +284,6 @@
       Match Date
     </label>
 
-
     <input
       type="date"
       id="fixtureDate"
@@ -313,7 +295,6 @@
       Save Fixture
     </button>
 
-
   </form>
 
 
@@ -324,10 +305,7 @@
        FIXTURES
   ====================================== -->
 
-  <h2>
-    📅 Fixtures
-  </h2>
-
+  <h2>📅 Fixtures</h2>
 
   <div id="fixturesList">
 
@@ -345,13 +323,9 @@
        ADD TOP SCORER
   ====================================== -->
 
-  <h2>
-    🥇 Add Top Scorer
-  </h2>
-
+  <h2>🥇 Add Top Scorer</h2>
 
   <form id="scorerForm">
-
 
     <input
       type="text"
@@ -362,4 +336,59 @@
 
 
     <label>
+      Team
+    </label>
+
+    <select
+      id="scorerTeam"
+      required
+    >
+
+      <option value="">
+        Select Team
+      </option>
+
+    </select>
+
+
+    <input
+      type="number"
+      id="playerGoals"
+      placeholder="Goals"
+      min="0"
+      required
+    >
+
+
+    <button type="submit">
+      Save Top Scorer
+    </button>
+
+  </form>
+
+
+  <h2>🥇 Top Scorers</h2>
+
+  <div id="scorersList">
+
+    <p>
+      Loading scorers...
+    </p>
+
+  </div>
+
+
+  <!-- =====================================
+       ADMIN JAVASCRIPT
+  ====================================== -->
+
+  <script
+    type="module"
+    src="admin.js"
+  ></script>
+
+
+</body>
+
+</html>
      

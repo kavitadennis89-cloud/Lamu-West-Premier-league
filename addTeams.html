@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Teams</title>
+</head>
+<body>
+
+<h2>Adding Teams...</h2>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+  authDomain: "lamu-west-premier-league.firebaseapp.com",
+  projectId: "lamu-west-premier-league",
+  storageBucket: "lamu-west-premier-league.firebasestorage.app",
+  messagingSenderId: "280853181931",
+  appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
+  measurementId: "G-HQ04SZWBBB"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const teams = [
+  "Mavuno Stars",
+  "Eleven Movers",
+  "Sefu Stars",
+  "Pangani FC",
+  "Juniors FC",
+  "Mikinduni FC",
+  "Lumshi FC",
+  "Yoro FC"
+];
+
+for (const team of teams) {
+  await addDoc(collection(db, "teams"), {
+    name: team,
+    played: 0,
+    won: 0,
+    draw: 0,
+    lost: 0,
+    goalsFor: 0,
+    goalsAgainst: 0,
+    points: 0
+  });
+}
+
+alert("✅ Teams added successfully!");
+</script>
+
+</body>
+</html>

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Admin - Match Results</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -65,27 +68,54 @@
 
     <h1>⚽ Enter Match Result</h1>
 
-    <label for="homeTeam">Home Team</label>
-    <select id="homeTeam">
-      <option value="">Select Home Team</option>
+    <label for="fixtureSelect">
+      Select Fixture
+    </label>
+
+    <select id="fixtureSelect">
+      <option value="">
+        Select Fixture
+      </option>
     </select>
 
-    <label for="homeGoals">Home Goals</label>
-    <input type="number" id="homeGoals" min="0" placeholder="Enter goals">
 
-    <label for="awayTeam">Away Team</label>
-    <select id="awayTeam">
-      <option value="">Select Away Team</option>
-    </select>
+    <label for="homeGoals">
+      Home Goals
+    </label>
 
-    <label for="awayGoals">Away Goals</label>
-    <input type="number" id="awayGoals" min="0" placeholder="Enter goals">
+    <input
+      type="number"
+      id="homeGoals"
+      min="0"
+      placeholder="Enter goals"
+    >
 
-    <button id="saveResult">Save Result</button>
+
+    <label for="awayGoals">
+      Away Goals
+    </label>
+
+    <input
+      type="number"
+      id="awayGoals"
+      min="0"
+      placeholder="Enter goals"
+    >
+
+
+    <button id="saveResult">
+      Save Result
+    </button>
 
   </div>
 
-  <script type="module" src="results.js"></script>
+
+  <script
+    type="module"
+    src="results.js">
+  </script>
 
 </body>
+
+</html>
                                            </html>

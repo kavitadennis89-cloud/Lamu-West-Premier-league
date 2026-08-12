@@ -7,41 +7,78 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #f2f5f3;
+  background: #eef3f0;
   color: #17221f;
+  line-height: 1.5;
 }
 
 
 /* =========================================
-   HEADER / HERO
+   HERO HEADER
 ========================================= */
 
 header {
   background:
     linear-gradient(
       135deg,
-      #064d32,
-      #087f50
+      #032f20 0%,
+      #075e3d 50%,
+      #0b8b56 100%
     );
 
   color: white;
   text-align: center;
-  padding: 45px 20px;
+  padding: 65px 20px 60px;
+
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: "⚽";
+  position: absolute;
+  font-size: 180px;
+  opacity: 0.06;
+  right: 5%;
+  top: -45px;
+}
+
+header::after {
+  content: "🏆";
+  position: absolute;
+  font-size: 150px;
+  opacity: 0.05;
+  left: 5%;
+  bottom: -50px;
+}
+
+header p:first-child {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  opacity: 0.85;
 }
 
 header h1 {
   margin: 0;
-  font-size: 34px;
-  font-weight: 800;
+  font-size: 42px;
+  line-height: 1.08;
+  font-weight: 900;
+  letter-spacing: 1px;
 }
 
-header p {
-  margin: 10px 0 0;
-  font-size: 16px;
-  opacity: 0.9;
+header p:last-child {
+  margin: 18px 0 0;
+  font-size: 17px;
+  opacity: 0.92;
 }
 
 
@@ -53,11 +90,11 @@ nav {
   display: flex !important;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
 
   background: #ffffff;
 
-  padding: 14px;
+  padding: 13px 10px;
 
   margin: 0;
 
@@ -67,30 +104,38 @@ nav {
   z-index: 1000;
 
   box-shadow:
-    0 2px 10px rgba(0,0,0,0.10);
+    0 3px 15px rgba(0, 0, 0, 0.12);
 }
 
 nav a {
   display: inline-block !important;
 
-  padding: 10px 15px;
+  padding: 10px 14px;
 
   text-decoration: none;
 
   font-weight: 700;
+  font-size: 13px;
 
-  border-radius: 7px;
+  border-radius: 8px;
 
   background: #075e3d;
 
   color: white !important;
 
-  transition: 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
 }
 
 nav a:hover {
   background: #043d28;
-  transform: translateY(-1px);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 
@@ -99,19 +144,26 @@ nav a:hover {
 ========================================= */
 
 section {
-  width: 95%;
-  max-width: 1100px;
+  width: 94%;
+  max-width: 1150px;
 
-  margin: 25px auto;
+  margin: 28px auto;
 
   background: white;
 
-  padding: 22px;
+  padding: 25px;
 
-  border-radius: 12px;
+  border-radius: 15px;
 
   box-shadow:
-    0 3px 15px rgba(0,0,0,0.08);
+    0 4px 18px rgba(0, 0, 0, 0.07);
+
+  border:
+    1px solid #e4ebe7;
+}
+
+section:first-of-type {
+  margin-top: 30px;
 }
 
 h2 {
@@ -120,11 +172,25 @@ h2 {
   text-align: left;
 
   margin-top: 0;
+  margin-bottom: 20px;
 
   padding-bottom: 12px;
 
   border-bottom:
     3px solid #075e3d;
+
+  font-size: 24px;
+}
+
+
+/* =========================================
+   WELCOME SECTION
+========================================= */
+
+section:first-of-type p {
+  color: #56635e;
+  font-size: 16px;
+  max-width: 800px;
 }
 
 
@@ -138,6 +204,8 @@ table {
   border-collapse: collapse;
 
   overflow: hidden;
+
+  border-radius: 10px;
 }
 
 th {
@@ -145,18 +213,20 @@ th {
 
   color: white;
 
-  padding: 13px 8px;
+  padding: 14px 9px;
 
-  font-size: 14px;
+  font-size: 13px;
+
+  text-align: center;
 }
 
 td {
-  padding: 12px 8px;
+  padding: 13px 9px;
 
   text-align: center;
 
   border-bottom:
-    1px solid #e2e7e4;
+    1px solid #e3e9e6;
 
   font-size: 14px;
 }
@@ -166,13 +236,15 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-  background: #eef6f1;
+  background: #edf6f1;
 }
 
 td a {
   color: #075e3d;
 
   text-decoration: none;
+
+  font-weight: 700;
 }
 
 
@@ -183,14 +255,17 @@ td a {
 #upcomingFixtures p {
   background: #f7faf8;
 
-  padding: 14px;
+  padding: 15px 16px;
 
-  margin: 8px 0;
+  margin: 10px 0;
 
   border-left:
-    4px solid #075e3d;
+    5px solid #075e3d;
 
-  border-radius: 5px;
+  border-radius: 7px;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 
@@ -201,14 +276,17 @@ td a {
 #resultsList p {
   background: #f7faf8;
 
-  padding: 14px;
+  padding: 15px 16px;
 
-  margin: 8px 0;
+  margin: 10px 0;
 
   border-left:
-    4px solid #075e3d;
+    5px solid #075e3d;
 
-  border-radius: 5px;
+  border-radius: 7px;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 
@@ -217,16 +295,91 @@ td a {
 ========================================= */
 
 #scorersList p {
-  background: #f7faf8;
+  background: #fffaf0;
 
-  padding: 14px;
+  padding: 15px 16px;
 
-  margin: 8px 0;
+  margin: 10px 0;
 
   border-left:
-    4px solid #d4a017;
+    5px solid #d4a017;
 
-  border-radius: 5px;
+  border-radius: 7px;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+button {
+  border: none;
+
+  background: #075e3d;
+
+  color: white;
+
+  padding: 10px 16px;
+
+  border-radius: 7px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+button:hover {
+  background: #043d28;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+  width: 100%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #032f20,
+      #075e3d
+    );
+
+  color: white;
+
+  text-align: center !important;
+
+  padding: 38px 15px;
+
+  margin-top: 50px;
+
+  display: block;
+}
+
+footer h3 {
+  margin:
+    0 0 12px;
+
+  font-size: 20px;
+}
+
+footer p {
+  margin: 7px 0;
+
+  text-align: center !important;
+
+  opacity: 0.9;
 }
 
 
@@ -237,39 +390,56 @@ td a {
 @media (max-width: 700px) {
 
   header {
-    padding: 35px 15px;
+    padding:
+      48px 15px
+      45px;
   }
 
   header h1 {
-    font-size: 25px;
+    font-size: 29px;
   }
 
-  header p {
+  header p:last-child {
     font-size: 14px;
   }
 
   nav {
     gap: 6px;
-    padding: 10px;
+    padding: 10px 7px;
   }
 
   nav a {
-    font-size: 12px;
+    font-size: 11px;
     padding: 8px 10px;
   }
 
   section {
     width: 96%;
-    padding: 15px;
+
+    padding: 17px;
+
+    margin:
+      20px auto;
+
+    border-radius: 12px;
+
     overflow-x: auto;
+  }
+
+  h2 {
+    font-size: 20px;
   }
 
   table {
     min-width: 650px;
   }
 
-  h2 {
-    font-size: 20px;
+  th {
+    padding: 11px 7px;
+  }
+
+  td {
+    padding: 11px 7px;
   }
 
 }
@@ -281,29 +451,30 @@ td a {
 
 @media (max-width: 400px) {
 
-  nav a {
+  header h1 {
+    font-size: 25px;
+  }
+
+  header p:first-child {
     font-size: 11px;
+  }
+
+  nav {
+    gap: 5px;
+  }
+
+  nav a {
+    font-size: 10px;
     padding: 7px 8px;
   }
 
-  header h1 {
-    font-size: 22px;
+  section {
+    width: 97%;
+    padding: 14px;
   }
 
-}
-/* FOOTER */
+  h2 {
+    font-size: 19px;
+  }
 
-footer {
-  width: 100%;
-  background: #006400;
-  color: white;
-  text-align: center !important;
-  padding: 30px 15px;
-  margin-top: 40px;
-  display: block;
-}
-
-footer p {
-  margin: 8px 0;
-  text-align: center !important;
 }

@@ -10,132 +10,168 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Admin - Match Results</title>
+  <title>Admin - Match Results | Lamu West Premier League</title>
 
   <style>
 
-    body {
-
-      font-family:
-        Arial,
-        sans-serif;
-
-      background:
-        #f4f6f8;
-
-      margin:
-        0;
-
-      padding:
-        20px;
-
+    * {
+      box-sizing: border-box;
     }
 
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f5f3;
+      color: #17221f;
+    }
 
-    .container {
-
-      max-width:
-        500px;
-
-      margin:
-        auto;
-
+    header {
       background:
-        white;
+        linear-gradient(
+          135deg,
+          #064d32,
+          #087f50
+        );
 
-      padding:
-        25px;
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
 
-      border-radius:
-        12px;
+    header h1 {
+      margin: 8px 0;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    nav {
+      background: white;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+
+      position: sticky;
+      top: 0;
+      z-index: 100;
 
       box-shadow:
-        0 4px 15px
-        rgba(0,0,0,0.1);
-
+        0 2px 10px rgba(0,0,0,0.10);
     }
 
-
-    h1 {
-
-      text-align:
-        center;
-
-      margin-bottom:
-        25px;
-
+    nav a {
+      text-decoration: none;
+      color: white;
+      background: #075e3d;
+      font-weight: bold;
+      padding: 10px 14px;
+      border-radius: 8px;
     }
 
+    nav a:hover {
+      background: #043d28;
+    }
+
+    main {
+      width: 95%;
+      max-width: 600px;
+      margin: 30px auto;
+    }
+
+    .form-card {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+
+      box-shadow:
+        0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    .form-card h2 {
+      text-align: center;
+      color: #075e3d;
+      margin-top: 0;
+    }
 
     label {
-
-      display:
-        block;
-
-      margin-top:
-        15px;
-
-      margin-bottom:
-        6px;
-
-      font-weight:
-        bold;
-
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 7px;
+      font-weight: bold;
     }
-
 
     select,
     input,
     button {
-
-      width:
-        100%;
-
-      padding:
-        12px;
-
-      box-sizing:
-        border-box;
-
-      border-radius:
-        6px;
-
-      border:
-        1px solid #ccc;
-
-      font-size:
-        16px;
-
+      width: 100%;
+      padding: 13px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #ccd6d1;
+      font-size: 16px;
     }
 
+    select:focus,
+    input:focus {
+      outline: none;
+      border-color: #075e3d;
+    }
 
     button {
-
-      margin-top:
-        25px;
-
-      background:
-        #111;
-
-      color:
-        white;
-
-      border:
-        none;
-
-      cursor:
-        pointer;
-
-      font-weight:
-        bold;
-
+      margin-top: 25px;
+      background: #075e3d;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
     }
 
-
     button:hover {
+      background: #043d28;
+    }
 
-      background:
-        #333;
+    .back {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .back a {
+      color: #075e3d;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    footer {
+      background: #073b29;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 40px;
+    }
+
+    footer p {
+      margin: 7px 0;
+    }
+
+    @media (max-width: 600px) {
+
+      header h1 {
+        font-size: 23px;
+      }
+
+      nav a {
+        font-size: 12px;
+        padding: 8px 10px;
+      }
+
+      main {
+        width: 94%;
+      }
 
     }
 
@@ -147,71 +183,131 @@
 <body>
 
 
-  <div class="container">
+  <header>
 
+    <div style="font-size:42px;">
+      ⚽
+    </div>
 
     <h1>
-      ⚽ Enter Match Result
+      Lamu West Premier League
     </h1>
 
+    <p>
+      Admin — Match Results
+    </p>
 
-    <label for="fixtureSelect">
-      Select Fixture
-    </label>
+  </header>
 
 
-    <select id="fixtureSelect">
+  <nav>
 
-      <option value="">
+    <a href="index.html">
+      🏠 Home
+    </a>
+
+    <a href="index.html#standings">
+      🏆 Standings
+    </a>
+
+    <a href="fixtures.html">
+      📅 Fixtures
+    </a>
+
+    <a href="index.html#latestResults">
+      ⚽ Results
+    </a>
+
+    <a href="teams.html">
+      👥 Teams
+    </a>
+
+    <a href="admin.html">
+      🔐 Admin Panel
+    </a>
+
+  </nav>
+
+
+  <main>
+
+    <div class="form-card">
+
+      <h2>
+        ⚽ Enter Match Result
+      </h2>
+
+
+      <label for="fixtureSelect">
         Select Fixture
-      </option>
+      </label>
 
-    </select>
+      <select id="fixtureSelect">
 
+        <option value="">
+          Select Fixture
+        </option>
 
-    <label for="homeGoals">
-      Home Goals
-    </label>
-
-
-    <input
-      type="number"
-      id="homeGoals"
-      min="0"
-      placeholder="Enter goals"
-    >
+      </select>
 
 
-    <label for="awayGoals">
-      Away Goals
-    </label>
+      <label for="homeGoals">
+        Home Goals
+      </label>
+
+      <input
+        type="number"
+        id="homeGoals"
+        min="0"
+        placeholder="Enter home goals"
+      >
 
 
-    <input
-      type="number"
-      id="awayGoals"
-      min="0"
-      placeholder="Enter goals"
-    >
+      <label for="awayGoals">
+        Away Goals
+      </label>
+
+      <input
+        type="number"
+        id="awayGoals"
+        min="0"
+        placeholder="Enter away goals"
+      >
 
 
-    <button id="saveResult">
-      Save Result
-    </button>
+      <button id="saveResult">
+        💾 Save Result
+      </button>
 
 
-  </div>
+      <div class="back">
+
+        <a href="admin.html">
+          ← Back to Admin Panel
+        </a>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <footer>
+
+    <p>
+      ⚽ Lamu West Premier League
+    </p>
+
+    <p>
+      © 2026 Lamu West Premier League
+    </p>
+
+  </footer>
 
 
   <script
     type="module"
-    src="results.js?v=10">
-  </script>
-
-
-</body>
-
-</html>
 
 
 

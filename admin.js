@@ -74,13 +74,8 @@ async function getTeams() {
     const data = teamDoc.data();
 
     teams.push({
-
       id: teamDoc.id,
-
-      name:
-        data.name ||
-        "Unknown Team"
-
+      name: data.name || "Unknown Team"
     });
 
   });
@@ -96,8 +91,7 @@ async function getTeams() {
 
 async function loadTeams() {
 
-  const list =
-    document.getElementById("teamsList");
+  const list = document.getElementById("teamsList");
 
   try {
 
@@ -107,8 +101,7 @@ async function loadTeams() {
 
     if (teams.length === 0) {
 
-      list.innerHTML =
-        "<p>No teams found.</p>";
+      list.innerHTML = "<p>No teams found.</p>";
 
       return;
 
@@ -117,7 +110,6 @@ async function loadTeams() {
     teams.forEach((team) => {
 
       list.innerHTML += `
-
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -127,19 +119,14 @@ async function loadTeams() {
 
           <p>
             ⚽
-            <strong>
-              ${team.name}
-            </strong>
+            <strong>${team.name}</strong>
           </p>
 
-          <button
-            onclick="deleteTeam('${team.id}')"
-          >
+          <button onclick="deleteTeam('${team.id}')">
             🗑️ Delete Team
           </button>
 
         </div>
-
       `;
 
     });
@@ -150,11 +137,8 @@ async function loadTeams() {
       "<p>Error loading teams.</p>";
 
     showError(
-      "Teams: " +
-      error.message
+      "Teams: " + error.message
     );
-
-    throw error;
 
   }
 
@@ -165,82 +149,68 @@ async function loadTeams() {
 // DELETE TEAM
 // ==========================================
 
-window.deleteTeam =
-  async function(teamId) {
+window.deleteTeam = async function(teamId) {
 
-    try {
+  try {
 
-      const teams =
-        await getTeams();
+    const teams = await getTeams();
 
-      const team =
-        teams.find(
-          (item) =>
-            item.id === teamId
-        );
+    const team = teams.find(
+      (item) => item.id === teamId
+    );
 
-      if (!team) {
+    if (!team) {
 
-        alert(
-          "Team not found."
-        );
+      alert("Team not found.");
 
-        return;
-
-      }
-
-
-      const answer =
-        confirm(
-          "Are you sure you want to delete " +
-          team.name +
-          "?\n\nThis action cannot be undone."
-        );
-
-
-      if (!answer) {
-
-        return;
-
-      }
-
-
-      await deleteDoc(
-        doc(
-          db,
-          "teams",
-          teamId
-        )
-      );
-
-
-      alert(
-        team.name +
-        " deleted successfully! 🗑️"
-      );
-
-
-      await loadTeams();
-
-      await loadFixtureTeams();
-
-      await loadScorerTeams();
-
-    } catch (error) {
-
-      alert(
-        "Error deleting team: " +
-        error.message
-      );
-
-      showError(
-        "Delete Team: " +
-        error.message
-      );
+      return;
 
     }
 
-  };
+    const answer = confirm(
+      "Are you sure you want to delete " +
+      team.name +
+      "?\n\nThis action cannot be undone."
+    );
+
+    if (!answer) {
+
+      return;
+
+    }
+
+    await deleteDoc(
+      doc(
+        db,
+        "teams",
+        teamId
+      )
+    );
+
+    alert(
+      team.name +
+      " deleted successfully! 🗑️"
+    );
+
+    await loadTeams();
+    await loadFixtureTeams();
+    await loadScorerTeams();
+
+  } catch (error) {
+
+    alert(
+      "Error deleting team: " +
+      error.message
+    );
+
+    showError(
+      "Delete Team: " +
+      error.message
+    );
+
+  }
+
+};
 
 
 // ==========================================
@@ -250,19 +220,14 @@ window.deleteTeam =
 async function loadFixtureTeams() {
 
   const home =
-    document.getElementById(
-      "fixtureHome"
-    );
+    document.getElementById("fixtureHome");
 
   const away =
-    document.getElementById(
-      "fixtureAway"
-    );
+    document.getElementById("fixtureAway");
 
   try {
 
-    const teams =
-      await getTeams();
+    const teams = await getTeams();
 
     home.innerHTML =
       '<option value="">Select Home Team</option>';
@@ -270,23 +235,18 @@ async function loadFixtureTeams() {
     away.innerHTML =
       '<option value="">Select Away Team</option>';
 
-
     teams.forEach((team) => {
 
       home.innerHTML += `
-
         <option value="${team.name}">
           ${team.name}
         </option>
-
       `;
 
       away.innerHTML += `
-
         <option value="${team.name}">
           ${team.name}
         </option>
-
       `;
 
     });
@@ -310,27 +270,21 @@ async function loadFixtureTeams() {
 async function loadScorerTeams() {
 
   const select =
-    document.getElementById(
-      "scorerTeam"
-    );
+    document.getElementById("scorerTeam");
 
   try {
 
-    const teams =
-      await getTeams();
+    const teams = await getTeams();
 
     select.innerHTML =
       '<option value="">Select Team</option>';
 
-
     teams.forEach((team) => {
 
       select.innerHTML += `
-
         <option value="${team.name}">
           ${team.name}
         </option>
-
       `;
 
     });
@@ -364,57 +318,41 @@ document
         const team = {
 
           name:
-            document.getElementById(
-              "name"
-            ).value.trim(),
+            document.getElementById("name").value.trim(),
 
           played:
             Number(
-              document.getElementById(
-                "played"
-              ).value
+              document.getElementById("played").value
             ),
 
           won:
             Number(
-              document.getElementById(
-                "wins"
-              ).value
+              document.getElementById("wins").value
             ),
 
           draw:
             Number(
-              document.getElementById(
-                "draws"
-              ).value
+              document.getElementById("draws").value
             ),
 
           lost:
             Number(
-              document.getElementById(
-                "losses"
-              ).value
+              document.getElementById("losses").value
             ),
 
           goalsFor:
             Number(
-              document.getElementById(
-                "goalsFor"
-              ).value
+              document.getElementById("goalsFor").value
             ),
 
           goalsAgainst:
             Number(
-              document.getElementById(
-                "goalsAgainst"
-              ).value
+              document.getElementById("goalsAgainst").value
             ),
 
           points:
             Number(
-              document.getElementById(
-                "points"
-              ).value
+              document.getElementById("points").value
             )
 
         };
@@ -435,9 +373,7 @@ document
 
 
         await loadTeams();
-
         await loadFixtureTeams();
-
         await loadScorerTeams();
 
       } catch (error) {
@@ -471,19 +407,13 @@ document
 
 
       const home =
-        document.getElementById(
-          "fixtureHome"
-        ).value;
+        document.getElementById("fixtureHome").value;
 
       const away =
-        document.getElementById(
-          "fixtureAway"
-        ).value;
+        document.getElementById("fixtureAway").value;
 
       const date =
-        document.getElementById(
-          "fixtureDate"
-        ).value;
+        document.getElementById("fixtureDate").value;
 
 
       if (!home || !away || !date) {
@@ -513,15 +443,10 @@ document
         await addDoc(
           collection(db, "fixtures"),
           {
-
             homeTeam: home,
-
             awayTeam: away,
-
             date: date,
-
             createdAt: new Date()
-
           }
         );
 
@@ -532,7 +457,6 @@ document
 
 
         event.target.reset();
-
 
         await loadFixtures();
 
@@ -560,9 +484,7 @@ document
 async function loadFixtures() {
 
   const list =
-    document.getElementById(
-      "fixturesList"
-    );
+    document.getElementById("fixturesList");
 
   try {
 
@@ -572,7 +494,6 @@ async function loadFixtures() {
       );
 
     list.innerHTML = "";
-
 
     if (snapshot.empty) {
 
@@ -591,7 +512,6 @@ async function loadFixtures() {
 
 
       list.innerHTML += `
-
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -600,7 +520,6 @@ async function loadFixtures() {
         ">
 
           <p>
-
             📅
             <strong>
               ${fixture.date || ""}
@@ -613,16 +532,13 @@ async function loadFixtures() {
             vs
 
             ${fixture.awayTeam || ""}
-
           </p>
-
 
           <button
             onclick="editFixture('${fixtureDoc.id}')"
           >
             ✏️ Edit
           </button>
-
 
           <button
             onclick="deleteFixture('${fixtureDoc.id}')"
@@ -631,7 +547,6 @@ async function loadFixtures() {
           </button>
 
         </div>
-
       `;
 
     });
@@ -655,46 +570,241 @@ async function loadFixtures() {
 // EDIT FIXTURE
 // ==========================================
 
-window.editFixture =
+window.editFixture = async function(fixtureId) {
+
+  try {
+
+    const fixtureRef =
+      doc(
+        db,
+        "fixtures",
+        fixtureId
+      );
+
+
+    const snapshot =
+      await getDocs(
+        collection(db, "fixtures")
+      );
+
+
+    let fixture = null;
+
+
+    snapshot.forEach((item) => {
+
+      if (item.id === fixtureId) {
+
+        fixture = item.data();
+
+      }
+
+    });
+
+
+    if (!fixture) {
+
+      alert(
+        "Fixture not found."
+      );
+
+      return;
+
+    }
+
+
+    const newDate =
+      prompt(
+        "Enter new match date:",
+        fixture.date || ""
+      );
+
+
+    if (newDate === null) {
+
+      return;
+
+    }
+
+
+    const newHome =
+      prompt(
+        "Enter Home Team:",
+        fixture.homeTeam || ""
+      );
+
+
+    if (newHome === null) {
+
+      return;
+
+    }
+
+
+    const newAway =
+      prompt(
+        "Enter Away Team:",
+        fixture.awayTeam || ""
+      );
+
+
+    if (newAway === null) {
+
+      return;
+
+    }
+
+
+    if (
+      !newDate ||
+      !newHome ||
+      !newAway
+    ) {
+
+      alert(
+        "All fields are required."
+      );
+
+      return;
+
+    }
+
+
+    if (newHome === newAway) {
+
+      alert(
+        "A team cannot play against itself."
+      );
+
+      return;
+
+    }
+
+
+    await updateDoc(
+      fixtureRef,
+      {
+        date: newDate,
+        homeTeam: newHome,
+        awayTeam: newAway
+      }
+    );
+
+
+    alert(
+      "Fixture updated successfully! ✅"
+    );
+
+
+    await loadFixtures();
+
+  } catch (error) {
+
+    alert(
+      "Error editing fixture: " +
+      error.message
+    );
+
+    showError(
+      error.message
+    );
+
+  }
+
+};
+
+
+// ==========================================
+// DELETE FIXTURE
+// ==========================================
+
+window.deleteFixture =
   async function(fixtureId) {
 
     try {
 
-      const fixtureRef =
+      const answer =
+        confirm(
+          "Are you sure you want to delete this fixture?"
+        );
+
+
+      if (!answer) {
+
+        return;
+
+      }
+
+
+      await deleteDoc(
         doc(
           db,
           "fixtures",
           fixtureId
+        )
+      );
+
+
+      alert(
+        "Fixture deleted successfully! 🗑️"
+      );
+
+
+      await loadFixtures();
+
+    } catch (error) {
+
+      alert(
+        "Error deleting fixture: " +
+        error.message
+      );
+
+      showError(
+        error.message
+      );
+
+    }
+
+  };
+
+
+// ==========================================
+// ADD TOP SCORER
+// ==========================================
+
+document
+  .getElementById("scorerForm")
+  .addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      const playerName =
+        document.getElementById(
+          "playerName"
+        ).value.trim();
+
+
+      const team =
+        document.getElementById(
+          "scorerTeam"
+        ).value;
+
+
+      const goals =
+        Number(
+          document.getElementById(
+            "playerGoals"
+          ).value
         );
 
 
-      const snapshot =
-        await getDocs(
-          collection(db, "fixtures")
-        );
-
-
-      let fixture = null;
-
-
-      snapshot.forEach((item) => {
-
-        if (
-          item.id === fixtureId
-        ) {
-
-          fixture =
-            item.data();
-
-        }
-
-      });
-
-
-      if (!fixture) {
+      if (!playerName || !team) {
 
         alert(
-          "Fixture not found."
+          "Please enter player name and select team."
         );
 
         return;
@@ -702,77 +812,148 @@ window.editFixture =
       }
 
 
-      const newDate =
-        prompt(
-          "Enter new match date:",
-          fixture.date || ""
+      try {
+
+        await addDoc(
+          collection(db, "scorers"),
+          {
+            playerName: playerName,
+            team: team,
+            goals: goals
+          }
         );
 
-
-      if (newDate === null) {
-        return;
-      }
-
-
-      const newHome =
-        prompt(
-          "Enter Home Team:",
-          fixture.homeTeam || ""
-        );
-
-
-      if (newHome === null) {
-        return;
-      }
-
-
-      const newAway =
-        prompt(
-          "Enter Away Team:",
-          fixture.awayTeam || ""
-        );
-
-
-      if (newAway === null) {
-        return;
-      }
-
-
-      if (
-        !newDate ||
-        !newHome ||
-        !newAway
-      ) {
 
         alert(
-          "All fields are required."
+          "Top scorer saved successfully! 🥇"
         );
 
-        return;
 
-      }
+        event.target.reset();
 
+        await loadScorers();
 
-      if (
-        newHome === newAway
-      ) {
+      } catch (error) {
 
         alert(
-          "A team cannot play against itself."
+          "Error saving scorer: " +
+          error.message
         );
 
-        return;
+        showError(
+          error.message
+        );
 
       }
 
+    }
+  );
 
-      await updateDoc(
-        fixtureRef,
-        {
 
-          date:
-            newDate,
+// ==========================================
+// LOAD SCORERS
+// ==========================================
 
-          homeTeam:
-            new
+async function loadScorers() {
+
+  const list =
+    document.getElementById("scorersList");
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "scorers")
+      );
+
+
+    list.innerHTML = "";
+
+
+    if (snapshot.empty) {
+
+      list.innerHTML =
+        "<p>No scorers added yet.</p>";
+
+      return;
+
+    }
+
+
+    snapshot.forEach((scorerDoc) => {
+
+      const data =
+        scorerDoc.data();
+
+
+      list.innerHTML += `
+        <p>
+
+          🥇
+
+          <strong>
+            ${data.playerName || ""}
+          </strong>
+
+          —
+
+          ${data.team || ""}
+
+          —
+
+          <strong>
+            ${data.goals || 0}
+            goals
+          </strong>
+
+        </p>
+      `;
+
+    });
+
+  } catch (error) {
+
+    list.innerHTML =
+      "<p>Error loading scorers.</p>";
+
+    showError(
+      "Scorers: " +
+      error.message
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// START ADMIN
+// ==========================================
+
+async function startAdmin() {
+
+  try {
+
+    await loadTeams();
+
+    await loadFixtureTeams();
+
+    await loadScorerTeams();
+
+    await loadFixtures();
+
+    await loadScorers();
+
+  } catch (error) {
+
+    showError(
+      error.message
+    );
+
+  }
+
+}
+
+
+startAdmin();
          

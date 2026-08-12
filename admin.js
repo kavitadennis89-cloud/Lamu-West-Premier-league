@@ -18,135 +18,101 @@ const firebaseConfig = {
   measurementId: "G-HQ04SZWBBB"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-
-// ==========================
-// TEAM ELEMENTS
-// ==========================
-
-const teamForm =
-  document.getElementById("teamForm");
-
-const teamsList =
-  document.getElementById("teamsList");
 
 
 // ==========================
 // ADD TEAM
 // ==========================
 
-teamForm.addEventListener(
-  "submit",
-  async (e) => {
+const teamForm = document.getElementById("teamForm");
+const teamsList = document.getElementById("teamsList");
 
-    e.preventDefault();
+teamForm.addEventListener("submit", async (e) => {
 
+  e.preventDefault();
 
-    const team = {
+  const team = {
+    name: document.getElementById("name").value,
+    played: Number(document.getElementById("played").value),
+    won: Number(document.getElementById("wins").value),
+    draw: Number(document.getElementById("draws").value),
+    lost: Number(document.getElementById("losses").value),
+    goalsFor: Number(document.getElementById("goalsFor").value),
+    goalsAgainst: Number(document.getElementById("goalsAgainst").value),
+    points: Number(document.getElementById("points").value)
+  };
 
-      name:
-        document.getElementById("name").value,
+  try {
 
-      played:
-        Number(
-          document.getElementById("played").value
-        ),
+    await addDoc(collection(db, "teams"), team);
 
-      won:
-        Number(
-          document.getElementById("wins").value
-        ),
+    alert("Team saved successfully! ⚽");
 
-      draw:
-        Number(
-          document.getElementById("draws").value
-        ),
+    teamForm.reset();
 
-      lost:
-        Number(
-          document.getElementById("losses").value
-        ),
+    await loadAll();
 
-      goalsFor:
-        Number(
-          document.getElementById("goalsFor").value
-        ),
+  } catch (error) {
 
-      goalsAgainst:
-        Number(
-          document.getElementById("goalsAgainst").value
-        ),
+    console.error(error);
 
-      points:
-        Number(
-          document.getElementById("points").value
-        )
-
-    };
-
-
-    try {
-
-      await addDoc(
-        collection(db, "teams"),
-        team
-      );
-
-
-      alert(
-        "Team saved successfully! ⚽"
-      );
-
-
-      teamForm.reset();
-
-
-      await loadTeams();
-
-      await loadFixtureTeams();
-
-      await loadScorerTeams();
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert(
-        "Error saving team: " +
-        error.message
-      );
-
-    }
+    alert("Error saving team: " + error.message);
 
   }
-);
+
+});
 
 
 // ==========================
-// LOAD TEAMS
+// LOAD ALL TEAMS
+// ==========================
+
+async function getTeams() {
+
+  const snapshot = await getDocs(
+    collection(db, "teams")
+  );
+
+  const teams = [];
+
+  snapshot.forEach((teamDoc) => {
+
+    teams.push({
+      id: teamDoc.id,
+      ...teamDoc.data()
+    });
+
+  });
+
+  return teams;
+
+}
+
+
+// ==========================
+// SHOW TEAMS
 // ==========================
 
 async function loadTeams() {
 
   try {
 
-    const snapshot =
-      await getDocs(
-        collection(db, "teams")
-      );
-
+    const teams = await getTeams();
 
     teamsList.innerHTML = "";
 
+    if (teams.length === 0) {
 
-    snapshot.forEach((teamDoc) => {
+      teamsList.innerHTML =
+        "<p>No teams added yet.</p>";
 
-      const team =
-        teamDoc.data();
+      return;
 
+    }
+
+    teams.forEach((team) => {
 
       teamsList.innerHTML += `
         <p>
@@ -159,7 +125,10 @@ async function loadTeams() {
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Error loading teams:",
+      error
+    );
 
   }
 
@@ -167,7 +136,7 @@ async function loadTeams() {
 
 
 // ==========================
-// FIXTURE TEAM DROPDOWNS
+// LOAD FIXTURE TEAMS
 // ==========================
 
 async function loadFixtureTeams() {
@@ -175,21 +144,12 @@ async function loadFixtureTeams() {
   try {
 
     const homeSelect =
-      document.getElementById(
-        "fixtureHome"
-      );
+      document.getElementById("fixtureHome");
 
     const awaySelect =
-      document.getElementById(
-        "fixtureAway"
-      );
+      document.getElementById("fixtureAway");
 
-
-    const snapshot =
-      await getDocs(
-        collection(db, "teams")
-      );
-
+    const teams = await getTeams();
 
     homeSelect.innerHTML =
       '<option value="">Select Home Team</option>';
@@ -197,50 +157,33 @@ async function loadFixtureTeams() {
     awaySelect.innerHTML =
       '<option value="">Select Away Team</option>';
 
-
-    snapshot.forEach((teamDoc) => {
-
-      const team =
-        teamDoc.data();
-
+    teams.forEach((team) => {
 
       const homeOption =
-        document.createElement(
-          "option"
-        );
+        document.createElement("option");
 
-      homeOption.value =
-        team.name;
+      homeOption.value = team.name;
+      homeOption.textContent = team.name;
 
-      homeOption.textContent =
-        team.name;
+      homeSelect.appendChild(homeOption);
 
 
       const awayOption =
-        document.createElement(
-          "option"
-        );
+        document.createElement("option");
 
-      awayOption.value =
-        team.name;
+      awayOption.value = team.name;
+      awayOption.textContent = team.name;
 
-      awayOption.textContent =
-        team.name;
-
-
-      homeSelect.appendChild(
-        homeOption
-      );
-
-      awaySelect.appendChild(
-        awayOption
-      );
+      awaySelect.appendChild(awayOption);
 
     });
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Error loading fixture teams:",
+      error
+    );
 
   }
 
@@ -252,285 +195,39 @@ async function loadFixtureTeams() {
 // ==========================
 
 const fixtureForm =
-  document.getElementById(
-    "fixtureForm"
-  );
+  document.getElementById("fixtureForm");
+
+fixtureForm.addEventListener("submit", async (e) => {
+
+  e.preventDefault();
+
+  const homeTeam =
+    document.getElementById("fixtureHome").value;
+
+  const awayTeam =
+    document.getElementById("fixtureAway").value;
+
+  const date =
+    document.getElementById("fixtureDate").value;
 
 
-fixtureForm.addEventListener(
-  "submit",
-  async (e) => {
+  if (!homeTeam || !awayTeam || !date) {
 
-    e.preventDefault();
-
-
-    const homeTeam =
-      document.getElementById(
-        "fixtureHome"
-      ).value;
-
-
-    const awayTeam =
-      document.getElementById(
-        "fixtureAway"
-      ).value;
-
-
-    const date =
-      document.getElementById(
-        "fixtureDate"
-      ).value;
-
-
-    if (
-      !homeTeam ||
-      !awayTeam ||
-      !date
-    ) {
-
-      alert(
-        "Please select both teams and a date."
-      );
-
-      return;
-
-    }
-
-
-    if (homeTeam === awayTeam) {
-
-      alert(
-        "A team cannot play against itself."
-      );
-
-      return;
-
-    }
-
-
-    try {
-
-      await addDoc(
-        collection(db, "fixtures"),
-        {
-
-          homeTeam:
-            homeTeam,
-
-          awayTeam:
-            awayTeam,
-
-          date:
-            date,
-
-          createdAt:
-            new Date()
-
-        }
-      );
-
-
-      alert(
-        "Fixture saved successfully! ⚽🔥"
-      );
-
-
-      fixtureForm.reset();
-
-
-      await loadFixtures();
-
-    } catch (error) {
-
-      console.error(
-        "Fixture error:",
-        error
-      );
-
-      alert(
-        "Error saving fixture: " +
-        error.message
-      );
-
-    }
-
-  }
-);
-
-
-// ==========================
-// LOAD FIXTURES
-// ==========================
-
-async function loadFixtures() {
-
-  try {
-
-    const fixturesList =
-      document.getElementById(
-        "fixturesList"
-      );
-
-
-    const snapshot =
-      await getDocs(
-        collection(db, "fixtures")
-      );
-
-
-    fixturesList.innerHTML = "";
-
-
-    if (snapshot.empty) {
-
-      fixturesList.innerHTML =
-        "<p>No fixtures added yet.</p>";
-
-      return;
-
-    }
-
-
-    snapshot.forEach((fixtureDoc) => {
-
-      const fixture =
-        fixtureDoc.data();
-
-
-      fixturesList.innerHTML += `
-        <p>
-          📅 <strong>${fixture.date}</strong>
-          —
-          ${fixture.homeTeam}
-          vs
-          ${fixture.awayTeam}
-        </p>
-      `;
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Fixture loading error:",
-      error
+    alert(
+      "Please select both teams and a date."
     );
 
+    return;
+
   }
 
-}
 
+  if (homeTeam === awayTeam) {
 
-// ==========================
-// TOP SCORER TEAM DROPDOWN
-// ==========================
-
-async function loadScorerTeams() {
-
-  try {
-
-    const scorerTeam =
-      document.getElementById(
-        "scorerTeam"
-      );
-
-
-    const snapshot =
-      await getDocs(
-        collection(db, "teams")
-      );
-
-
-    scorerTeam.innerHTML =
-      '<option value="">Select Team</option>';
-
-
-    snapshot.forEach((teamDoc) => {
-
-      const team =
-        teamDoc.data();
-
-
-      const option =
-        document.createElement(
-          "option"
-        );
-
-
-      option.value =
-        team.name;
-
-      option.textContent =
-        team.name;
-
-
-      scorerTeam.appendChild(
-        option
-      );
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Error loading scorer teams:",
-      error
+    alert(
+      "A team cannot play against itself."
     );
 
+    return;
+
   }
-
-}
-
-
-// ==========================
-// SAVE TOP SCORER
-// ==========================
-
-const scorerForm =
-  document.getElementById(
-    "scorerForm"
-  );
-
-
-scorerForm.addEventListener(
-  "submit",
-  async (e) => {
-
-    e.preventDefault();
-
-
-    const playerName =
-      document.getElementById(
-        "playerName"
-      ).value.trim();
-
-
-    const team =
-      document.getElementById(
-        "scorerTeam"
-      ).value;
-
-
-    const goals =
-      Number(
-        document.getElementById(
-          "playerGoals"
-        ).value
-      );
-
-
-    if (
-      !playerName ||
-      !team
-    ) {
-
-      alert(
-        "Please enter player name and team."
-      );
-
-      return;
-
-    }
-
-
-    if (goals < 0) {

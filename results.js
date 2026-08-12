@@ -32,6 +32,7 @@ let teams = [];
 async function loadTeams() {
   try {
     const snapshot = await getDocs(collection(db, "teams"));
+alert("Teams found: " + snapshot.size);
 
     teams = [];
 

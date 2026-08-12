@@ -29,7 +29,8 @@ async function loadTeams() {
 
   try {
 
-    const snapshot = await getDocs(collection(db, "teams"));
+    const snapshot =
+      await getDocs(collection(db, "teams"));
 
     const teams = [];
 
@@ -43,9 +44,9 @@ async function loadTeams() {
         won: Number(data.won || data.wins || 0),
         draw: Number(data.draw || data.draws || 0),
         lost: Number(data.lost || data.losses || 0),
-        points: Number(data.points || 0),
         goalsFor: Number(data.goalsFor || 0),
-        goalsAgainst: Number(data.goalsAgainst || 0)
+        goalsAgainst: Number(data.goalsAgainst || 0),
+        points: Number(data.points || 0)
       });
 
     });
@@ -57,15 +58,19 @@ async function loadTeams() {
         return b.points - a.points;
       }
 
-      const aGD = a.goalsFor - a.goalsAgainst;
-      const bGD = b.goalsFor - b.goalsAgainst;
+      const aGD =
+        a.goalsFor - a.goalsAgainst;
+
+      const bGD =
+        b.goalsFor - b.goalsAgainst;
 
       return bGD - aGD;
 
     });
 
 
-    const table = document.querySelector("table");
+    const table =
+      document.querySelector("table");
 
     if (!table) return;
 
@@ -85,7 +90,8 @@ async function loadTeams() {
 
     teams.forEach((team, index) => {
 
-      const row = document.createElement("tr");
+      const row =
+        document.createElement("tr");
 
       row.innerHTML = `
         <td>${index + 1}</td>
@@ -103,7 +109,10 @@ async function loadTeams() {
 
   } catch (error) {
 
-    console.error("Error loading teams:", error);
+    console.error(
+      "Error loading teams:",
+      error
+    );
 
   }
 
@@ -118,25 +127,60 @@ async function loadFixtures() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "fixtures")
-    );
+    const fixtureSnapshot =
+      await getDocs(
+        collection(db, "fixtures")
+      );
 
 
-    const sections = document.querySelectorAll("section");
+    const resultSnapshot =
+      await getDocs(
+        collection(db, "results")
+      );
+
+
+    // Get IDs of fixtures already played
+
+    const playedFixtureIds = new Set();
+
+
+    resultSnapshot.forEach((resultDoc) => {
+
+      const result =
+        resultDoc.data();
+
+      if (result.fixtureId) {
+
+        playedFixtureIds.add(
+          result.fixtureId
+        );
+
+      }
+
+    });
+
+
+    const sections =
+      document.querySelectorAll("section");
+
 
     let fixturesSection = null;
 
 
     sections.forEach((section) => {
 
-      const heading = section.querySelector("h2");
+      const heading =
+        section.querySelector("h2");
 
       if (
         heading &&
-        heading.textContent.includes("Upcoming Fixtures")
+        heading.textContent.includes(
+          "Upcoming Fixtures"
+        )
       ) {
+
         fixturesSection = section;
+
       }
 
     });
@@ -150,21 +194,34 @@ async function loadFixtures() {
     `;
 
 
-    if (snapshot.empty) {
-
-      fixturesSection.innerHTML +=
-        "<p>No fixtures added yet.</p>";
-
-      return;
-
-    }
+    let upcomingCount = 0;
 
 
-    snapshot.forEach((fixtureDoc) => {
+    fixtureSnapshot.forEach((fixtureDoc) => {
 
-      const fixture = fixtureDoc.data();
+      const fixture =
+        fixtureDoc.data();
 
-      const match = document.createElement("p");
+
+      // Skip fixture if already played
+
+      if (
+        playedFixtureIds.has(
+          fixtureDoc.id
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      upcomingCount++;
+
+
+      const match =
+        document.createElement("p");
+
 
       match.innerHTML = `
         📅 <strong>${fixture.date}</strong>
@@ -174,13 +231,25 @@ async function loadFixtures() {
         ${fixture.awayTeam}
       `;
 
+
       fixturesSection.appendChild(match);
 
     });
 
+
+    if (upcomingCount === 0) {
+
+      fixturesSection.innerHTML +=
+        "<p>No upcoming fixtures.</p>";
+
+    }
+
   } catch (error) {
 
-    console.error("Error loading fixtures:", error);
+    console.error(
+      "Error loading fixtures:",
+      error
+    );
 
   }
 
@@ -195,13 +264,16 @@ async function loadResults() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "results")
-    );
+    const snapshot =
+      await getDocs(
+        collection(db, "results")
+      );
 
 
     const resultsList =
-      document.getElementById("resultsList");
+      document.getElementById(
+        "resultsList"
+      );
 
 
     if (!resultsList) return;
@@ -222,9 +294,13 @@ async function loadResults() {
 
     snapshot.forEach((resultDoc) => {
 
-      const result = resultDoc.data();
+      const result =
+        resultDoc.data();
 
-      const match = document.createElement("p");
+
+      const match =
+        document.createElement("p");
+
 
       match.innerHTML = `
         ⚽ <strong>${result.homeTeam}</strong>
@@ -234,13 +310,17 @@ async function loadResults() {
         <strong>${result.awayTeam}</strong>
       `;
 
+
       resultsList.appendChild(match);
 
     });
 
   } catch (error) {
 
-    console.error("Error loading results:", error);
+    console.error(
+      "Error loading results:",
+      error
+    );
 
   }
 
@@ -248,7 +328,7 @@ async function loadResults() {
 
 
 // ==========================
-// LOAD WEBSITE DATA
+// START
 // ==========================
 
 loadTeams();

@@ -23,7 +23,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-// TEAM FORM
+// ==========================
+// TEAMS
+// ==========================
+
 const teamForm = document.getElementById("teamForm");
 const teamsList = document.getElementById("teamsList");
 
@@ -43,89 +46,155 @@ teamForm.addEventListener("submit", async (e) => {
     points: Number(document.getElementById("points").value)
   };
 
-  await addDoc(collection(db, "teams"), team);
+  try {
 
-  alert("Team saved successfully!");
+    await addDoc(collection(db, "teams"), team);
 
-  teamForm.reset();
+    alert("Team saved successfully! ⚽");
 
-  loadTeams();
-  loadFixtureTeams();
+    teamForm.reset();
+
+    await loadTeams();
+    await loadFixtureTeams();
+
+  } catch (error) {
+
+    console.error(error);
+    alert("Error saving team: " + error.message);
+
+  }
 
 });
 
 
-// LOAD TEAMS LIST
+// ==========================
+// LOAD TEAMS
+// ==========================
+
 async function loadTeams() {
 
-  const snapshot = await getDocs(collection(db, "teams"));
+  try {
 
-  teamsList.innerHTML = "";
+    const snapshot = await getDocs(
+      collection(db, "teams")
+    );
 
-  snapshot.forEach((teamDoc) => {
+    teamsList.innerHTML = "";
 
-    const team = teamDoc.data();
+    snapshot.forEach((teamDoc) => {
 
-    teamsList.innerHTML += `
-      <p>
-        <strong>${team.name}</strong>
-        - ${team.points || 0} pts
-      </p>
-    `;
+      const team = teamDoc.data();
 
-  });
+      teamsList.innerHTML += `
+        <p>
+          <strong>${team.name}</strong>
+          - ${team.points || 0} pts
+        </p>
+      `;
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
 
 }
 
 
-// LOAD FIXTURE DROPDOWNS DIRECTLY
+// ==========================
+// FIXTURE TEAM DROPDOWNS
+// ==========================
+
 async function loadFixtureTeams() {
 
-  const homeSelect = document.getElementById("fixtureHome");
-  const awaySelect = document.getElementById("fixtureAway");
+  try {
 
-  const snapshot = await getDocs(collection(db, "teams"));
+    const homeSelect =
+      document.getElementById("fixtureHome");
 
-  homeSelect.innerHTML =
-    '<option value="">Select Home Team</option>';
-
-  awaySelect.innerHTML =
-    '<option value="">Select Away Team</option>';
+    const awaySelect =
+      document.getElementById("fixtureAway");
 
 
-  snapshot.forEach((teamDoc) => {
+    const snapshot = await getDocs(
+      collection(db, "teams")
+    );
 
-    const team = teamDoc.data();
 
-    const homeOption = document.createElement("option");
+    homeSelect.innerHTML =
+      '<option value="">Select Home Team</option>';
 
-    homeOption.value = team.name;
-    homeOption.textContent = team.name;
+    awaySelect.innerHTML =
+      '<option value="">Select Away Team</option>';
 
-    const awayOption = document.createElement("option");
 
-    awayOption.value = team.name;
-    awayOption.textContent = team.name;
+    snapshot.forEach((teamDoc) => {
 
-    homeSelect.appendChild(homeOption);
-    awaySelect.appendChild(awayOption);
+      const team = teamDoc.data();
 
-  });
+
+      const homeOption =
+        document.createElement("option");
+
+      homeOption.value = team.name;
+      homeOption.textContent = team.name;
+
+
+      const awayOption =
+        document.createElement("option");
+
+      awayOption.value = team.name;
+      awayOption.textContent = team.name;
+
+
+      homeSelect.appendChild(homeOption);
+      awaySelect.appendChild(awayOption);
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Could not load teams: " + error.message);
+
+  }
 
 }
 
 
+// ==========================
 // SAVE FIXTURE
-const fixtureForm = document.getElementById("fixtureForm");
+// ==========================
+
+const fixtureForm =
+  document.getElementById("fixtureForm");
 
 
 fixtureForm.addEventListener("submit", async (e) => {
 
   e.preventDefault();
 
-  const homeTeam = document.getElementById("fixtureHome").value;
-  const awayTeam = document.getElementById("fixtureAway").value;
-  const date = document.getElementById("fixtureDate").value;
+
+  const homeTeam =
+    document.getElementById("fixtureHome").value;
+
+  const awayTeam =
+    document.getElementById("fixtureAway").value;
+
+  const date =
+    document.getElementById("fixtureDate").value;
+
+
+  if (!homeTeam || !awayTeam || !date) {
+
+    alert("Please select both teams and a date.");
+
+    return;
+
+  }
 
 
   if (homeTeam === awayTeam) {
@@ -137,65 +206,104 @@ fixtureForm.addEventListener("submit", async (e) => {
   }
 
 
-  await addDoc(collection(db, "fixtures"), {
+  try {
 
-    homeTeam: homeTeam,
-    awayTeam: awayTeam,
-    date: date,
-    createdAt: new Date()
+    await addDoc(
+      collection(db, "fixtures"),
+      {
+        homeTeam: homeTeam,
+        awayTeam: awayTeam,
+        date: date,
+        createdAt: new Date()
+      }
+    );
 
-  });
+
+    alert("Fixture saved successfully! ⚽🔥");
 
 
-  alert("Fixture saved successfully! ⚽");
+    fixtureForm.reset();
 
-  fixtureForm.reset();
 
-  loadFixtures();
+    await loadFixtures();
+
+  } catch (error) {
+
+    console.error("Fixture error:", error);
+
+    alert(
+      "Error saving fixture: " +
+      error.message
+    );
+
+  }
 
 });
 
 
+// ==========================
 // LOAD FIXTURES
+// ==========================
+
 async function loadFixtures() {
 
-  const fixturesList =
-    document.getElementById("fixturesList");
+  try {
 
-  const snapshot =
-    await getDocs(collection(db, "fixtures"));
+    const fixturesList =
+      document.getElementById("fixturesList");
 
-  fixturesList.innerHTML = "";
 
-  if (snapshot.empty) {
+    const snapshot = await getDocs(
+      collection(db, "fixtures")
+    );
 
-    fixturesList.innerHTML =
-      "<p>No fixtures added yet.</p>";
 
-    return;
+    fixturesList.innerHTML = "";
+
+
+    if (snapshot.empty) {
+
+      fixturesList.innerHTML =
+        "<p>No fixtures added yet.</p>";
+
+      return;
+
+    }
+
+
+    snapshot.forEach((fixtureDoc) => {
+
+      const fixture = fixtureDoc.data();
+
+
+      fixturesList.innerHTML += `
+        <p>
+          📅 <strong>${fixture.date}</strong>
+          —
+          ${fixture.homeTeam}
+          vs
+          ${fixture.awayTeam}
+        </p>
+      `;
+
+    });
+
+  } catch (error) {
+
+    console.error("Fixture loading error:", error);
+
+    document.getElementById("fixturesList").innerHTML =
+      "<p>Could not load fixtures.</p>";
 
   }
-
-
-  snapshot.forEach((fixtureDoc) => {
-
-    const fixture = fixtureDoc.data();
-
-    fixturesList.innerHTML += `
-      <p>
-        📅 ${fixture.date} —
-        <strong>${fixture.homeTeam}</strong>
-        vs
-        <strong>${fixture.awayTeam}</strong>
-      </p>
-    `;
-
-  });
 
 }
 
 
+// ==========================
 // START
+// ==========================
+
 loadTeams();
 loadFixtureTeams();
 loadFixtures();

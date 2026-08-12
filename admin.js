@@ -1,233 +1,279 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+<!DOCTYPE html>
+<html lang="en">
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+<head>
 
+  <meta charset="UTF-8">
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
-  authDomain: "lamu-west-premier-league.firebaseapp.com",
-  projectId: "lamu-west-premier-league",
-  storageBucket: "lamu-west-premier-league.firebasestorage.app",
-  messagingSenderId: "280853181931",
-  appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
-  measurementId: "G-HQ04SZWBBB"
-};
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  <title>Lamu West Premier League - Admin</title>
 
+  <link rel="stylesheet" href="style.css">
 
-// ==========================
-// ADD TEAM
-// ==========================
+</head>
 
-const teamForm = document.getElementById("teamForm");
-const teamsList = document.getElementById("teamsList");
 
-teamForm.addEventListener("submit", async (e) => {
+<body>
 
-  e.preventDefault();
+  <h1>
+    Lamu West Premier League - Admin Panel
+  </h1>
 
-  const team = {
-    name: document.getElementById("name").value,
-    played: Number(document.getElementById("played").value),
-    won: Number(document.getElementById("wins").value),
-    draw: Number(document.getElementById("draws").value),
-    lost: Number(document.getElementById("losses").value),
-    goalsFor: Number(document.getElementById("goalsFor").value),
-    goalsAgainst: Number(document.getElementById("goalsAgainst").value),
-    points: Number(document.getElementById("points").value)
-  };
 
-  try {
+  <!-- ========================== -->
+  <!-- ADD TEAM -->
+  <!-- ========================== -->
 
-    await addDoc(collection(db, "teams"), team);
+  <h2>⚽ Add Team</h2>
 
-    alert("Team saved successfully! ⚽");
+  <form id="teamForm">
 
-    teamForm.reset();
+    <input
+      type="text"
+      id="name"
+      placeholder="Team Name"
+      required
+    >
 
-    await loadAll();
+    <input
+      type="number"
+      id="played"
+      placeholder="Played"
+      required
+    >
 
-  } catch (error) {
+    <input
+      type="number"
+      id="wins"
+      placeholder="Wins"
+      required
+    >
 
-    console.error(error);
+    <input
+      type="number"
+      id="draws"
+      placeholder="Draws"
+      required
+    >
 
-    alert("Error saving team: " + error.message);
+    <input
+      type="number"
+      id="losses"
+      placeholder="Losses"
+      required
+    >
 
-  }
+    <input
+      type="number"
+      id="goalsFor"
+      placeholder="Goals For"
+      required
+    >
 
-});
+    <input
+      type="number"
+      id="goalsAgainst"
+      placeholder="Goals Against"
+      required
+    >
 
+    <input
+      type="number"
+      id="points"
+      placeholder="Points"
+      required
+    >
 
-// ==========================
-// LOAD ALL TEAMS
-// ==========================
+    <button type="submit">
+      Save Team
+    </button>
 
-async function getTeams() {
+  </form>
 
-  const snapshot = await getDocs(
-    collection(db, "teams")
-  );
 
-  const teams = [];
+  <hr>
 
-  snapshot.forEach((teamDoc) => {
 
-    teams.push({
-      id: teamDoc.id,
-      ...teamDoc.data()
-    });
+  <!-- ========================== -->
+  <!-- TEAMS -->
+  <!-- ========================== -->
 
-  });
+  <h2>⚽ Teams</h2>
 
-  return teams;
+  <div id="teamsList">
 
-}
+    <p>
+      Loading teams...
+    </p>
 
+  </div>
 
-// ==========================
-// SHOW TEAMS
-// ==========================
 
-async function loadTeams() {
+  <hr>
 
-  try {
 
-    const teams = await getTeams();
+  <!-- ========================== -->
+  <!-- ADD FIXTURE -->
+  <!-- ========================== -->
 
-    teamsList.innerHTML = "";
+  <h2>📅 Add Fixture</h2>
 
-    if (teams.length === 0) {
+  <form id="fixtureForm">
 
-      teamsList.innerHTML =
-        "<p>No teams added yet.</p>";
+    <label for="fixtureHome">
+      Home Team
+    </label>
 
-      return;
+    <select
+      id="fixtureHome"
+      required
+    >
 
-    }
+      <option value="">
+        Select Home Team
+      </option>
 
-    teams.forEach((team) => {
+    </select>
 
-      teamsList.innerHTML += `
-        <p>
-          <strong>${team.name}</strong>
-          - ${team.points || 0} pts
-        </p>
-      `;
 
-    });
+    <label for="fixtureAway">
+      Away Team
+    </label>
 
-  } catch (error) {
+    <select
+      id="fixtureAway"
+      required
+    >
 
-    console.error(
-      "Error loading teams:",
-      error
-    );
+      <option value="">
+        Select Away Team
+      </option>
 
-  }
+    </select>
 
-}
 
+    <label for="fixtureDate">
+      Match Date
+    </label>
 
-// ==========================
-// LOAD FIXTURE TEAMS
-// ==========================
+    <input
+      type="date"
+      id="fixtureDate"
+      required
+    >
 
-async function loadFixtureTeams() {
 
-  try {
+    <button
+      type="submit"
+      id="saveFixture"
+    >
+      Save Fixture
+    </button>
 
-    const homeSelect =
-      document.getElementById("fixtureHome");
+  </form>
 
-    const awaySelect =
-      document.getElementById("fixtureAway");
 
-    const teams = await getTeams();
+  <hr>
 
-    homeSelect.innerHTML =
-      '<option value="">Select Home Team</option>';
 
-    awaySelect.innerHTML =
-      '<option value="">Select Away Team</option>';
+  <!-- ========================== -->
+  <!-- FIXTURES -->
+  <!-- ========================== -->
 
-    teams.forEach((team) => {
+  <h2>📅 Fixtures</h2>
 
-      const homeOption =
-        document.createElement("option");
+  <div id="fixturesList">
 
-      homeOption.value = team.name;
-      homeOption.textContent = team.name;
+    <p>
+      No fixtures added yet.
+    </p>
 
-      homeSelect.appendChild(homeOption);
+  </div>
 
 
-      const awayOption =
-        document.createElement("option");
+  <hr>
 
-      awayOption.value = team.name;
-      awayOption.textContent = team.name;
 
-      awaySelect.appendChild(awayOption);
+  <!-- ========================== -->
+  <!-- TOP SCORERS -->
+  <!-- ========================== -->
 
-    });
+  <h2>🥇 Add Top Scorer</h2>
 
-  } catch (error) {
+  <form id="scorerForm">
 
-    console.error(
-      "Error loading fixture teams:",
-      error
-    );
+    <label for="playerName">
+      Player Name
+    </label>
 
-  }
+    <input
+      type="text"
+      id="playerName"
+      placeholder="Player Name"
+      required
+    >
 
-}
 
+    <label for="scorerTeam">
+      Team
+    </label>
 
-// ==========================
-// SAVE FIXTURE
-// ==========================
+    <select
+      id="scorerTeam"
+      required
+    >
 
-const fixtureForm =
-  document.getElementById("fixtureForm");
+      <option value="">
+        Loading teams...
+      </option>
 
-fixtureForm.addEventListener("submit", async (e) => {
+    </select>
 
-  e.preventDefault();
 
-  const homeTeam =
-    document.getElementById("fixtureHome").value;
+    <label for="playerGoals">
+      Goals
+    </label>
 
-  const awayTeam =
-    document.getElementById("fixtureAway").value;
+    <input
+      type="number"
+      id="playerGoals"
+      min="0"
+      placeholder="Goals"
+      required
+    >
 
-  const date =
-    document.getElementById("fixtureDate").value;
 
+    <button type="submit">
+      Save Top Scorer
+    </button>
 
-  if (!homeTeam || !awayTeam || !date) {
+  </form>
 
-    alert(
-      "Please select both teams and a date."
-    );
 
-    return;
+  <h2>🥇 Top Scorers</h2>
 
-  }
+  <div id="scorersList">
 
+    <p>
+      No scorers added yet.
+    </p>
 
-  if (homeTeam === awayTeam) {
+  </div>
 
-    alert(
-      "A team cannot play against itself."
-    );
 
-    return;
+  <!-- ========================== -->
+  <!-- JAVASCRIPT -->
+  <!-- ========================== -->
 
-  }
+  <script
+    type="module"
+    src="admin.js?v=3">
+  </script>
+
+</body>
+
+</html>

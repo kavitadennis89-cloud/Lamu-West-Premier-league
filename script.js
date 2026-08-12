@@ -30,36 +30,63 @@ async function loadTeams() {
   try {
 
     const snapshot =
-      await getDocs(collection(db, "teams"));
+      await getDocs(
+        collection(db, "teams")
+      );
+
 
     const teams = [];
 
+
     snapshot.forEach((teamDoc) => {
 
-      const data = teamDoc.data();
+      const data =
+        teamDoc.data();
+
 
       const goalsFor =
-        Number(data.goalsFor || 0);
+        Number(
+          data.goalsFor || 0
+        );
+
 
       const goalsAgainst =
-        Number(data.goalsAgainst || 0);
+        Number(
+          data.goalsAgainst || 0
+        );
+
 
       teams.push({
 
         name:
-          data.name || "Unknown Team",
+          data.name ||
+          "Unknown Team",
 
         played:
-          Number(data.played || 0),
+          Number(
+            data.played || 0
+          ),
 
         won:
-          Number(data.won || data.wins || 0),
+          Number(
+            data.won ||
+            data.wins ||
+            0
+          ),
 
         draw:
-          Number(data.draw || data.draws || 0),
+          Number(
+            data.draw ||
+            data.draws ||
+            0
+          ),
 
         lost:
-          Number(data.lost || data.losses || 0),
+          Number(
+            data.lost ||
+            data.losses ||
+            0
+          ),
 
         goalsFor:
           goalsFor,
@@ -68,10 +95,13 @@ async function loadTeams() {
           goalsAgainst,
 
         goalDifference:
-          goalsFor - goalsAgainst,
+          goalsFor -
+          goalsAgainst,
 
         points:
-          Number(data.points || 0)
+          Number(
+            data.points || 0
+          )
 
       });
 
@@ -80,27 +110,45 @@ async function loadTeams() {
 
     teams.sort((a, b) => {
 
-      if (b.points !== a.points) {
-        return b.points - a.points;
+      if (
+        b.points !==
+        a.points
+      ) {
+
+        return (
+          b.points -
+          a.points
+        );
+
       }
+
 
       if (
         b.goalDifference !==
         a.goalDifference
       ) {
+
         return (
           b.goalDifference -
           a.goalDifference
         );
+
       }
 
-      return b.goalsFor - a.goalsFor;
+
+      return (
+        b.goalsFor -
+        a.goalsFor
+      );
 
     });
 
 
     const table =
-      document.querySelector("table");
+      document.querySelector(
+        "table"
+      );
+
 
     if (!table) return;
 
@@ -108,6 +156,7 @@ async function loadTeams() {
     table.innerHTML = `
 
       <tr>
+
         <th>Pos</th>
         <th>Club</th>
         <th>P</th>
@@ -118,54 +167,86 @@ async function loadTeams() {
         <th>GA</th>
         <th>GD</th>
         <th>Pts</th>
+
       </tr>
 
     `;
 
 
-    teams.forEach((team, index) => {
+    teams.forEach(
+      (team, index) => {
 
-      const row =
-        document.createElement("tr");
-
-      const gd =
-        team.goalDifference;
-
-      const gdText =
-        gd > 0 ? `+${gd}` : gd;
+        const row =
+          document.createElement(
+            "tr"
+          );
 
 
-      row.innerHTML = `
+        const gd =
+          team.goalDifference;
 
-        <td>${index + 1}</td>
 
-        <td>
-          <strong>${team.name}</strong>
-        </td>
+        const gdText =
+          gd > 0
+            ? `+${gd}`
+            : gd;
 
-        <td>${team.played}</td>
 
-        <td>${team.won}</td>
+        row.innerHTML = `
 
-        <td>${team.draw}</td>
+          <td>
+            ${index + 1}
+          </td>
 
-        <td>${team.lost}</td>
+          <td>
+            <strong>
+              ${team.name}
+            </strong>
+          </td>
 
-        <td>${team.goalsFor}</td>
+          <td>
+            ${team.played}
+          </td>
 
-        <td>${team.goalsAgainst}</td>
+          <td>
+            ${team.won}
+          </td>
 
-        <td>${gdText}</td>
+          <td>
+            ${team.draw}
+          </td>
 
-        <td>
-          <strong>${team.points}</strong>
-        </td>
+          <td>
+            ${team.lost}
+          </td>
 
-      `;
+          <td>
+            ${team.goalsFor}
+          </td>
 
-      table.appendChild(row);
+          <td>
+            ${team.goalsAgainst}
+          </td>
 
-    });
+          <td>
+            ${gdText}
+          </td>
+
+          <td>
+            <strong>
+              ${team.points}
+            </strong>
+          </td>
+
+        `;
+
+
+        table.appendChild(
+          row
+        );
+
+      }
+    );
 
   } catch (error) {
 
@@ -192,6 +273,7 @@ async function loadFixtures() {
         collection(db, "fixtures")
       );
 
+
     const resultSnapshot =
       await getDocs(
         collection(db, "results")
@@ -202,20 +284,25 @@ async function loadFixtures() {
       new Set();
 
 
-    resultSnapshot.forEach((resultDoc) => {
+    resultSnapshot.forEach(
+      (resultDoc) => {
 
-      const result =
-        resultDoc.data();
+        const result =
+          resultDoc.data();
 
-      if (result.fixtureId) {
 
-        playedFixtureIds.add(
+        if (
           result.fixtureId
-        );
+        ) {
+
+          playedFixtureIds.add(
+            result.fixtureId
+          );
+
+        }
 
       }
-
-    });
+    );
 
 
     const section =
@@ -223,59 +310,74 @@ async function loadFixtures() {
         "upcomingFixtures"
       );
 
+
     if (!section) return;
 
 
     section.innerHTML = `
-      <h2>📅 Upcoming Fixtures</h2>
+
+      <h2>
+        📅 Upcoming Fixtures
+      </h2>
+
     `;
 
 
     let count = 0;
 
 
-    fixtureSnapshot.forEach((fixtureDoc) => {
+    fixtureSnapshot.forEach(
+      (fixtureDoc) => {
 
-      const fixture =
-        fixtureDoc.data();
+        const fixture =
+          fixtureDoc.data();
 
 
-      if (
-        playedFixtureIds.has(
-          fixtureDoc.id
-        )
-      ) {
-        return;
+        if (
+          playedFixtureIds.has(
+            fixtureDoc.id
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        count++;
+
+
+        const match =
+          document.createElement(
+            "p"
+          );
+
+
+        match.innerHTML = `
+
+          📅
+
+          <strong>
+            ${fixture.date || ""}
+          </strong>
+
+          —
+
+          ${fixture.homeTeam || ""}
+
+          vs
+
+          ${fixture.awayTeam || ""}
+
+        `;
+
+
+        section.appendChild(
+          match
+        );
+
       }
-
-
-      count++;
-
-
-      const match =
-        document.createElement("p");
-
-
-      match.innerHTML = `
-
-        📅 <strong>
-          ${fixture.date || ""}
-        </strong>
-
-        —
-
-        ${fixture.homeTeam || ""}
-
-        vs
-
-        ${fixture.awayTeam || ""}
-
-      `;
-
-
-      section.appendChild(match);
-
-    });
+    );
 
 
     if (count === 0) {
@@ -326,16 +428,20 @@ async function loadResults() {
     const results = [];
 
 
-    snapshot.forEach((resultDoc) => {
+    snapshot.forEach(
+      (resultDoc) => {
 
-      results.push(
-        resultDoc.data()
-      );
+        results.push(
+          resultDoc.data()
+        );
 
-    });
+      }
+    );
 
 
-    if (results.length === 0) {
+    if (
+      results.length === 0
+    ) {
 
       list.innerHTML =
         "<p>No match results yet.</p>";
@@ -348,44 +454,238 @@ async function loadResults() {
     results.reverse();
 
 
-    results.forEach((result) => {
+    results.forEach(
+      (result) => {
 
-      const match =
-        document.createElement("p");
-
-
-      const home =
-        result.homeTeam ||
-        result.home ||
-        "Home Team";
+        const match =
+          document.createElement(
+            "p"
+          );
 
 
-      const away =
-        result.awayTeam ||
-        result.away ||
-        "Away Team";
+        const home =
+          result.homeTeam ||
+          result.home ||
+          "Home Team";
 
 
-      const homeScore =
-        Number(
-          result.homeScore ||
-          result.homeGoals ||
-          0
+        const away =
+          result.awayTeam ||
+          result.away ||
+          "Away Team";
+
+
+        const homeScore =
+          Number(
+            result.homeScore ||
+            result.homeGoals ||
+            0
+          );
+
+
+        const awayScore =
+          Number(
+            result.awayScore ||
+            result.awayGoals ||
+            0
+          );
+
+
+        match.innerHTML = `
+
+          📅 ${result.date || ""}
+
+          —
+
+          <strong>
+            ${home}
+          </strong>
+
+          ${homeScore}
+
+          -
+
+          ${awayScore}
+
+          <strong>
+            ${away}
+          </strong>
+
+        `;
+
+
+        list.appendChild(
+          match
         );
 
+      }
+    );
 
-      const awayScore =
-        Number(
-          result.awayScore ||
-          result.awayGoals ||
-          0
+  } catch (error) {
+
+    console.error(
+      "Results error:",
+      error
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// TOP SCORERS
+// ==========================================
+
+async function loadTopScorers() {
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "scorers")
+      );
+
+
+    const list =
+      document.getElementById(
+        "scorersList"
+      );
+
+
+    if (!list) return;
+
+
+    list.innerHTML = "";
+
+
+    const scorers = [];
+
+
+    snapshot.forEach(
+      (scorerDoc) => {
+
+        const data =
+          scorerDoc.data();
+
+
+        scorers.push({
+
+          playerName:
+            data.playerName ||
+            "Unknown Player",
+
+          team:
+            data.team ||
+            "Unknown Team",
+
+          goals:
+            Number(
+              data.goals || 0
+            )
+
+        });
+
+      }
+    );
+
+
+    scorers.sort(
+      (a, b) =>
+        b.goals - a.goals
+    );
+
+
+    if (
+      scorers.length === 0
+    ) {
+
+      list.innerHTML =
+        "<p>No top scorers yet.</p>";
+
+      return;
+
+    }
+
+
+    scorers.forEach(
+      (player, index) => {
+
+        const row =
+          document.createElement(
+            "p"
+          );
+
+
+        row.innerHTML = `
+
+          <strong>
+            ${index + 1}.
+            ${player.playerName}
+          </strong>
+
+          —
+
+          ${player.team}
+
+          —
+
+          <strong>
+            ${player.goals}
+            goals
+          </strong>
+
+        `;
+
+
+        list.appendChild(
+          row
         );
 
+      }
+    );
 
-      match.innerHTML = `
+  } catch (error) {
 
-        📅 ${result.date || ""}
+    console.error(
+      "Top scorers error:",
+      error
+    );
 
-        —
 
-        <
+    const list =
+      document.getElementById(
+        "scorersList"
+      );
+
+
+    if (list) {
+
+      list.innerHTML =
+        "<p>Error loading top scorers.</p>";
+
+    }
+
+  }
+
+}
+
+
+// ==========================================
+// LOAD WEBSITE
+// ==========================================
+
+async function loadWebsite() {
+
+  await loadTeams();
+
+  await loadFixtures();
+
+  await loadResults();
+
+  await loadTopScorers();
+
+}
+
+
+loadWebsite();

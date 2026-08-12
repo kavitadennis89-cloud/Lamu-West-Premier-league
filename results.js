@@ -25,25 +25,13 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-// ==========================
-// ELEMENTS
-// ==========================
-
-const fixtureSelect =
-  document.getElementById("fixtureSelect");
-
-const homeGoals =
-  document.getElementById("homeGoals");
-
-const awayGoals =
-  document.getElementById("awayGoals");
-
-const saveResult =
-  document.getElementById("saveResult");
+const fixtureSelect = document.getElementById("fixtureSelect");
+const homeGoals = document.getElementById("homeGoals");
+const awayGoals = document.getElementById("awayGoals");
+const saveResult = document.getElementById("saveResult");
 
 
 let fixtures = [];
-
 let teams = [];
 
 
@@ -55,16 +43,14 @@ async function loadFixtures() {
 
   try {
 
-    const snapshot =
-      await getDocs(collection(db, "fixtures"));
-
+    const snapshot = await getDocs(
+      collection(db, "fixtures")
+    );
 
     fixtures = [];
 
-
     fixtureSelect.innerHTML =
       '<option value="">Select Fixture</option>';
-
 
     snapshot.forEach((fixtureDoc) => {
 
@@ -73,34 +59,24 @@ async function loadFixtures() {
         ...fixtureDoc.data()
       };
 
-
       fixtures.push(fixture);
 
-
-      const option =
-        document.createElement("option");
-
+      const option = document.createElement("option");
 
       option.value = fixture.id;
 
-
       option.textContent =
         `${fixture.date} — ${fixture.homeTeam} vs ${fixture.awayTeam}`;
-
 
       fixtureSelect.appendChild(option);
 
     });
 
-
     console.log("Fixtures loaded:", fixtures);
 
   } catch (error) {
 
-    console.error(
-      "Error loading fixtures:",
-      error
-    );
+    console.error("Error loading fixtures:", error);
 
     alert(
       "Could not load fixtures: " +
@@ -120,12 +96,11 @@ async function loadTeams() {
 
   try {
 
-    const snapshot =
-      await getDocs(collection(db, "teams"));
-
+    const snapshot = await getDocs(
+      collection(db, "teams")
+    );
 
     teams = [];
-
 
     snapshot.forEach((teamDoc) => {
 
@@ -136,20 +111,9 @@ async function loadTeams() {
 
     });
 
-
-    console.log("Teams loaded:", teams);
-
   } catch (error) {
 
-    console.error(
-      "Error loading teams:",
-      error
-    );
-
-    alert(
-      "Could not load teams: " +
-      error.message
-    );
+    console.error("Error loading teams:", error);
 
   }
 
@@ -160,146 +124,217 @@ async function loadTeams() {
 // SAVE RESULT
 // ==========================
 
-saveResult.addEventListener(
-  "click",
-  async () => {
+saveResult.addEventListener("click", async () => {
 
-    const fixtureId =
-      fixtureSelect.value;
+  const fixtureId = fixtureSelect.value;
 
-
-    const homeScore =
-      Number(homeGoals.value);
+  const homeScore = Number(homeGoals.value);
+  const awayScore = Number(awayGoals.value);
 
 
-    const awayScore =
-      Number(awayGoals.value);
+  if (!fixtureId) {
+
+    alert("Please select a fixture.");
+
+    return;
+
+  }
 
 
-    // Check fixture
+  if (
+    homeGoals.value === "" ||
+    awayGoals.value === ""
+  ) {
 
-    if (!fixtureId) {
+    alert("Please enter both scores.");
 
-      alert("Please select a fixture.");
+    return;
 
-      return;
-
-    }
-
-
-    // Check scores
-
-    if (
-      homeGoals.value === "" ||
-      awayGoals.value === ""
-    ) {
-
-      alert("Please enter both scores.");
-
-      return;
-
-    }
+  }
 
 
-    if (
-      homeScore < 0 ||
-      awayScore < 0
-    ) {
-
-      alert("Goals cannot be negative.");
-
-      return;
-
-    }
+  const fixture = fixtures.find(
+    item => item.id === fixtureId
+  );
 
 
-    // Find fixture
+  if (!fixture) {
 
-    const fixture =
-      fixtures.find(
-        item => item.id === fixtureId
-      );
+    alert("Fixture not found.");
 
+    return;
 
-    if (!fixture) {
-
-      alert("Fixture not found.");
-
-      return;
-
-    }
+  }
 
 
-    // Find teams
-
-    const home =
-      teams.find(
-        team =>
-          team.name === fixture.homeTeam
-      );
+  const home = teams.find(
+    team => team.name === fixture.homeTeam
+  );
 
 
-    const away =
-      teams.find(
-        team =>
-          team.name === fixture.awayTeam
-      );
+  const away = teams.find(
+    team => team.name === fixture.awayTeam
+  );
 
 
-    if (!home || !away) {
+  if (!home || !away) {
 
-      alert(
-        "Could not find teams for this fixture."
-      );
+    alert("Could not find teams.");
 
-      return;
+    return;
 
-    }
+  }
 
 
-    // ==========================
-    // CALCULATE RESULT
-    // ==========================
+  let homeWon = 0;
+  let homeDraw = 0;
+  let homeLost = 0;
 
-    let homeWon = 0;
-    let homeDraw = 0;
-    let homeLost = 0;
+  let awayWon = 0;
+  let awayDraw = 0;
+  let awayLost = 0;
 
-    let awayWon = 0;
-    let awayDraw = 0;
-    let awayLost = 0;
-
-    let homePoints = 0;
-    let awayPoints = 0;
+  let homePoints = 0;
+  let awayPoints = 0;
 
 
-    if (homeScore > awayScore) {
+  if (homeScore > awayScore) {
 
-      homeWon = 1;
-      awayLost = 1;
+    homeWon = 1;
+    awayLost = 1;
 
-      homePoints = 3;
+    homePoints = 3;
 
-    }
+  } else if (homeScore < awayScore) {
 
-    else if (homeScore < awayScore) {
+    awayWon = 1;
+    homeLost = 1;
 
-      awayWon = 1;
-      homeLost = 1;
+    awayPoints = 3;
 
-      awayPoints = 3;
+  } else {
 
-    }
+    homeDraw = 1;
+    awayDraw = 1;
 
-    else {
+    homePoints = 1;
+    awayPoints = 1;
 
-      homeDraw = 1;
-      awayDraw = 1;
-
-      homePoints = 1;
-      awayPoints = 1;
-
-    }
+  }
 
 
-    // =========================
+  const homeUpdate = {
+
+    played: Number(home.played || 0) + 1,
+
+    won: Number(home.won || 0) + homeWon,
+
+    draw: Number(home.draw || 0) + homeDraw,
+
+    lost: Number(home.lost || 0) + homeLost,
+
+    goalsFor:
+      Number(home.goalsFor || 0) + homeScore,
+
+    goalsAgainst:
+      Number(home.goalsAgainst || 0) + awayScore,
+
+    points:
+      Number(home.points || 0) + homePoints
+
+  };
+
+
+  const awayUpdate = {
+
+    played: Number(away.played || 0) + 1,
+
+    won: Number(away.won || 0) + awayWon,
+
+    draw: Number(away.draw || 0) + awayDraw,
+
+    lost: Number(away.lost || 0) + awayLost,
+
+    goalsFor:
+      Number(away.goalsFor || 0) + awayScore,
+
+    goalsAgainst:
+      Number(away.goalsAgainst || 0) + homeScore,
+
+    points:
+      Number(away.points || 0) + awayPoints
+
+  };
+
+
+  try {
+
+    await updateDoc(
+      doc(db, "teams", home.id),
+      homeUpdate
+    );
+
+
+    await updateDoc(
+      doc(db, "teams", away.id),
+      awayUpdate
+    );
+
+
+    await addDoc(
+      collection(db, "results"),
+      {
+
+        fixtureId: fixture.id,
+
+        homeTeam: home.name,
+
+        awayTeam: away.name,
+
+        homeGoals: homeScore,
+
+        awayGoals: awayScore,
+
+        createdAt: new Date()
+
+      }
+    );
+
+
+    alert(
+      "Match result saved successfully! ⚽🔥"
+    );
+
+
+    fixtureSelect.value = "";
+
+    homeGoals.value = "";
+
+    awayGoals.value = "";
+
+
+    await loadFixtures();
+
+  } catch (error) {
+
+    console.error(
+      "Error saving result:",
+      error
+    );
+
+    alert(
+      "Error saving result: " +
+      error.message
+    );
+
+  }
+
+});
+
+
+// ==========================
+// START
+// ==========================
+
+loadTeams();
+loadFixtures();

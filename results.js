@@ -16,8 +16,7 @@ const firebaseConfig = {
   projectId: "lamu-west-premier-league",
   storageBucket: "lamu-west-premier-league.firebasestorage.app",
   messagingSenderId: "280853181931",
-  appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
-  measurementId: "G-HQ04SZWBBB"
+  appId: "1:280853181931:web:8c411d3528bddadd2d15ae"
 };
 
 
@@ -55,13 +54,10 @@ async function loadFixtures() {
         collection(db, "fixtures")
       );
 
-
     fixtures = [];
-
 
     fixtureSelect.innerHTML =
       '<option value="">Select Fixture</option>';
-
 
     snapshot.forEach((fixtureDoc) => {
 
@@ -70,26 +66,19 @@ async function loadFixtures() {
         ...fixtureDoc.data()
       };
 
-
       fixtures.push(fixture);
-
 
       const option =
         document.createElement("option");
 
-
-      option.value =
-        fixture.id;
-
+      option.value = fixture.id;
 
       option.textContent =
         `${fixture.date} — ${fixture.homeTeam} vs ${fixture.awayTeam}`;
 
-
       fixtureSelect.appendChild(option);
 
     });
-
 
     console.log(
       "Fixtures loaded:",
@@ -126,9 +115,7 @@ async function loadTeams() {
         collection(db, "teams")
       );
 
-
     teams = [];
-
 
     snapshot.forEach((teamDoc) => {
 
@@ -138,7 +125,6 @@ async function loadTeams() {
       });
 
     });
-
 
     console.log(
       "Teams loaded:",
@@ -170,149 +156,350 @@ saveResult.addEventListener(
   "click",
   async () => {
 
-    const fixtureId =
-      fixtureSelect.value;
+    try {
+
+      const fixtureId =
+        fixtureSelect.value;
+
+      const homeScore =
+        Number(homeGoals.value);
+
+      const awayScore =
+        Number(awayGoals.value);
 
 
-    const homeScore =
-      Number(homeGoals.value);
+      // CHECK FIXTURE
+
+      if (!fixtureId) {
+
+        alert(
+          "Please select a fixture."
+        );
+
+        return;
+
+      }
 
 
-    const awayScore =
-      Number(awayGoals.value);
+      // CHECK SCORES
+
+      if (
+        homeGoals.value === "" ||
+        awayGoals.value === ""
+      ) {
+
+        alert(
+          "Please enter both scores."
+        );
+
+        return;
+
+      }
 
 
-    if (!fixtureId) {
+      if (
+        homeScore < 0 ||
+        awayScore < 0
+      ) {
+
+        alert(
+          "Goals cannot be negative."
+        );
+
+        return;
+
+      }
+
+
+      // FIND FIXTURE
+
+      const fixture =
+        fixtures.find(
+          item => item.id === fixtureId
+        );
+
+
+      if (!fixture) {
+
+        alert(
+          "Fixture not found."
+        );
+
+        return;
+
+      }
+
+
+      // FIND TEAMS
+
+      const home =
+        teams.find(
+          team =>
+            team.name === fixture.homeTeam
+        );
+
+
+      const away =
+        teams.find(
+          team =>
+            team.name === fixture.awayTeam
+        );
+
+
+      if (!home || !away) {
+
+        alert(
+          "Could not find teams."
+        );
+
+        return;
+
+      }
+
+
+      // ==========================
+      // CALCULATE RESULT
+      // ==========================
+
+      let homeWon = 0;
+      let homeDraw = 0;
+      let homeLost = 0;
+
+      let awayWon = 0;
+      let awayDraw = 0;
+      let awayLost = 0;
+
+      let homePoints = 0;
+      let awayPoints = 0;
+
+
+      if (homeScore > awayScore) {
+
+        homeWon = 1;
+        awayLost = 1;
+
+        homePoints = 3;
+
+      }
+
+      else if (homeScore < awayScore) {
+
+        awayWon = 1;
+        homeLost = 1;
+
+        awayPoints = 3;
+
+      }
+
+      else {
+
+        homeDraw = 1;
+        awayDraw = 1;
+
+        homePoints = 1;
+        awayPoints = 1;
+
+      }
+
+
+      // ==========================
+      // UPDATE HOME TEAM
+      // ==========================
+
+      const homeUpdate = {
+
+        played:
+          Number(home.played || 0) + 1,
+
+        wins:
+          Number(
+            home.wins ||
+            home.won ||
+            0
+          ) + homeWon,
+
+        draws:
+          Number(
+            home.draws ||
+            home.draw ||
+            0
+          ) + homeDraw,
+
+        losses:
+          Number(
+            home.losses ||
+            home.lost ||
+            0
+          ) + homeLost,
+
+        goalsFor:
+          Number(
+            home.goalsFor || 0
+          ) + homeScore,
+
+        goalsAgainst:
+          Number(
+            home.goalsAgainst || 0
+          ) + awayScore,
+
+        points:
+          Number(
+            home.points || 0
+          ) + homePoints
+
+      };
+
+
+      // ==========================
+      // UPDATE AWAY TEAM
+      // ==========================
+
+      const awayUpdate = {
+
+        played:
+          Number(away.played || 0) + 1,
+
+        wins:
+          Number(
+            away.wins ||
+            away.won ||
+            0
+          ) + awayWon,
+
+        draws:
+          Number(
+            away.draws ||
+            away.draw ||
+            0
+          ) + awayDraw,
+
+        losses:
+          Number(
+            away.losses ||
+            away.lost ||
+            0
+          ) + awayLost,
+
+        goalsFor:
+          Number(
+            away.goalsFor || 0
+          ) + awayScore,
+
+        goalsAgainst:
+          Number(
+            away.goalsAgainst || 0
+          ) + homeScore,
+
+        points:
+          Number(
+            away.points || 0
+          ) + awayPoints
+
+      };
+
+
+      // ==========================
+      // SAVE HOME TEAM
+      // ==========================
+
+      await updateDoc(
+        doc(
+          db,
+          "teams",
+          home.id
+        ),
+        homeUpdate
+      );
+
+
+      // ==========================
+      // SAVE AWAY TEAM
+      // ==========================
+
+      await updateDoc(
+        doc(
+          db,
+          "teams",
+          away.id
+        ),
+        awayUpdate
+      );
+
+
+      // ==========================
+      // SAVE RESULT
+      // ==========================
+
+      await addDoc(
+        collection(
+          db,
+          "results"
+        ),
+        {
+
+          fixtureId:
+            fixtureId,
+
+          homeTeam:
+            fixture.homeTeam,
+
+          awayTeam:
+            fixture.awayTeam,
+
+          homeGoals:
+            homeScore,
+
+          awayGoals:
+            awayScore
+
+        }
+      );
+
+
+      // ==========================
+      // SUCCESS
+      // ==========================
 
       alert(
-        "Please select a fixture."
+        "Match result saved successfully!"
       );
 
-      return;
 
-    }
+      homeGoals.value = "";
+
+      awayGoals.value = "";
+
+      fixtureSelect.value = "";
 
 
-    if (
-      homeGoals.value === "" ||
-      awayGoals.value === ""
-    ) {
+      await loadTeams();
+
+      await loadFixtures();
+
+
+    } catch (error) {
+
+      console.error(
+        "Error saving result:",
+        error
+      );
 
       alert(
-        "Please enter both scores."
+        "Error saving result: " +
+        error.message
       );
-
-      return;
 
     }
 
-
-    if (
-      homeScore < 0 ||
-      awayScore < 0
-    ) {
-
-      alert(
-        "Goals cannot be negative."
-      );
-
-      return;
-
-    }
+  }
+);
 
 
-    const fixture =
-      fixtures.find(
-        item => item.id === fixtureId
-      );
+// ==========================
+// START
+// ==========================
 
+loadTeams();
 
-    if (!fixture) {
-
-      alert(
-        "Fixture not found."
-      );
-
-      return;
-
-    }
-
-
-    const home =
-      teams.find(
-        team =>
-          team.name === fixture.homeTeam
-      );
-
-
-    const away =
-      teams.find(
-        team =>
-          team.name === fixture.awayTeam
-      );
-
-
-    if (!home || !away) {
-
-      alert(
-        "Could not find teams."
-      );
-
-      return;
-
-    }
-
-
-    // ==========================
-    // CALCULATE RESULT
-    // ==========================
-
-    let homeWon = 0;
-    let homeDraw = 0;
-    let homeLost = 0;
-
-    let awayWon = 0;
-    let awayDraw = 0;
-    let awayLost = 0;
-
-    let homePoints = 0;
-    let awayPoints = 0;
-
-
-    if (homeScore > awayScore) {
-
-      homeWon = 1;
-      awayLost = 1;
-
-      homePoints = 3;
-
-    }
-
-    else if (homeScore < awayScore) {
-
-      awayWon = 1;
-      homeLost = 1;
-
-      awayPoints = 3;
-
-    }
-
-    else {
-
-      homeDraw = 1;
-      awayDraw = 1;
-
-      homePoints = 1;
-      awayPoints = 1;
-
-    }
-
-
-    // ==========================
-    // UPDATE HOME TEAM
-    // ==========================
-
-    const homeUpdate = {
-
-      played:
+loadFixtures();
        

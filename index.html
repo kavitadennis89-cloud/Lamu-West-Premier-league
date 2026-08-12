@@ -28,24 +28,20 @@
       background: linear-gradient(135deg, #075e3d, #0b8f5b);
       color: white;
       text-align: center;
-      padding: 45px 20px 40px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 45px 20px;
     }
 
-    header .league-badge {
+    header .logo {
       font-size: 48px;
-      margin-bottom: 8px;
     }
 
     header h1 {
-      margin: 0;
+      margin: 10px 0 5px;
       font-size: 32px;
-      font-weight: 800;
     }
 
     header p {
-      margin: 10px 0 0;
-      font-size: 16px;
+      margin: 0;
       opacity: 0.9;
     }
 
@@ -53,8 +49,8 @@
       background: white;
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
       justify-content: center;
+      gap: 8px;
       padding: 14px;
       position: sticky;
       top: 0;
@@ -65,10 +61,9 @@
     nav a {
       text-decoration: none;
       color: #075e3d;
-      font-weight: 700;
+      font-weight: bold;
       padding: 10px 14px;
       border-radius: 8px;
-      transition: 0.2s;
     }
 
     nav a:hover {
@@ -84,37 +79,30 @@
 
     .welcome {
       background: white;
+      text-align: center;
+      padding: 30px 20px;
       border-radius: 14px;
-      padding: 28px 22px;
       margin-bottom: 22px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-      text-align: center;
     }
 
     .welcome h2 {
-      margin-top: 0;
       color: #075e3d;
-      font-size: 26px;
-    }
-
-    .welcome p {
-      color: #596662;
-      margin-bottom: 0;
+      margin-top: 0;
     }
 
     section {
       background: white;
-      border-radius: 14px;
       padding: 22px;
       margin-bottom: 22px;
+      border-radius: 14px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.08);
       overflow-x: auto;
     }
 
     section h2 {
-      margin-top: 0;
       color: #075e3d;
-      border-bottom: 2px solid #e8efec;
+      border-bottom: 2px solid #e5ece8;
       padding-bottom: 12px;
     }
 
@@ -128,30 +116,18 @@
       background: #075e3d;
       color: white;
       padding: 12px 8px;
-      text-align: center;
     }
 
     td {
       padding: 11px 8px;
-      border-bottom: 1px solid #e5e9e7;
       text-align: center;
+      border-bottom: 1px solid #e5e9e7;
     }
 
-    tr:hover td {
-      background: #f1f8f5;
-    }
-
+    #fixturesList,
     #resultsList,
     #scorersList {
-      min-height: 50px;
-    }
-
-    .info-card {
-      background: #f5faf7;
-      border-left: 4px solid #0b8f5b;
-      padding: 14px;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      min-height: 40px;
     }
 
     footer {
@@ -162,31 +138,14 @@
       margin-top: 30px;
     }
 
-    footer p {
-      margin: 5px 0;
-    }
-
-    .footer-title {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
     @media (max-width: 600px) {
-
-      header {
-        padding: 32px 15px;
-      }
 
       header h1 {
         font-size: 25px;
       }
 
-      header .league-badge {
+      header .logo {
         font-size: 40px;
-      }
-
-      nav {
-        padding: 10px;
       }
 
       nav a {
@@ -202,10 +161,6 @@
         padding: 16px;
       }
 
-      section h2 {
-        font-size: 20px;
-      }
-
     }
 
   </style>
@@ -216,13 +171,11 @@
 <body>
 
 
-  <!-- ========================== -->
   <!-- HEADER -->
-  <!-- ========================== -->
 
   <header>
 
-    <div class="league-badge">
+    <div class="logo">
       ⚽🏆
     </div>
 
@@ -237,9 +190,7 @@
   </header>
 
 
-  <!-- ========================== -->
   <!-- NAVIGATION -->
-  <!-- ========================== -->
 
   <nav>
 
@@ -251,7 +202,7 @@
       🏆 Standings
     </a>
 
-    <a href="#upcomingFixtures">
+    <a href="fixtures.html">
       📅 Fixtures
     </a>
 
@@ -263,15 +214,21 @@
       🥇 Top Scorers
     </a>
 
+    <a href="teams.html">
+      👥 Team Profiles
+    </a>
+
+    <a href="admin.html">
+      🔐 Admin Panel
+    </a>
+
   </nav>
 
 
   <main>
 
 
-    <!-- ========================== -->
     <!-- WELCOME -->
-    <!-- ========================== -->
 
     <div class="welcome">
 
@@ -280,16 +237,14 @@
       </h2>
 
       <p>
-        Follow league standings, fixtures, match results and top scorers
+        Follow standings, fixtures, results, teams and top scorers
         all in one place.
       </p>
 
     </div>
 
 
-    <!-- ========================== -->
-    <!-- LEAGUE TABLE -->
-    <!-- ========================== -->
+    <!-- STANDINGS -->
 
     <section id="standings">
 
@@ -319,9 +274,7 @@
     </section>
 
 
-    <!-- ========================== -->
-    <!-- UPCOMING FIXTURES -->
-    <!-- ========================== -->
+    <!-- FIXTURES PREVIEW -->
 
     <section id="upcomingFixtures">
 
@@ -336,86 +289,3 @@
         </p>
 
       </div>
-
-    </section>
-
-
-    <!-- ========================== -->
-    <!-- MATCH RESULTS -->
-    <!-- ========================== -->
-
-    <section id="latestResults">
-
-      <h2>
-        ⚽ Match Results
-      </h2>
-
-      <div id="resultsList">
-
-        <p>
-          Loading results...
-        </p>
-
-      </div>
-
-    </section>
-
-
-    <!-- ========================== -->
-    <!-- TOP SCORERS -->
-    <!-- ========================== -->
-
-    <section id="topScorers">
-
-      <h2>
-        🥇 Top Scorers
-      </h2>
-
-      <div id="scorersList">
-
-        <p>
-          Loading top scorers...
-        </p>
-
-      </div>
-
-    </section>
-
-
-  </main>
-
-
-  <!-- ========================== -->
-  <!-- FOOTER -->
-  <!-- ========================== -->
-
-  <footer>
-
-    <p class="footer-title">
-      ⚽ Lamu West Premier League
-    </p>
-
-    <p>
-      Official League Website
-    </p>
-
-    <p>
-      © 2026 Lamu West Premier League. All rights reserved.
-    </p>
-
-  </footer>
-
-
-  <!-- ========================== -->
-  <!-- JAVASCRIPT -->
-  <!-- ========================== -->
-
-  <script
-    type="module"
-    src="script.js?v=12">
-  </script>
-
-
-</body>
-
-</html>

@@ -18,6 +18,7 @@ const firebaseConfig = {
 
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
 
@@ -39,41 +40,53 @@ async function loadTeams() {
 
       const data = teamDoc.data();
 
-      const goalsFor = Number(data.goalsFor || 0);
-      const goalsAgainst = Number(data.goalsAgainst || 0);
+      const goalsFor =
+        Number(data.goalsFor || 0);
+
+      const goalsAgainst =
+        Number(data.goalsAgainst || 0);
 
       teams.push({
 
-        name: data.name || "Unknown Team",
+        name:
+          data.name ||
+          "Unknown Team",
 
-        played: Number(data.played || 0),
+        played:
+          Number(data.played || 0),
 
-        won: Number(
-          data.won ||
-          data.wins ||
-          0
-        ),
+        won:
+          Number(
+            data.won ||
+            data.wins ||
+            0
+          ),
 
-        draw: Number(
-          data.draw ||
-          data.draws ||
-          0
-        ),
+        draw:
+          Number(
+            data.draw ||
+            data.draws ||
+            0
+          ),
 
-        lost: Number(
-          data.lost ||
-          data.losses ||
-          0
-        ),
+        lost:
+          Number(
+            data.lost ||
+            data.losses ||
+            0
+          ),
 
-        goalsFor: goalsFor,
+        goalsFor:
+          goalsFor,
 
-        goalsAgainst: goalsAgainst,
+        goalsAgainst:
+          goalsAgainst,
 
         goalDifference:
           goalsFor - goalsAgainst,
 
-        points: Number(data.points || 0)
+        points:
+          Number(data.points || 0)
 
       });
 
@@ -83,11 +96,21 @@ async function loadTeams() {
     teams.sort((a, b) => {
 
       if (b.points !== a.points) {
+
         return b.points - a.points;
+
       }
 
-      if (b.goalDifference !== a.goalDifference) {
-        return b.goalDifference - a.goalDifference;
+      if (
+        b.goalDifference !==
+        a.goalDifference
+      ) {
+
+        return (
+          b.goalDifference -
+          a.goalDifference
+        );
+
       }
 
       return b.goalsFor - a.goalsFor;
@@ -95,7 +118,9 @@ async function loadTeams() {
     });
 
 
-    const table = document.querySelector("table");
+    const table =
+      document.querySelector("table");
+
 
     if (!table) return;
 
@@ -103,6 +128,7 @@ async function loadTeams() {
     table.innerHTML = `
 
       <tr>
+
         <th>Pos</th>
         <th>Club</th>
         <th>P</th>
@@ -113,6 +139,7 @@ async function loadTeams() {
         <th>GA</th>
         <th>GD</th>
         <th>Pts</th>
+
       </tr>
 
     `;
@@ -120,40 +147,74 @@ async function loadTeams() {
 
     teams.forEach((team, index) => {
 
-      const row = document.createElement("tr");
+      const row =
+        document.createElement("tr");
 
-      const gd = team.goalDifference;
+
+      const gd =
+        team.goalDifference;
+
 
       const gdText =
-        gd > 0 ? `+${gd}` : gd;
+        gd > 0
+          ? `+${gd}`
+          : gd;
 
 
       row.innerHTML = `
 
-        <td>${index + 1}</td>
-
         <td>
-          <a href="team.html?team=${encodeURIComponent(team.name)}">
-            <strong>${team.name}</strong>
-          </a>
+          ${index + 1}
         </td>
 
-        <td>${team.played}</td>
+        <td>
 
-        <td>${team.won}</td>
+          <a
+            href="team.html?team=${encodeURIComponent(team.name)}"
+          >
 
-        <td>${team.draw}</td>
+            <strong>
+              ${team.name}
+            </strong>
 
-        <td>${team.lost}</td>
+          </a>
 
-        <td>${team.goalsFor}</td>
-
-        <td>${team.goalsAgainst}</td>
-
-        <td>${gdText}</td>
+        </td>
 
         <td>
-          <strong>${team.points}</strong>
+          ${team.played}
+        </td>
+
+        <td>
+          ${team.won}
+        </td>
+
+        <td>
+          ${team.draw}
+        </td>
+
+        <td>
+          ${team.lost}
+        </td>
+
+        <td>
+          ${team.goalsFor}
+        </td>
+
+        <td>
+          ${team.goalsAgainst}
+        </td>
+
+        <td>
+          ${gdText}
+        </td>
+
+        <td>
+
+          <strong>
+            ${team.points}
+          </strong>
+
         </td>
 
       `;
@@ -183,31 +244,39 @@ async function loadFixtures() {
 
   try {
 
-    const fixtureSnapshot = await getDocs(
-      collection(db, "fixtures")
-    );
-
-    const resultSnapshot = await getDocs(
-      collection(db, "results")
-    );
+    const fixtureSnapshot =
+      await getDocs(
+        collection(db, "fixtures")
+      );
 
 
-    const playedFixtureIds = new Set();
+    const resultSnapshot =
+      await getDocs(
+        collection(db, "results")
+      );
 
 
-    resultSnapshot.forEach((resultDoc) => {
+    const playedFixtureIds =
+      new Set();
 
-      const result = resultDoc.data();
 
-      if (result.fixtureId) {
+    resultSnapshot.forEach(
+      (resultDoc) => {
 
-        playedFixtureIds.add(
-          result.fixtureId
-        );
+        const result =
+          resultDoc.data();
+
+
+        if (result.fixtureId) {
+
+          playedFixtureIds.add(
+            result.fixtureId
+          );
+
+        }
 
       }
-
-    });
+    );
 
 
     const section =
@@ -221,7 +290,9 @@ async function loadFixtures() {
 
     section.innerHTML = `
 
-      <h2>📅 Upcoming Fixtures</h2>
+      <h2>
+        📅 Upcoming Fixtures
+      </h2>
 
     `;
 
@@ -229,51 +300,54 @@ async function loadFixtures() {
     let count = 0;
 
 
-    fixtureSnapshot.forEach((fixtureDoc) => {
+    fixtureSnapshot.forEach(
+      (fixtureDoc) => {
 
-      const fixture = fixtureDoc.data();
+        const fixture =
+          fixtureDoc.data();
 
 
-      if (
-        playedFixtureIds.has(
-          fixtureDoc.id
-        )
-      ) {
+        if (
+          playedFixtureIds.has(
+            fixtureDoc.id
+          )
+        ) {
 
-        return;
+          return;
+
+        }
+
+
+        count++;
+
+
+        const match =
+          document.createElement("p");
+
+
+        match.innerHTML = `
+
+          📅
+
+          <strong>
+            ${fixture.date || ""}
+          </strong>
+
+          —
+
+          ${fixture.homeTeam || ""}
+
+          vs
+
+          ${fixture.awayTeam || ""}
+
+        `;
+
+
+        section.appendChild(match);
 
       }
-
-
-      count++;
-
-
-      const match =
-        document.createElement("p");
-
-
-      match.innerHTML = `
-
-        📅
-
-        <strong>
-          ${fixture.date || ""}
-        </strong>
-
-        —
-
-        ${fixture.homeTeam || ""}
-
-        vs
-
-        ${fixture.awayTeam || ""}
-
-      `;
-
-
-      section.appendChild(match);
-
-    });
+    );
 
 
     if (count === 0) {
@@ -303,9 +377,10 @@ async function loadResults() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "results")
-    );
+    const snapshot =
+      await getDocs(
+        collection(db, "results")
+      );
 
 
     const list =
@@ -323,19 +398,28 @@ async function loadResults() {
     const results = [];
 
 
-    snapshot.forEach((resultDoc) => {
+    snapshot.forEach(
+      (resultDoc) => {
 
-      results.push(
-        resultDoc.data()
-      );
+        results.push(
+          resultDoc.data()
+        );
 
-    });
+      }
+    );
 
 
     if (results.length === 0) {
 
-      list.innerHTML =
-        "<p>No match results yet.</p>";
+      list.innerHTML = `
+
+        <div class="result-empty">
+
+          ⚽ No match results yet.
+
+        </div>
+
+      `;
 
       return;
 
@@ -348,7 +432,11 @@ async function loadResults() {
     results.forEach((result) => {
 
       const match =
-        document.createElement("p");
+        document.createElement("div");
+
+
+      match.className =
+        "result-card";
 
 
       const home =
@@ -381,19 +469,48 @@ async function loadResults() {
 
       match.innerHTML = `
 
-        📅 ${result.date || ""}
+        <div class="result-date">
 
-        —
+          📅 ${result.date || ""}
 
-        <strong>${home}</strong>
+        </div>
 
-        ${homeScore}
 
-        -
+        <div class="result-teams">
 
-        ${awayScore}
 
-        <strong>${away}</strong>
+          <div class="result-team home-team">
+
+            ${home}
+
+          </div>
+
+
+          <div class="result-score">
+
+            <span>
+              ${homeScore}
+            </span>
+
+            <small>
+              -
+            </small>
+
+            <span>
+              ${awayScore}
+            </span>
+
+          </div>
+
+
+          <div class="result-team away-team">
+
+            ${away}
+
+          </div>
+
+
+        </div>
 
       `;
 
@@ -422,9 +539,10 @@ async function loadTopScorers() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "scorers")
-    );
+    const snapshot =
+      await getDocs(
+        collection(db, "scorers")
+      );
 
 
     const list =
@@ -442,29 +560,32 @@ async function loadTopScorers() {
     const scorers = [];
 
 
-    snapshot.forEach((scorerDoc) => {
+    snapshot.forEach(
+      (scorerDoc) => {
 
-      const data = scorerDoc.data();
+        const data =
+          scorerDoc.data();
 
 
-      scorers.push({
+        scorers.push({
 
-        playerName:
-          data.playerName ||
-          "Unknown Player",
+          playerName:
+            data.playerName ||
+            "Unknown Player",
 
-        team:
-          data.team ||
-          "Unknown Team",
+          team:
+            data.team ||
+            "Unknown Team",
 
-        goals:
-          Number(
-            data.goals || 0
-          )
+          goals:
+            Number(
+              data.goals || 0
+            )
 
-      });
+        });
 
-    });
+      }
+    );
 
 
     scorers.sort((a, b) => {
@@ -484,35 +605,43 @@ async function loadTopScorers() {
     }
 
 
-    scorers.forEach((player, index) => {
+    scorers.forEach(
+      (player, index) => {
 
-      const row =
-        document.createElement("p");
-
-
-      row.innerHTML = `
-
-        <strong>
-          ${index + 1}.
-          ${player.playerName}
-        </strong>
-
-        —
-
-        ${player.team}
-
-        —
-
-        <strong>
-          ${player.goals} goals
-        </strong>
-
-      `;
+        const row =
+          document.createElement("p");
 
 
-      list.appendChild(row);
+        row.innerHTML = `
 
-    });
+          <strong>
+
+            ${index + 1}.
+
+            ${player.playerName}
+
+          </strong>
+
+          —
+
+          ${player.team}
+
+          —
+
+          <strong>
+
+            ${player.goals}
+            goals
+
+          </strong>
+
+        `;
+
+
+        list.appendChild(row);
+
+      }
+    );
 
   } catch (error) {
 

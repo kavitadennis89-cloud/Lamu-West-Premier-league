@@ -26,7 +26,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+document.getElementById("adminError").innerHTML =
+  "<div style='padding:15px;background:orange;color:black;'>FIREBASE JS IMEFIKA</div>";
 
 // ==========================================
 // ERROR DISPLAY

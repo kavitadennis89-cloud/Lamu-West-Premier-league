@@ -6,6 +6,7 @@ import {
   getDocs
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
   authDomain: "lamu-west-premier-league.firebaseapp.com",
@@ -14,6 +15,7 @@ const firebaseConfig = {
   messagingSenderId: "280853181931",
   appId: "1:280853181931:web:8c411d3528bddadd2d15ae"
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -27,52 +29,56 @@ async function loadTeams() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "teams")
-    );
+    const snapshot =
+      await getDocs(collection(db, "teams"));
 
     const teams = [];
+
 
     snapshot.forEach((teamDoc) => {
 
       const data = teamDoc.data();
 
-      const goalsFor = Number(data.goalsFor || 0);
-      const goalsAgainst = Number(data.goalsAgainst || 0);
+      const goalsFor =
+        Number(data.goalsFor || 0);
+
+      const goalsAgainst =
+        Number(data.goalsAgainst || 0);
+
 
       teams.push({
 
-        name: data.name || "Unknown Team",
+        name:
+          data.name || "Unknown Team",
 
-        played: Number(data.played || 0),
+        played:
+          Number(data.played || 0),
 
-        won: Number(
-          data.won || data.wins || 0
-        ),
+        won:
+          Number(data.won || data.wins || 0),
 
-        draw: Number(
-          data.draw || data.draws || 0
-        ),
+        draw:
+          Number(data.draw || data.draws || 0),
 
-        lost: Number(
-          data.lost || data.losses || 0
-        ),
+        lost:
+          Number(data.lost || data.losses || 0),
 
-        goalsFor: goalsFor,
+        goalsFor:
+          goalsFor,
 
-        goalsAgainst: goalsAgainst,
+        goalsAgainst:
+          goalsAgainst,
 
         goalDifference:
           goalsFor - goalsAgainst,
 
-        points: Number(data.points || 0)
+        points:
+          Number(data.points || 0)
 
       });
 
     });
 
-
-    // SORT TABLE
 
     teams.sort((a, b) => {
 
@@ -80,8 +86,14 @@ async function loadTeams() {
         return b.points - a.points;
       }
 
-      if (b.goalDifference !== a.goalDifference) {
-        return b.goalDifference - a.goalDifference;
+      if (
+        b.goalDifference !==
+        a.goalDifference
+      ) {
+        return (
+          b.goalDifference -
+          a.goalDifference
+        );
       }
 
       return b.goalsFor - a.goalsFor;
@@ -89,7 +101,9 @@ async function loadTeams() {
     });
 
 
-    const table = document.querySelector("table");
+    const table =
+      document.querySelector("table");
+
 
     if (!table) return;
 
@@ -114,7 +128,9 @@ async function loadTeams() {
 
     teams.forEach((team, index) => {
 
-      const row = document.createElement("tr");
+      const row =
+        document.createElement("tr");
+
 
       const gdText =
         team.goalDifference > 0
@@ -127,7 +143,9 @@ async function loadTeams() {
         <td>${index + 1}</td>
 
         <td>
-          <strong>${team.name}</strong>
+          <strong>
+            ${team.name}
+          </strong>
         </td>
 
         <td>${team.played}</td>
@@ -145,10 +163,13 @@ async function loadTeams() {
         <td>${gdText}</td>
 
         <td>
-          <strong>${team.points}</strong>
+          <strong>
+            ${team.points}
+          </strong>
         </td>
 
       `;
+
 
       table.appendChild(row);
 
@@ -174,31 +195,39 @@ async function loadFixtures() {
 
   try {
 
-    const fixtureSnapshot = await getDocs(
-      collection(db, "fixtures")
-    );
-
-    const resultSnapshot = await getDocs(
-      collection(db, "results")
-    );
+    const fixtureSnapshot =
+      await getDocs(
+        collection(db, "fixtures")
+      );
 
 
-    const playedFixtureIds = new Set();
+    const resultSnapshot =
+      await getDocs(
+        collection(db, "results")
+      );
 
 
-    resultSnapshot.forEach((resultDoc) => {
+    const playedFixtureIds =
+      new Set();
 
-      const result = resultDoc.data();
 
-      if (result.fixtureId) {
+    resultSnapshot.forEach(
+      (resultDoc) => {
 
-        playedFixtureIds.add(
-          result.fixtureId
-        );
+        const result =
+          resultDoc.data();
+
+
+        if (result.fixtureId) {
+
+          playedFixtureIds.add(
+            result.fixtureId
+          );
+
+        }
 
       }
-
-    });
+    );
 
 
     const fixturesSection =
@@ -212,7 +241,9 @@ async function loadFixtures() {
 
     fixturesSection.innerHTML = `
 
-      <h2>📅 Upcoming Fixtures</h2>
+      <h2>
+        📅 Upcoming Fixtures
+      </h2>
 
     `;
 
@@ -220,46 +251,52 @@ async function loadFixtures() {
     let upcomingCount = 0;
 
 
-    fixtureSnapshot.forEach((fixtureDoc) => {
+    fixtureSnapshot.forEach(
+      (fixtureDoc) => {
 
-      const fixture = fixtureDoc.data();
+        const fixture =
+          fixtureDoc.data();
 
 
-      if (
-        playedFixtureIds.has(
-          fixtureDoc.id
-        )
-      ) {
-        return;
+        if (
+          playedFixtureIds.has(
+            fixtureDoc.id
+          )
+        ) {
+          return;
+        }
+
+
+        upcomingCount++;
+
+
+        const match =
+          document.createElement("p");
+
+
+        match.innerHTML = `
+
+          📅 <strong>
+            ${fixture.date || ""}
+          </strong>
+
+          —
+
+          ${fixture.homeTeam || ""}
+
+          vs
+
+          ${fixture.awayTeam || ""}
+
+        `;
+
+
+        fixturesSection.appendChild(
+          match
+        );
+
       }
-
-
-      upcomingCount++;
-
-
-      const match = document.createElement("p");
-
-
-      match.innerHTML = `
-
-        📅 <strong>
-          ${fixture.date || ""}
-        </strong>
-
-        —
-
-        ${fixture.homeTeam || ""}
-
-        vs
-
-        ${fixture.awayTeam || ""}
-
-      `;
-
-
-      fixturesSection.appendChild(match);
-
-    });
+    );
 
 
     if (upcomingCount === 0) {
@@ -289,81 +326,51 @@ async function loadResults() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "results")
-    );
-
-
-    const resultsSection =
-      document.getElementById(
-        "matchResults"
+    const snapshot =
+      await getDocs(
+        collection(db, "results")
       );
 
 
-    if (!resultsSection) return;
+    const resultsList =
+      document.getElementById(
+        "resultsList"
+      );
 
 
-    resultsSection.innerHTML = `
+    if (!resultsList) return;
 
-      <h2>⚽ Match Results</h2>
 
-    `;
+    resultsList.innerHTML = "";
 
 
     const results = [];
 
 
-    snapshot.forEach((resultDoc) => {
+    snapshot.forEach(
+      (resultDoc) => {
 
-      const result = resultDoc.data();
-
-
-      results.push({
-
-        date: result.date || "",
-
-        homeTeam:
-          result.homeTeam ||
-          result.home ||
-          "",
-
-        awayTeam:
-          result.awayTeam ||
-          result.away ||
-          "",
-
-        homeScore:
-          Number(
-            result.homeScore ||
-            result.homeGoals ||
-            0
-          ),
-
-        awayScore:
-          Number(
-            result.awayScore ||
-            result.awayGoals ||
-            0
-          )
-
-      });
-
-    });
+        const result =
+          resultDoc.data();
 
 
-    // Latest results first
+        results.push(result);
 
-    results.reverse();
+      }
+    );
 
 
     if (results.length === 0) {
 
-      resultsSection.innerHTML +=
+      resultsList.innerHTML =
         "<p>No match results yet.</p>";
 
       return;
 
     }
+
+
+    results.reverse();
 
 
     results.forEach((result) => {
@@ -372,32 +379,58 @@ async function loadResults() {
         document.createElement("p");
 
 
+      const homeTeam =
+        result.homeTeam ||
+        result.home ||
+        "Home Team";
+
+
+      const awayTeam =
+        result.awayTeam ||
+        result.away ||
+        "Away Team";
+
+
+      const homeScore =
+        Number(
+          result.homeScore ||
+          result.homeGoals ||
+          0
+        );
+
+
+      const awayScore =
+        Number(
+          result.awayScore ||
+          result.awayGoals ||
+          0
+        );
+
+
       match.innerHTML = `
 
-        📅 ${result.date}
+        📅 ${result.date || ""}
 
         —
 
         <strong>
-          ${result.homeTeam}
+          ${homeTeam}
         </strong>
 
-        ${result.homeScore}
+        ${homeScore}
 
         -
 
-        ${result.awayScore}
+        ${awayScore}
 
         <strong>
-          ${result.awayTeam}
+          ${awayTeam}
         </strong>
 
       `;
 
 
-      resultsSection.appendChild(
-        match
-      );
+      resultsList.appendChild(match);
 
     });
 
@@ -408,13 +441,60 @@ async function loadResults() {
       error
     );
 
+
+    const resultsList =
+      document.getElementById(
+        "resultsList"
+      );
+
+
+    if (resultsList) {
+
+      resultsList.innerHTML =
+        "<p>Error loading results.</p>";
+
+    }
+
   }
 
 }
 
 
 // ==========================
-// LOAD EVERYTHING
+// TOP SCORERS
+// ==========================
+
+async function loadTopScorers() {
+
+  try {
+
+    const scorersList =
+      document.getElementById(
+        "scorersList"
+      );
+
+
+    if (!scorersList) return;
+
+
+    scorersList.innerHTML =
+      "<p>No top scorers yet.</p>";
+
+
+  } catch (error) {
+
+    console.error(
+      "Error loading top scorers:",
+      error
+    );
+
+  }
+
+}
+
+
+// ==========================
+// LOAD WEBSITE
 // ==========================
 
 async function loadWebsite() {
@@ -425,9 +505,9 @@ async function loadWebsite() {
 
   await loadResults();
 
+  await loadTopScorers();
+
 }
 
-
-// Start website
 
 loadWebsite();

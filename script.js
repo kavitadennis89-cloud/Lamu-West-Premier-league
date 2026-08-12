@@ -22,19 +22,17 @@ const db = getFirestore(app);
 
 
 // ==========================================
-// LEAGUE STANDINGS
+// LEAGUE TABLE
 // ==========================================
 
 async function loadTeams() {
 
   try {
 
-    const snapshot = await getDocs(
-      collection(db, "teams")
-    );
+    const snapshot =
+      await getDocs(collection(db, "teams"));
 
     const teams = [];
-
 
     snapshot.forEach((teamDoc) => {
 
@@ -45,7 +43,6 @@ async function loadTeams() {
 
       const goalsAgainst =
         Number(data.goalsAgainst || 0);
-
 
       teams.push({
 
@@ -81,8 +78,6 @@ async function loadTeams() {
     });
 
 
-    // Sort by Points → Goal Difference → Goals For
-
     teams.sort((a, b) => {
 
       if (b.points !== a.points) {
@@ -106,7 +101,6 @@ async function loadTeams() {
 
     const table =
       document.querySelector("table");
-
 
     if (!table) return;
 
@@ -134,65 +128,40 @@ async function loadTeams() {
       const row =
         document.createElement("tr");
 
-
       const gd =
         team.goalDifference;
 
-
       const gdText =
-        gd > 0
-          ? `+${gd}`
-          : gd;
+        gd > 0 ? `+${gd}` : gd;
 
 
       row.innerHTML = `
 
-        <td>
-          ${index + 1}
-        </td>
+        <td>${index + 1}</td>
 
         <td>
-          <strong>
-            ${team.name}
-          </strong>
+          <strong>${team.name}</strong>
         </td>
 
-        <td>
-          ${team.played}
-        </td>
+        <td>${team.played}</td>
+
+        <td>${team.won}</td>
+
+        <td>${team.draw}</td>
+
+        <td>${team.lost}</td>
+
+        <td>${team.goalsFor}</td>
+
+        <td>${team.goalsAgainst}</td>
+
+        <td>${gdText}</td>
 
         <td>
-          ${team.won}
-        </td>
-
-        <td>
-          ${team.draw}
-        </td>
-
-        <td>
-          ${team.lost}
-        </td>
-
-        <td>
-          ${team.goalsFor}
-        </td>
-
-        <td>
-          ${team.goalsAgainst}
-        </td>
-
-        <td>
-          ${gdText}
-        </td>
-
-        <td>
-          <strong>
-            ${team.points}
-          </strong>
+          <strong>${team.points}</strong>
         </td>
 
       `;
-
 
       table.appendChild(row);
 
@@ -201,7 +170,7 @@ async function loadTeams() {
   } catch (error) {
 
     console.error(
-      "Error loading league table:",
+      "League table error:",
       error
     );
 
@@ -223,7 +192,6 @@ async function loadFixtures() {
         collection(db, "fixtures")
       );
 
-
     const resultSnapshot =
       await getDocs(
         collection(db, "results")
@@ -239,7 +207,6 @@ async function loadFixtures() {
       const result =
         resultDoc.data();
 
-
       if (result.fixtureId) {
 
         playedFixtureIds.add(
@@ -251,25 +218,20 @@ async function loadFixtures() {
     });
 
 
-    const fixturesSection =
+    const section =
       document.getElementById(
         "upcomingFixtures"
       );
 
+    if (!section) return;
 
-    if (!fixturesSection) return;
 
-
-    fixturesSection.innerHTML = `
-
-      <h2>
-        📅 Upcoming Fixtures
-      </h2>
-
+    section.innerHTML = `
+      <h2>📅 Upcoming Fixtures</h2>
     `;
 
 
-    let upcomingCount = 0;
+    let count = 0;
 
 
     fixtureSnapshot.forEach((fixtureDoc) => {
@@ -283,13 +245,11 @@ async function loadFixtures() {
           fixtureDoc.id
         )
       ) {
-
         return;
-
       }
 
 
-      upcomingCount++;
+      count++;
 
 
       const match =
@@ -313,16 +273,14 @@ async function loadFixtures() {
       `;
 
 
-      fixturesSection.appendChild(
-        match
-      );
+      section.appendChild(match);
 
     });
 
 
-    if (upcomingCount === 0) {
+    if (count === 0) {
 
-      fixturesSection.innerHTML +=
+      section.innerHTML +=
         "<p>No upcoming fixtures.</p>";
 
     }
@@ -330,7 +288,7 @@ async function loadFixtures() {
   } catch (error) {
 
     console.error(
-      "Error loading fixtures:",
+      "Fixtures error:",
       error
     );
 
@@ -353,16 +311,16 @@ async function loadResults() {
       );
 
 
-    const resultsList =
+    const list =
       document.getElementById(
         "resultsList"
       );
 
 
-    if (!resultsList) return;
+    if (!list) return;
 
 
-    resultsList.innerHTML = "";
+    list.innerHTML = "";
 
 
     const results = [];
@@ -370,26 +328,22 @@ async function loadResults() {
 
     snapshot.forEach((resultDoc) => {
 
-      const result =
-        resultDoc.data();
-
-
-      results.push(result);
+      results.push(
+        resultDoc.data()
+      );
 
     });
 
 
     if (results.length === 0) {
 
-      resultsList.innerHTML =
+      list.innerHTML =
         "<p>No match results yet.</p>";
 
       return;
 
     }
 
-
-    // Latest result first
 
     results.reverse();
 
@@ -400,13 +354,13 @@ async function loadResults() {
         document.createElement("p");
 
 
-      const homeTeam =
+      const home =
         result.homeTeam ||
         result.home ||
         "Home Team";
 
 
-      const awayTeam =
+      const away =
         result.awayTeam ||
         result.away ||
         "Away Team";
@@ -434,110 +388,4 @@ async function loadResults() {
 
         —
 
-        <strong>
-          ${homeTeam}
-        </strong>
-
-        ${homeScore}
-
-        -
-
-        ${awayScore}
-
-        <strong>
-          ${awayTeam}
-        </strong>
-
-      `;
-
-
-      resultsList.appendChild(
-        match
-      );
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "Error loading results:",
-      error
-    );
-
-
-    const resultsList =
-      document.getElementById(
-        "resultsList"
-      );
-
-
-    if (resultsList) {
-
-      resultsList.innerHTML =
-        "<p>Error loading match results.</p>";
-
-    }
-
-  }
-
-}
-
-
-// ==========================================
-// TOP SCORERS
-// ==========================================
-
-async function loadTopScorers() {
-
-  try {
-
-    const scorersList =
-      document.getElementById(
-        "scorersList"
-      );
-
-
-    if (!scorersList) return;
-
-
-    // We have not created the
-    // top scorers collection yet.
-
-    scorersList.innerHTML = `
-
-      <p>
-        No top scorers yet.
-      </p>
-
-    `;
-
-  } catch (error) {
-
-    console.error(
-      "Error loading top scorers:",
-      error
-    );
-
-  }
-
-}
-
-
-// ==========================================
-// START WEBSITE
-// ==========================================
-
-async function loadWebsite() {
-
-  await loadTeams();
-
-  await loadFixtures();
-
-  await loadResults();
-
-  await loadTopScorers();
-
-}
-
-
-loadWebsite();
+        <

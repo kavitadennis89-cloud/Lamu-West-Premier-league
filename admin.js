@@ -1,279 +1,524 @@
-<!DOCTYPE html>
-<html lang="en">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
-<head>
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-  <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+const firebaseConfig = {
+  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+  authDomain: "lamu-west-premier-league.firebaseapp.com",
+  projectId: "lamu-west-premier-league",
+  storageBucket: "lamu-west-premier-league.firebasestorage.app",
+  messagingSenderId: "280853181931",
+  appId: "1:280853181931:web:8c411d3528bddadd2d15ae"
+};
 
-  <title>Lamu West Premier League - Admin</title>
 
-  <link rel="stylesheet" href="style.css">
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-</head>
 
+// ==========================
+// GET TEAMS
+// ==========================
 
-<body>
+async function getTeams() {
 
-  <h1>
-    Lamu West Premier League - Admin Panel
-  </h1>
+  const snapshot =
+    await getDocs(collection(db, "teams"));
 
+  const teams = [];
 
-  <!-- ========================== -->
-  <!-- ADD TEAM -->
-  <!-- ========================== -->
+  snapshot.forEach((teamDoc) => {
 
-  <h2>⚽ Add Team</h2>
+    const data = teamDoc.data();
 
-  <form id="teamForm">
+    teams.push({
+      id: teamDoc.id,
+      name: data.name
+    });
 
-    <input
-      type="text"
-      id="name"
-      placeholder="Team Name"
-      required
-    >
+  });
 
-    <input
-      type="number"
-      id="played"
-      placeholder="Played"
-      required
-    >
+  return teams;
+}
 
-    <input
-      type="number"
-      id="wins"
-      placeholder="Wins"
-      required
-    >
 
-    <input
-      type="number"
-      id="draws"
-      placeholder="Draws"
-      required
-    >
+// ==========================
+// LOAD TEAM LIST
+// ==========================
 
-    <input
-      type="number"
-      id="losses"
-      placeholder="Losses"
-      required
-    >
+async function loadTeams() {
 
-    <input
-      type="number"
-      id="goalsFor"
-      placeholder="Goals For"
-      required
-    >
+  const teamsList =
+    document.getElementById("teamsList");
 
-    <input
-      type="number"
-      id="goalsAgainst"
-      placeholder="Goals Against"
-      required
-    >
+  const teams =
+    await getTeams();
 
-    <input
-      type="number"
-      id="points"
-      placeholder="Points"
-      required
-    >
+  teamsList.innerHTML = "";
 
-    <button type="submit">
-      Save Team
-    </button>
+  teams.forEach((team) => {
 
-  </form>
+    teamsList.innerHTML += `
+      <p>
+        <strong>${team.name}</strong>
+      </p>
+    `;
 
+  });
 
-  <hr>
+}
 
 
-  <!-- ========================== -->
-  <!-- TEAMS -->
-  <!-- ========================== -->
+// ==========================
+// LOAD FIXTURE TEAMS
+// ==========================
 
-  <h2>⚽ Teams</h2>
+async function loadFixtureTeams() {
 
-  <div id="teamsList">
+  const home =
+    document.getElementById("fixtureHome");
 
-    <p>
-      Loading teams...
-    </p>
+  const away =
+    document.getElementById("fixtureAway");
 
-  </div>
+  const teams =
+    await getTeams();
 
+  home.innerHTML =
+    '<option value="">Select Home Team</option>';
 
-  <hr>
+  away.innerHTML =
+    '<option value="">Select Away Team</option>';
 
+  teams.forEach((team) => {
 
-  <!-- ========================== -->
-  <!-- ADD FIXTURE -->
-  <!-- ========================== -->
+    const homeOption =
+      document.createElement("option");
 
-  <h2>📅 Add Fixture</h2>
+    homeOption.value =
+      team.name;
 
-  <form id="fixtureForm">
+    homeOption.textContent =
+      team.name;
 
-    <label for="fixtureHome">
-      Home Team
-    </label>
+    home.appendChild(homeOption);
 
-    <select
-      id="fixtureHome"
-      required
-    >
 
-      <option value="">
-        Select Home Team
-      </option>
+    const awayOption =
+      document.createElement("option");
 
-    </select>
+    awayOption.value =
+      team.name;
 
+    awayOption.textContent =
+      team.name;
 
-    <label for="fixtureAway">
-      Away Team
-    </label>
+    away.appendChild(awayOption);
 
-    <select
-      id="fixtureAway"
-      required
-    >
+  });
 
-      <option value="">
-        Select Away Team
-      </option>
+}
 
-    </select>
 
+// ==========================
+// LOAD SCORER TEAMS
+// ==========================
 
-    <label for="fixtureDate">
-      Match Date
-    </label>
+async function loadScorerTeams() {
 
-    <input
-      type="date"
-      id="fixtureDate"
-      required
-    >
+  const scorerTeam =
+    document.getElementById("scorerTeam");
 
+  const teams =
+    await getTeams();
 
-    <button
-      type="submit"
-      id="saveFixture"
-    >
-      Save Fixture
-    </button>
+  scorerTeam.innerHTML =
+    '<option value="">Select Team</option>';
 
-  </form>
+  teams.forEach((team) => {
 
+    const option =
+      document.createElement("option");
 
-  <hr>
+    option.value =
+      team.name;
 
+    option.textContent =
+      team.name;
 
-  <!-- ========================== -->
-  <!-- FIXTURES -->
-  <!-- ========================== -->
+    scorerTeam.appendChild(option);
 
-  <h2>📅 Fixtures</h2>
+  });
 
-  <div id="fixturesList">
+}
 
-    <p>
-      No fixtures added yet.
-    </p>
 
-  </div>
+// ==========================
+// ADD TEAM
+// ==========================
 
+document
+  .getElementById("teamForm")
+  .addEventListener("submit", async (e) => {
 
-  <hr>
+    e.preventDefault();
 
+    const team = {
 
-  <!-- ========================== -->
-  <!-- TOP SCORERS -->
-  <!-- ========================== -->
+      name:
+        document.getElementById("name").value,
 
-  <h2>🥇 Add Top Scorer</h2>
+      played:
+        Number(
+          document.getElementById("played").value
+        ),
 
-  <form id="scorerForm">
+      won:
+        Number(
+          document.getElementById("wins").value
+        ),
 
-    <label for="playerName">
-      Player Name
-    </label>
+      draw:
+        Number(
+          document.getElementById("draws").value
+        ),
 
-    <input
-      type="text"
-      id="playerName"
-      placeholder="Player Name"
-      required
-    >
+      lost:
+        Number(
+          document.getElementById("losses").value
+        ),
 
+      goalsFor:
+        Number(
+          document.getElementById("goalsFor").value
+        ),
 
-    <label for="scorerTeam">
-      Team
-    </label>
+      goalsAgainst:
+        Number(
+          document.getElementById("goalsAgainst").value
+        ),
 
-    <select
-      id="scorerTeam"
-      required
-    >
+      points:
+        Number(
+          document.getElementById("points").value
+        )
 
-      <option value="">
-        Loading teams...
-      </option>
+    };
 
-    </select>
+    try {
 
+      await addDoc(
+        collection(db, "teams"),
+        team
+      );
 
-    <label for="playerGoals">
-      Goals
-    </label>
+      alert(
+        "Team saved successfully! ⚽"
+      );
 
-    <input
-      type="number"
-      id="playerGoals"
-      min="0"
-      placeholder="Goals"
-      required
-    >
+      e.target.reset();
 
+      await loadTeams();
+      await loadFixtureTeams();
+      await loadScorerTeams();
 
-    <button type="submit">
-      Save Top Scorer
-    </button>
+    } catch (error) {
 
-  </form>
+      console.error(error);
 
+      alert(
+        "Error saving team: " +
+        error.message
+      );
 
-  <h2>🥇 Top Scorers</h2>
+    }
 
-  <div id="scorersList">
+  });
 
-    <p>
-      No scorers added yet.
-    </p>
 
-  </div>
+// ==========================
+// SAVE FIXTURE
+// ==========================
 
+document
+  .getElementById("fixtureForm")
+  .addEventListener("submit", async (e) => {
 
-  <!-- ========================== -->
-  <!-- JAVASCRIPT -->
-  <!-- ========================== -->
+    e.preventDefault();
 
-  <script
-    type="module"
-    src="admin.js?v=3">
-  </script>
+    const home =
+      document.getElementById("fixtureHome").value;
 
-</body>
+    const away =
+      document.getElementById("fixtureAway").value;
 
-</html>
+    const date =
+      document.getElementById("fixtureDate").value;
+
+
+    if (!home || !away || !date) {
+
+      alert(
+        "Please select both teams and date."
+      );
+
+      return;
+
+    }
+
+
+    if (home === away) {
+
+      alert(
+        "A team cannot play against itself."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      await addDoc(
+        collection(db, "fixtures"),
+        {
+          homeTeam: home,
+          awayTeam: away,
+          date: date,
+          createdAt: new Date()
+        }
+      );
+
+      alert(
+        "Fixture saved successfully! ⚽🔥"
+      );
+
+      e.target.reset();
+
+      await loadFixtures();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error saving fixture: " +
+        error.message
+      );
+
+    }
+
+  });
+
+
+// ==========================
+// LOAD FIXTURES
+// ==========================
+
+async function loadFixtures() {
+
+  const list =
+    document.getElementById("fixturesList");
+
+  const snapshot =
+    await getDocs(
+      collection(db, "fixtures")
+    );
+
+  list.innerHTML = "";
+
+  if (snapshot.empty) {
+
+    list.innerHTML =
+      "<p>No fixtures added yet.</p>";
+
+    return;
+
+  }
+
+  snapshot.forEach((fixtureDoc) => {
+
+    const fixture =
+      fixtureDoc.data();
+
+    list.innerHTML += `
+      <p>
+        📅 <strong>${fixture.date}</strong>
+        —
+        ${fixture.homeTeam}
+        vs
+        ${fixture.awayTeam}
+      </p>
+    `;
+
+  });
+
+}
+
+
+// ==========================
+// SAVE TOP SCORER
+// ==========================
+
+document
+  .getElementById("scorerForm")
+  .addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const playerName =
+      document.getElementById("playerName").value.trim();
+
+    const team =
+      document.getElementById("scorerTeam").value;
+
+    const goals =
+      Number(
+        document.getElementById("playerGoals").value
+      );
+
+
+    if (!playerName || !team) {
+
+      alert(
+        "Please enter player name and select team."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      await addDoc(
+        collection(db, "scorers"),
+        {
+          playerName: playerName,
+          team: team,
+          goals: goals,
+          createdAt: new Date()
+        }
+      );
+
+      alert(
+        "Top scorer saved successfully! 🥇⚽"
+      );
+
+      e.target.reset();
+
+      await loadScorers();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error saving scorer: " +
+        error.message
+      );
+
+    }
+
+  });
+
+
+// ==========================
+// LOAD TOP SCORERS
+// ==========================
+
+async function loadScorers() {
+
+  const list =
+    document.getElementById("scorersList");
+
+  const snapshot =
+    await getDocs(
+      collection(db, "scorers")
+    );
+
+  list.innerHTML = "";
+
+  if (snapshot.empty) {
+
+    list.innerHTML =
+      "<p>No scorers added yet.</p>";
+
+    return;
+
+  }
+
+  const scorers = [];
+
+  snapshot.forEach((scorerDoc) => {
+
+    scorers.push(
+      scorerDoc.data()
+    );
+
+  });
+
+  scorers.sort((a, b) => {
+
+    return Number(b.goals || 0) -
+           Number(a.goals || 0);
+
+  });
+
+
+  scorers.forEach((scorer, index) => {
+
+    list.innerHTML += `
+      <p>
+        ${index + 1}.
+        <strong>${scorer.playerName}</strong>
+        —
+        ${scorer.team}
+        —
+        ${scorer.goals} goals
+      </p>
+    `;
+
+  });
+
+}
+
+
+// ==========================
+// START
+// ==========================
+
+async function start() {
+
+  try {
+
+    await loadTeams();
+
+    await loadFixtureTeams();
+
+    await loadFixtures();
+
+    await loadScorerTeams();
+
+    await loadScorers();
+
+  } catch (error) {
+
+    console.error(
+      "Startup error:",
+      error
+    );
+
+  }
+
+}
+
+
+start();

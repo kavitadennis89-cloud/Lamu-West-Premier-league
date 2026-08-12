@@ -199,9 +199,11 @@ async function loadTeams() {
           </td>
 
           <td>
-            <strong>
-              ${team.name}
-            </strong>
+            <a href="team.html?team=${encodeURIComponent(team.name)}">
+  <strong>
+    ${team.name}
+  </strong>
+</a>
           </td>
 
           <td>

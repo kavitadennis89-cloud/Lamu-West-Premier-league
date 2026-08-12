@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Fixtures | Lamu West Premier League</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f6;
+      color: #17221f;
+    }
+
+    header {
+      background: linear-gradient(135deg, #075e3d, #0b8f5b);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    header .logo {
+      font-size: 45px;
+    }
+
+    header h1 {
+      margin: 8px 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    nav {
+      background: white;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #075e3d;
+      font-weight: bold;
+      padding: 10px 14px;
+      border-radius: 8px;
+    }
+
+    nav a:hover {
+      background: #075e3d;
+      color: white;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .page-title {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .page-title h2 {
+      margin: 0 0 8px;
+      color: #075e3d;
+    }
+
+    .fixtures-container {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .fixture {
+      border: 1px solid #e1e8e4;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #f9fbfa;
+      text-align: center;
+    }
+
+    .fixture-date {
+      font-size: 14px;
+      font-weight: bold;
+      color: #0b8f5b;
+      margin-bottom: 10px;
+    }
+
+    .teams {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .vs {
+      display: inline-block;
+      margin: 0 12px;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+    }
+
+    footer {
+      background: #073b29;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      margin-top: 30px;
+    }
+
+    @media (max-width: 600px) {
+
+      header h1 {
+        font-size: 25px;
+      }
+
+      nav a {
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      main {
+        padding: 12px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- HEADER -->
+
+  <header>
+
+    <div class="logo">
+      ⚽📅
+    </div>
+
+    <h1>
+      Lamu West Premier League
+    </h1>
+
+    <p>
+      Official Fixtures
+    </p>
+
+  </header>
+
+
+  <!-- NAVIGATION -->
+
+  <nav>
+
+    <a href="index.html">
+      🏠 Home
+    </a>
+
+    <a href="index.html#standings">
+      🏆 Standings
+    </a>
+
+    <a href="fixtures.html">
+      📅 Fixtures
+    </a>
+
+    <a href="index.html#latestResults">
+      ⚽ Results
+    </a>
+
+    <a href="index.html#topScorers">
+      🥇 Top Scorers
+    </a>
+
+    <a href="teams.html">
+      👥 Team Profiles
+    </a>
+
+    <a href="admin.html">
+      🔐 Admin Panel
+    </a>
+
+  </nav>
+
+
+  <main>
+
+
+    <div class="page-title">
+
+      <h2>
+        📅 Upcoming Fixtures
+      </h2>
+
+      <p>
+        View upcoming Lamu West Premier League matches.
+      </p>
+
+    </div>
+
+
+    <div class="fixtures-container">
+
+      <div id="fixturesList">
+
+        <div class="loading">
+          Loading fixtures...
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </main>
+
+
+  <footer>
+
+    <p>
+      ⚽ Lamu West Premier League
+    </p>
+
+    <p>
+      © 2026 Lamu West Premier League
+    </p>
+
+  </footer>
+
+
+  <!-- FIREBASE / FIXTURES JAVASCRIPT -->
+
+  <script
+    type="module"
+    src="fixtures.js">
+  </script>
+
+
+</body>
+
+      </html>

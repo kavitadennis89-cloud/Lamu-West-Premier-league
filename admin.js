@@ -11,6 +11,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
+// ==========================================
+// FIREBASE
+// ==========================================
+
 const firebaseConfig = {
   apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
   authDomain: "lamu-west-premier-league.firebaseapp.com",
@@ -20,45 +24,38 @@ const firebaseConfig = {
   appId: "1:280853181931:web:8c411d3528bddadd2d15ae"
 };
 
-
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
 
 // ==========================================
-// SHOW ERROR
+// ERROR DISPLAY
 // ==========================================
 
 function showError(message) {
 
-  const box =
-    document.getElementById("adminError");
+  const box = document.getElementById("adminError");
 
   if (box) {
 
     box.innerHTML = `
       <div style="
-        background:#ffe0e0;
+        background:#ffe5e5;
         color:#900;
         padding:15px;
         margin:15px 0;
-        border:2px solid #900;
+        border:2px solid #c00;
         border-radius:8px;
       ">
-
         <strong>Admin Error:</strong>
-
         <br>
-
         ${message}
-
       </div>
     `;
 
   }
 
-  console.error(message);
+  console.error("ADMIN ERROR:", message);
 
 }
 
@@ -69,37 +66,24 @@ function showError(message) {
 
 async function getTeams() {
 
-  const snapshot =
-    await getDocs(
-      collection(db, "teams")
-    );
-
+  const snapshot = await getDocs(
+    collection(db, "teams")
+  );
 
   const teams = [];
 
+  snapshot.forEach((item) => {
 
-  snapshot.forEach((teamDoc) => {
-
-    const data =
-      teamDoc.data();
-
+    const data = item.data();
 
     teams.push({
-
-      id:
-        teamDoc.id,
-
-      name:
-        data.name ||
-        "Unknown Team"
-
+      id: item.id,
+      name: data.name || "Unknown Team"
     });
 
   });
 
-
   return teams;
-
 }
 
 
@@ -109,35 +93,28 @@ async function getTeams() {
 
 async function loadTeams() {
 
-  const list =
-    document.getElementById(
-      "teamsList"
-    );
+  const list = document.getElementById("teamsList");
 
+  if (!list) return;
+
+  list.innerHTML = "<p>Loading teams...</p>";
 
   try {
 
-    const teams =
-      await getTeams();
-
-
-    list.innerHTML = "";
-
+    const teams = await getTeams();
 
     if (teams.length === 0) {
 
-      list.innerHTML =
-        "<p>No teams found.</p>";
-
+      list.innerHTML = "<p>No teams found.</p>";
       return;
 
     }
 
+    list.innerHTML = "";
 
     teams.forEach((team) => {
 
       list.innerHTML += `
-
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -145,27 +122,15 @@ async function loadTeams() {
           border-radius:8px;
         ">
 
-          <p>
+          <strong>⚽ ${team.name}</strong>
 
-            ⚽
+          <br><br>
 
-            <strong>
-              ${team.name}
-            </strong>
-
-          </p>
-
-
-          <button
-            onclick="deleteTeam('${team.id}')"
-          >
-
+          <button onclick="deleteTeam('${team.id}')">
             🗑️ Delete Team
-
           </button>
 
         </div>
-
       `;
 
     });
@@ -173,12 +138,10 @@ async function loadTeams() {
   } catch (error) {
 
     list.innerHTML =
-      "<p>Error loading teams.</p>";
-
+      "<p>Unable to load teams.</p>";
 
     showError(
-      "Teams: " +
-      error.message
+      "Teams: " + error.message
     );
 
   }
@@ -190,87 +153,92 @@ async function loadTeams() {
 // DELETE TEAM
 // ==========================================
 
-window.deleteTeam =
-  async function(teamId) {
+window.deleteTeam = async function(teamId) {
 
-    try {
+  try {
 
-      const teams =
-        await getTeams();
+    const teams = await getTeams();
 
+    const team = teams.find(
+      (item) => item.id === teamId
+    );
 
-      const team =
-        teams.find(
-          (item) =>
-            item.id === teamId
-        );
+    if (!team) {
 
-
-      if (!team) {
-
-        alert(
-          "Team not found."
-        );
-
-        return;
-
-      }
-
-
-      const answer =
-        confirm(
-          "Are you sure you want to delete " +
-          team.name +
-          "?\n\nThis action cannot be undone."
-        );
-
-
-      if (!answer) {
-
-        return;
-
-      }
-
-
-      await deleteDoc(
-        doc(
-          db,
-          "teams",
-          teamId
-        )
-      );
-
-
-      alert(
-        team.name +
-        " deleted successfully! 🗑️"
-      );
-
-
-      await loadTeams();
-
-      await loadFixtureTeams();
-
-      await loadScorerTeams();
-
-      await loadPlayerTeams();
-
-    } catch (error) {
-
-      alert(
-        "Error deleting team: " +
-        error.message
-      );
-
-
-      showError(
-        "Delete Team: " +
-        error.message
-      );
+      alert("Team not found.");
+      return;
 
     }
 
-  };
+    const confirmDelete = confirm(
+      "Delete " +
+      team.name +
+      "?\n\nThis cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    await deleteDoc(
+      doc(db, "teams", teamId)
+    );
+
+    alert(
+      team.name +
+      " deleted successfully! 🗑️"
+    );
+
+    await refreshAll();
+
+  } catch (error) {
+
+    showError(
+      "Delete Team: " +
+      error.message
+    );
+
+  }
+
+};
+
+
+// ==========================================
+// LOAD PLAYER TEAMS
+// ==========================================
+
+async function loadPlayerTeams() {
+
+  const select =
+    document.getElementById("playerTeam");
+
+  if (!select) return;
+
+  try {
+
+    const teams = await getTeams();
+
+    select.innerHTML =
+      '<option value="">Select Team</option>';
+
+    teams.forEach((team) => {
+
+      select.innerHTML += `
+        <option value="${team.name}">
+          ${team.name}
+        </option>
+      `;
+
+    });
+
+  } catch (error) {
+
+    showError(
+      "Player team dropdown: " +
+      error.message
+    );
+
+  }
+
+}
 
 
 // ==========================================
@@ -280,22 +248,16 @@ window.deleteTeam =
 async function loadFixtureTeams() {
 
   const home =
-    document.getElementById(
-      "fixtureHome"
-    );
-
+    document.getElementById("fixtureHome");
 
   const away =
-    document.getElementById(
-      "fixtureAway"
-    );
+    document.getElementById("fixtureAway");
 
+  if (!home || !away) return;
 
   try {
 
-    const teams =
-      await getTeams();
-
+    const teams = await getTeams();
 
     home.innerHTML =
       '<option value="">Select Home Team</option>';
@@ -303,24 +265,18 @@ async function loadFixtureTeams() {
     away.innerHTML =
       '<option value="">Select Away Team</option>';
 
-
     teams.forEach((team) => {
 
       home.innerHTML += `
-
         <option value="${team.name}">
           ${team.name}
         </option>
-
       `;
 
-
       away.innerHTML += `
-
         <option value="${team.name}">
           ${team.name}
         </option>
-
       `;
 
     });
@@ -344,29 +300,23 @@ async function loadFixtureTeams() {
 async function loadScorerTeams() {
 
   const select =
-    document.getElementById(
-      "scorerTeam"
-    );
+    document.getElementById("scorerTeam");
 
+  if (!select) return;
 
   try {
 
-    const teams =
-      await getTeams();
-
+    const teams = await getTeams();
 
     select.innerHTML =
       '<option value="">Select Team</option>';
 
-
     teams.forEach((team) => {
 
       select.innerHTML += `
-
         <option value="${team.name}">
           ${team.name}
         </option>
-
       `;
 
     });
@@ -384,161 +334,67 @@ async function loadScorerTeams() {
 
 
 // ==========================================
-// LOAD PLAYER TEAMS
-// ==========================================
-
-async function loadPlayerTeams() {
-
-  const select =
-    document.getElementById(
-      "playerTeam"
-    );
-
-
-  if (!select) {
-    return;
-  }
-
-
-  try {
-
-    const teams =
-      await getTeams();
-
-
-    select.innerHTML =
-      '<option value="">Select Team</option>';
-
-
-    teams.forEach((team) => {
-
-      select.innerHTML += `
-
-        <option value="${team.name}">
-          ${team.name}
-        </option>
-
-      `;
-
-    });
-
-  } catch (error) {
-
-    showError(
-      "Player teams: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-// ==========================================
 // ADD TEAM
 // ==========================================
 
-document
-  .getElementById("teamForm")
-  .addEventListener(
+const teamForm =
+  document.getElementById("teamForm");
+
+if (teamForm) {
+
+  teamForm.addEventListener(
     "submit",
     async function(event) {
 
       event.preventDefault();
-
 
       try {
 
         const team = {
 
           name:
-            document.getElementById(
-              "name"
-            ).value.trim(),
+            document.getElementById("name").value.trim(),
 
           played:
-            Number(
-              document.getElementById(
-                "played"
-              ).value
-            ),
+            Number(document.getElementById("played").value),
 
           won:
-            Number(
-              document.getElementById(
-                "wins"
-              ).value
-            ),
+            Number(document.getElementById("wins").value),
 
           draw:
-            Number(
-              document.getElementById(
-                "draws"
-              ).value
-            ),
+            Number(document.getElementById("draws").value),
 
           lost:
-            Number(
-              document.getElementById(
-                "losses"
-              ).value
-            ),
+            Number(document.getElementById("losses").value),
 
           goalsFor:
-            Number(
-              document.getElementById(
-                "goalsFor"
-              ).value
-            ),
+            Number(document.getElementById("goalsFor").value),
 
           goalsAgainst:
-            Number(
-              document.getElementById(
-                "goalsAgainst"
-              ).value
-            ),
+            Number(document.getElementById("goalsAgainst").value),
 
           points:
-            Number(
-              document.getElementById(
-                "points"
-              ).value
-            )
+            Number(document.getElementById("points").value)
 
         };
-
 
         await addDoc(
           collection(db, "teams"),
           team
         );
 
-
         alert(
           "Team saved successfully! ⚽"
         );
 
+        teamForm.reset();
 
-        event.target.reset();
-
-
-        await loadTeams();
-
-        await loadFixtureTeams();
-
-        await loadScorerTeams();
-
-        await loadPlayerTeams();
+        await refreshAll();
 
       } catch (error) {
 
-        alert(
-          "Error saving team: " +
-          error.message
-        );
-
-
         showError(
+          "Save Team: " +
           error.message
         );
 
@@ -547,70 +403,57 @@ document
     }
   );
 
+}
+
 
 // ==========================================
 // ADD PLAYER
 // ==========================================
 
-document
-  .getElementById("playerForm")
-  .addEventListener(
+const playerForm =
+  document.getElementById("playerForm");
+
+if (playerForm) {
+
+  playerForm.addEventListener(
     "submit",
     async function(event) {
 
       event.preventDefault();
 
-
       try {
 
         const name =
           document
-            .getElementById(
-              "playerNameAdmin"
-            )
+            .getElementById("playerNameAdmin")
             .value
             .trim();
 
-
         const team =
           document
-            .getElementById(
-              "playerTeam"
-            )
+            .getElementById("playerTeam")
             .value;
-
 
         const number =
           Number(
             document
-              .getElementById(
-                "playerNumber"
-              )
+              .getElementById("playerNumber")
               .value
           );
 
-
         const position =
           document
-            .getElementById(
-              "playerPosition"
-            )
+            .getElementById("playerPosition")
             .value;
-
 
         const starting =
           document
-            .getElementById(
-              "playerStarting"
-            )
+            .getElementById("playerStarting")
             .checked;
-
 
         const captain =
           document
-            .getElementById(
-              "playerCaptain"
-            )
+            .getElementById("playerCaptain")
             .checked;
 
 
@@ -634,23 +477,17 @@ document
           collection(db, "players"),
           {
 
-            name:
-              name,
+            name: name,
 
-            team:
-              team,
+            team: team,
 
-            number:
-              number,
+            number: number,
 
-            position:
-              position,
+            position: position,
 
-            starting:
-              starting,
+            starting: starting,
 
-            captain:
-              captain
+            captain: captain
 
           }
         );
@@ -661,21 +498,14 @@ document
         );
 
 
-        event.target.reset();
-
+        playerForm.reset();
 
         await loadPlayers();
 
       } catch (error) {
 
-        alert(
-          "Error saving player: " +
-          error.message
-        );
-
-
         showError(
-          "Player: " +
+          "Save Player: " +
           error.message
         );
 
@@ -683,6 +513,8 @@ document
 
     }
   );
+
+}
 
 
 // ==========================================
@@ -692,15 +524,12 @@ document
 async function loadPlayers() {
 
   const list =
-    document.getElementById(
-      "playersList"
-    );
+    document.getElementById("playersList");
 
+  if (!list) return;
 
-  if (!list) {
-    return;
-  }
-
+  list.innerHTML =
+    "<p>Loading players...</p>";
 
   try {
 
@@ -708,10 +537,6 @@ async function loadPlayers() {
       await getDocs(
         collection(db, "players")
       );
-
-
-    list.innerHTML = "";
-
 
     if (snapshot.empty) {
 
@@ -722,27 +547,24 @@ async function loadPlayers() {
 
     }
 
+    list.innerHTML = "";
 
     snapshot.forEach((playerDoc) => {
 
       const player =
         playerDoc.data();
 
-
-      const startingText =
+      const starting =
         player.starting
           ? "Starting XI"
           : "Substitute";
 
-
-      const captainText =
+      const captain =
         player.captain
           ? " ⭐ Captain"
           : "";
 
-
       list.innerHTML += `
-
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -750,57 +572,34 @@ async function loadPlayers() {
           border-radius:8px;
         ">
 
+          <strong>
+            👤 ${player.name || ""}
+          </strong>
+
           <p>
-
-            👤
-
-            <strong>
-              ${player.name || ""}
-            </strong>
-
-            —
-
             ${player.team || ""}
-
-          </p>
-
-
-          <p>
-
+            <br>
             #${player.number || ""}
-
             —
-
             ${player.position || ""}
-
             —
-
-            ${startingText}
-
-            ${captainText}
-
+            ${starting}
+            ${captain}
           </p>
-
 
           <button
             onclick="editPlayer('${playerDoc.id}')"
           >
-
             ✏️ Edit
-
           </button>
-
 
           <button
             onclick="deletePlayer('${playerDoc.id}')"
           >
-
             🗑️ Delete
-
           </button>
 
         </div>
-
       `;
 
     });
@@ -808,8 +607,7 @@ async function loadPlayers() {
   } catch (error) {
 
     list.innerHTML =
-      "<p>Error loading players.</p>";
-
+      "<p>Unable to load players.</p>";
 
     showError(
       "Players: " +
@@ -825,287 +623,180 @@ async function loadPlayers() {
 // EDIT PLAYER
 // ==========================================
 
-window.editPlayer =
-  async function(playerId) {
+window.editPlayer = async function(playerId) {
 
-    try {
+  try {
 
-      const snapshot =
-        await getDocs(
-          collection(db, "players")
-        );
+    const playerRef =
+      doc(db, "players", playerId);
 
-
-      let player = null;
-
-
-      snapshot.forEach((item) => {
-
-        if (
-          item.id === playerId
-        ) {
-
-          player =
-            item.data();
-
-        }
-
-      });
-
-
-      if (!player) {
-
-        alert(
-          "Player not found."
-        );
-
-        return;
-
-      }
-
-
-      const newName =
-        prompt(
-          "Player name:",
-          player.name || ""
-        );
-
-
-      if (newName === null) {
-        return;
-      }
-
-
-      const newTeam =
-        prompt(
-          "Team:",
-          player.team || ""
-        );
-
-
-      if (newTeam === null) {
-        return;
-      }
-
-
-      const newNumber =
-        prompt(
-          "Jersey number:",
-          player.number || ""
-        );
-
-
-      if (newNumber === null) {
-        return;
-      }
-
-
-      const newPosition =
-        prompt(
-          "Position (GK, DEF, MID, FWD):",
-          player.position || ""
-        );
-
-
-      if (newPosition === null) {
-        return;
-      }
-
-
-      const newStarting =
-        confirm(
-          "Is this player in Starting XI?\n\nOK = Starting XI\nCancel = Substitute"
-        );
-
-
-      const newCaptain =
-        confirm(
-          "Is this player Captain?\n\nOK = Captain\nCancel = Not Captain"
-        );
-
-
-      await updateDoc(
-        doc(
-          db,
-          "players",
-          playerId
-        ),
-        {
-
-          name:
-            newName.trim(),
-
-          team:
-            newTeam.trim(),
-
-          number:
-            Number(newNumber),
-
-          position:
-            newPosition.trim().toUpperCase(),
-
-          starting:
-            newStarting,
-
-          captain:
-            newCaptain
-
-        }
+    const snapshot =
+      await getDocs(
+        collection(db, "players")
       );
 
+    let player = null;
 
-      alert(
-        "Player updated successfully! ✅"
-      );
+    snapshot.forEach((item) => {
 
+      if (item.id === playerId) {
 
-      await loadPlayers();
+        player = item.data();
 
-    } catch (error) {
+      }
 
-      alert(
-        "Error editing player: " +
-        error.message
-      );
+    });
 
+    if (!player) {
 
-      showError(
-        "Edit Player: " +
-        error.message
-      );
+      alert("Player not found.");
+      return;
 
     }
 
-  };
+    const name =
+      prompt(
+        "Player name:",
+        player.name || ""
+      );
+
+    if (name === null) return;
+
+    const team =
+      prompt(
+        "Team:",
+        player.team || ""
+      );
+
+    if (team === null) return;
+
+    const number =
+      prompt(
+        "Jersey number:",
+        player.number || ""
+      );
+
+    if (number === null) return;
+
+    const position =
+      prompt(
+        "Position:",
+        player.position || ""
+      );
+
+    if (position === null) return;
+
+    const starting =
+      confirm(
+        "OK = Starting XI\nCancel = Substitute"
+      );
+
+    const captain =
+      confirm(
+        "OK = Captain\nCancel = Not Captain"
+      );
+
+    await updateDoc(
+      playerRef,
+      {
+
+        name: name.trim(),
+
+        team: team.trim(),
+
+        number: Number(number),
+
+        position:
+          position.trim().toUpperCase(),
+
+        starting: starting,
+
+        captain: captain
+
+      }
+    );
+
+    alert(
+      "Player updated successfully! ✅"
+    );
+
+    await loadPlayers();
+
+  } catch (error) {
+
+    showError(
+      "Edit Player: " +
+      error.message
+    );
+
+  }
+
+};
 
 
 // ==========================================
 // DELETE PLAYER
 // ==========================================
 
-window.deletePlayer =
-  async function(playerId) {
+window.deletePlayer = async function(playerId) {
 
-    try {
+  try {
 
-      const snapshot =
-        await getDocs(
-          collection(db, "players")
-        );
-
-
-      let player = null;
-
-
-      snapshot.forEach((item) => {
-
-        if (
-          item.id === playerId
-        ) {
-
-          player =
-            item.data();
-
-        }
-
-      });
-
-
-      if (!player) {
-
-        alert(
-          "Player not found."
-        );
-
-        return;
-
-      }
-
-
-      const answer =
-        confirm(
-          "Are you sure you want to delete " +
-          player.name +
-          "?\n\nThis action cannot be undone."
-        );
-
-
-      if (!answer) {
-        return;
-      }
-
-
-      await deleteDoc(
-        doc(
-          db,
-          "players",
-          playerId
-        )
+    const confirmDelete =
+      confirm(
+        "Delete this player?\n\nThis cannot be undone."
       );
 
+    if (!confirmDelete) return;
 
-      alert(
-        player.name +
-        " deleted successfully! 🗑️"
-      );
+    await deleteDoc(
+      doc(db, "players", playerId)
+    );
 
+    alert(
+      "Player deleted successfully! 🗑️"
+    );
 
-      await loadPlayers();
+    await loadPlayers();
 
-    } catch (error) {
+  } catch (error) {
 
-      alert(
-        "Error deleting player: " +
-        error.message
-      );
+    showError(
+      "Delete Player: " +
+      error.message
+    );
 
+  }
 
-      showError(
-        "Delete Player: " +
-        error.message
-      );
-
-    }
-
-  };
+};
 
 
 // ==========================================
 // ADD FIXTURE
 // ==========================================
 
-document
-  .getElementById("fixtureForm")
-  .addEventListener(
+const fixtureForm =
+  document.getElementById("fixtureForm");
+
+if (fixtureForm) {
+
+  fixtureForm.addEventListener(
     "submit",
     async function(event) {
 
       event.preventDefault();
 
-
       const home =
-        document.getElementById(
-          "fixtureHome"
-        ).value;
-
+        document.getElementById("fixtureHome").value;
 
       const away =
-        document.getElementById(
-          "fixtureAway"
-        ).value;
-
+        document.getElementById("fixtureAway").value;
 
       const date =
-        document.getElementById(
-          "fixtureDate"
-        ).value;
+        document.getElementById("fixtureDate").value;
 
 
-      if (
-        !home ||
-        !away ||
-        !date
-      ) {
+      if (!home || !away || !date) {
 
         alert(
           "Please select both teams and date."
@@ -1116,9 +807,7 @@ document
       }
 
 
-      if (
-        home === away
-      ) {
+      if (home === away) {
 
         alert(
           "A team cannot play against itself."
@@ -1135,17 +824,13 @@ document
           collection(db, "fixtures"),
           {
 
-            homeTeam:
-              home,
+            homeTeam: home,
 
-            awayTeam:
-              away,
+            awayTeam: away,
 
-            date:
-              date,
+            date: date,
 
-            createdAt:
-              new Date()
+            createdAt: new Date()
 
           }
         );
@@ -1156,20 +841,14 @@ document
         );
 
 
-        event.target.reset();
-
+        fixtureForm.reset();
 
         await loadFixtures();
 
       } catch (error) {
 
-        alert(
-          "Error saving fixture: " +
-          error.message
-        );
-
-
         showError(
+          "Save Fixture: " +
           error.message
         );
 
@@ -1177,6 +856,8 @@ document
 
     }
   );
+
+}
 
 
 // ==========================================
@@ -1186,10 +867,12 @@ document
 async function loadFixtures() {
 
   const list =
-    document.getElementById(
-      "fixturesList"
-    );
+    document.getElementById("fixturesList");
 
+  if (!list) return;
+
+  list.innerHTML =
+    "<p>Loading fixtures...</p>";
 
   try {
 
@@ -1197,10 +880,6 @@ async function loadFixtures() {
       await getDocs(
         collection(db, "fixtures")
       );
-
-
-    list.innerHTML = "";
-
 
     if (snapshot.empty) {
 
@@ -1211,15 +890,14 @@ async function loadFixtures() {
 
     }
 
+    list.innerHTML = "";
 
     snapshot.forEach((fixtureDoc) => {
 
       const fixture =
         fixtureDoc.data();
 
-
       list.innerHTML += `
-
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -1227,44 +905,29 @@ async function loadFixtures() {
           border-radius:8px;
         ">
 
+          <strong>
+            📅 ${fixture.date || ""}
+          </strong>
+
           <p>
-
-            📅
-
-            <strong>
-              ${fixture.date || ""}
-            </strong>
-
-            —
-
             ${fixture.homeTeam || ""}
-
             vs
-
             ${fixture.awayTeam || ""}
-
           </p>
-
 
           <button
             onclick="editFixture('${fixtureDoc.id}')"
           >
-
             ✏️ Edit
-
           </button>
-
 
           <button
             onclick="deleteFixture('${fixtureDoc.id}')"
           >
-
             🗑️ Delete
-
           </button>
 
         </div>
-
       `;
 
     });
@@ -1272,8 +935,7 @@ async function loadFixtures() {
   } catch (error) {
 
     list.innerHTML =
-      "<p>Error loading fixtures.</p>";
-
+      "<p>Unable to load fixtures.</p>";
 
     showError(
       "Fixtures: " +
@@ -1289,428 +951,88 @@ async function loadFixtures() {
 // EDIT FIXTURE
 // ==========================================
 
-window.editFixture =
-  async function(fixtureId) {
-
-    try {
-
-      const fixtureRef =
-        doc(
-          db,
-          "fixtures",
-          fixtureId
-        );
-
-
-      const snapshot =
-        await getDocs(
-          collection(db, "fixtures")
-        );
-
-
-      let fixture = null;
-
-
-      snapshot.forEach((item) => {
-
-        if (
-          item.id === fixtureId
-        ) {
-
-          fixture =
-            item.data();
-
-        }
-
-      });
-
-
-      if (!fixture) {
-
-        alert(
-          "Fixture not found."
-        );
-
-        return;
-
-      }
-
-
-      const newDate =
-        prompt(
-          "Enter new match date:",
-          fixture.date || ""
-        );
-
-
-      if (newDate === null) {
-        return;
-      }
-
-
-      const newHome =
-        prompt(
-          "Enter Home Team:",
-          fixture.homeTeam || ""
-        );
-
-
-      if (newHome === null) {
-        return;
-      }
-
-
-      const newAway =
-        prompt(
-          "Enter Away Team:",
-          fixture.awayTeam || ""
-        );
-
-
-      if (newAway === null) {
-        return;
-      }
-
-
-      if (
-        !newDate ||
-        !newHome ||
-        !newAway
-      ) {
-
-        alert(
-          "All fields are required."
-        );
-
-        return;
-
-      }
-
-
-      if (
-        newHome === newAway
-      ) {
-
-        alert(
-          "A team cannot play against itself."
-        );
-
-        return;
-
-      }
-
-
-      await updateDoc(
-        fixtureRef,
-        {
-
-          date:
-            newDate,
-
-          homeTeam:
-            newHome,
-
-          awayTeam:
-            newAway
-
-        }
-      );
-
-
-      alert(
-        "Fixture updated successfully! ✅"
-      );
-
-
-      await loadFixtures();
-
-    } catch (error) {
-
-      alert(
-        "Error editing fixture: " +
-        error.message
-      );
-
-
-      showError(
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ==========================================
-// DELETE FIXTURE
-// ==========================================
-
-window.deleteFixture =
-  async function(fixtureId) {
-
-    try {
-
-      const answer =
-        confirm(
-          "Are you sure you want to delete this fixture?"
-        );
-
-
-      if (!answer) {
-        return;
-      }
-
-
-      await deleteDoc(
-        doc(
-          db,
-          "fixtures",
-          fixtureId
-        )
-      );
-
-
-      alert(
-        "Fixture deleted successfully! 🗑️"
-      );
-
-
-      await loadFixtures();
-
-    } catch (error) {
-
-      alert(
-        "Error deleting fixture: " +
-        error.message
-      );
-
-
-      showError(
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ==========================================
-// ADD TOP SCORER
-// ==========================================
-
-document
-  .getElementById("scorerForm")
-  .addEventListener(
-    "submit",
-    async function(event) {
-
-      event.preventDefault();
-
-
-      const playerName =
-        document.getElementById(
-          "playerName"
-        ).value.trim();
-
-
-      const team =
-        document.getElementById(
-          "scorerTeam"
-        ).value;
-
-
-      const goals =
-        Number(
-          document.getElementById(
-            "playerGoals"
-          ).value
-        );
-
-
-      if (
-        !playerName ||
-        !team
-      ) {
-
-        alert(
-          "Please enter player name and select team."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        await addDoc(
-          collection(db, "scorers"),
-          {
-
-            playerName:
-              playerName,
-
-            team:
-              team,
-
-            goals:
-              goals
-
-          }
-        );
-
-
-        alert(
-          "Top scorer saved successfully! 🥇"
-        );
-
-
-        event.target.reset();
-
-
-        await loadScorers();
-
-      } catch (error) {
-
-        alert(
-          "Error saving scorer: " +
-          error.message
-        );
-
-
-        showError(
-          error.message
-        );
-
-      }
-
-    }
-  );
-
-
-// ==========================================
-// LOAD SCORERS
-// ==========================================
-
-async function loadScorers() {
-
-  const list =
-    document.getElementById(
-      "scorersList"
-    );
-
+window.editFixture = async function(fixtureId) {
 
   try {
 
+    const fixtureRef =
+      doc(db, "fixtures", fixtureId);
+
     const snapshot =
       await getDocs(
-        collection(db, "scorers")
+        collection(db, "fixtures")
       );
 
+    let fixture = null;
 
-    list.innerHTML = "";
+    snapshot.forEach((item) => {
 
+      if (item.id === fixtureId) {
 
-    if (snapshot.empty) {
+        fixture = item.data();
 
-      list.innerHTML =
-        "<p>No scorers added yet.</p>";
+      }
+
+    });
+
+    if (!fixture) {
+
+      alert("Fixture not found.");
+      return;
+
+    }
+
+    const date =
+      prompt(
+        "Match date:",
+        fixture.date || ""
+      );
+
+    if (date === null) return;
+
+    const home =
+      prompt(
+        "Home Team:",
+        fixture.homeTeam || ""
+      );
+
+    if (home === null) return;
+
+    const away =
+      prompt(
+        "Away Team:",
+        fixture.awayTeam || ""
+      );
+
+    if (away === null) return;
+
+    if (!date || !home || !away) {
+
+      alert(
+        "All fields are required."
+      );
 
       return;
 
     }
 
+    if (home === away) {
 
-    snapshot.forEach((scorerDoc) => {
+      alert(
+        "A team cannot play against itself."
+      );
 
-      const data =
-        scorerDoc.data();
+      return;
 
+    }
 
-      list.innerHTML += `
+    await updateDoc(
+      fixtureRef,
+      {
 
-        <div style="
-          margin-bottom:10px;
-          padding:10px;
-          border:1px solid #ddd;
-          border-radius:8px;
-        ">
+        date: date,
 
-          <p>
+        homeTeam: home,
 
-            🥇
-
-            <strong>
-              ${data.playerName || ""}
-            </strong>
-
-            —
-
-            ${data.team || ""}
-
-            —
-
-            <strong>
-              ${data.goals || 0}
-              goals
-            </strong>
-
-          </p>
-
-        </div>
-
-      `;
-
-    });
-
-  } catch (error) {
-
-    list.innerHTML =
-      "<p>Error loading scorers.</p>";
-
-
-    showError(
-      "Scorers: " +
-      error.message
-    );
-
-  }
-
-}
-
-
-// ==========================================
-// START ADMIN
-// ==========================================
-
-async function startAdmin() {
-
-  try {
-
-    await loadTeams();
-
-    await loadPlayerTeams();
-
-    await loadPlayers();
-
-    await loadFixtureTeams();
-
-    await loadScorerTeams();
-
-    await loadFixtures();
-
-    await loadScorers();
-
-  } catch (error) {
-
-    showError(
-      error.message
-    );
-
-  }
-
-}
-
-
-startAdmin();
+        away
          

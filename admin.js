@@ -22,6 +22,7 @@ const firebaseConfig = {
 
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
 
@@ -31,7 +32,8 @@ const db = getFirestore(app);
 
 function showError(message) {
 
-  const box = document.getElementById("adminError");
+  const box =
+    document.getElementById("adminError");
 
   if (box) {
 
@@ -44,9 +46,13 @@ function showError(message) {
         border:2px solid #900;
         border-radius:8px;
       ">
+
         <strong>Admin Error:</strong>
+
         <br>
+
         ${message}
+
       </div>
     `;
 
@@ -63,22 +69,34 @@ function showError(message) {
 
 async function getTeams() {
 
-  const snapshot = await getDocs(
-    collection(db, "teams")
-  );
+  const snapshot =
+    await getDocs(
+      collection(db, "teams")
+    );
+
 
   const teams = [];
 
+
   snapshot.forEach((teamDoc) => {
 
-    const data = teamDoc.data();
+    const data =
+      teamDoc.data();
+
 
     teams.push({
-      id: teamDoc.id,
-      name: data.name || "Unknown Team"
+
+      id:
+        teamDoc.id,
+
+      name:
+        data.name ||
+        "Unknown Team"
+
     });
 
   });
+
 
   return teams;
 
@@ -91,25 +109,35 @@ async function getTeams() {
 
 async function loadTeams() {
 
-  const list = document.getElementById("teamsList");
+  const list =
+    document.getElementById(
+      "teamsList"
+    );
+
 
   try {
 
-    const teams = await getTeams();
+    const teams =
+      await getTeams();
+
 
     list.innerHTML = "";
 
+
     if (teams.length === 0) {
 
-      list.innerHTML = "<p>No teams found.</p>";
+      list.innerHTML =
+        "<p>No teams found.</p>";
 
       return;
 
     }
 
+
     teams.forEach((team) => {
 
       list.innerHTML += `
+
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -118,15 +146,26 @@ async function loadTeams() {
         ">
 
           <p>
+
             ⚽
-            <strong>${team.name}</strong>
+
+            <strong>
+              ${team.name}
+            </strong>
+
           </p>
 
-          <button onclick="deleteTeam('${team.id}')">
+
+          <button
+            onclick="deleteTeam('${team.id}')"
+          >
+
             🗑️ Delete Team
+
           </button>
 
         </div>
+
       `;
 
     });
@@ -136,8 +175,10 @@ async function loadTeams() {
     list.innerHTML =
       "<p>Error loading teams.</p>";
 
+
     showError(
-      "Teams: " + error.message
+      "Teams: " +
+      error.message
     );
 
   }
@@ -149,68 +190,87 @@ async function loadTeams() {
 // DELETE TEAM
 // ==========================================
 
-window.deleteTeam = async function(teamId) {
+window.deleteTeam =
+  async function(teamId) {
 
-  try {
+    try {
 
-    const teams = await getTeams();
+      const teams =
+        await getTeams();
 
-    const team = teams.find(
-      (item) => item.id === teamId
-    );
 
-    if (!team) {
+      const team =
+        teams.find(
+          (item) =>
+            item.id === teamId
+        );
 
-      alert("Team not found.");
 
-      return;
+      if (!team) {
+
+        alert(
+          "Team not found."
+        );
+
+        return;
+
+      }
+
+
+      const answer =
+        confirm(
+          "Are you sure you want to delete " +
+          team.name +
+          "?\n\nThis action cannot be undone."
+        );
+
+
+      if (!answer) {
+
+        return;
+
+      }
+
+
+      await deleteDoc(
+        doc(
+          db,
+          "teams",
+          teamId
+        )
+      );
+
+
+      alert(
+        team.name +
+        " deleted successfully! 🗑️"
+      );
+
+
+      await loadTeams();
+
+      await loadFixtureTeams();
+
+      await loadScorerTeams();
+
+      await loadPlayerTeams();
+
+    } catch (error) {
+
+      alert(
+        "Error deleting team: " +
+        error.message
+      );
+
+
+      showError(
+        "Delete Team: " +
+        error.message
+      );
 
     }
 
-    const answer = confirm(
-      "Are you sure you want to delete " +
-      team.name +
-      "?\n\nThis action cannot be undone."
-    );
-
-    if (!answer) {
-
-      return;
-
-    }
-
-    await deleteDoc(
-      doc(
-        db,
-        "teams",
-        teamId
-      )
-    );
-
-    alert(
-      team.name +
-      " deleted successfully! 🗑️"
-    );
-
-    await loadTeams();
-    await loadFixtureTeams();
-    await loadScorerTeams();
-
-  } catch (error) {
-
-    alert(
-      "Error deleting team: " +
-      error.message
-    );
-
-    showError(
-      "Delete Team: " +
-      error.message
-    );
-
-  }
-
-};
+  };
 
 
 // ==========================================
@@ -220,14 +280,22 @@ window.deleteTeam = async function(teamId) {
 async function loadFixtureTeams() {
 
   const home =
-    document.getElementById("fixtureHome");
+    document.getElementById(
+      "fixtureHome"
+    );
+
 
   const away =
-    document.getElementById("fixtureAway");
+    document.getElementById(
+      "fixtureAway"
+    );
+
 
   try {
 
-    const teams = await getTeams();
+    const teams =
+      await getTeams();
+
 
     home.innerHTML =
       '<option value="">Select Home Team</option>';
@@ -235,18 +303,24 @@ async function loadFixtureTeams() {
     away.innerHTML =
       '<option value="">Select Away Team</option>';
 
+
     teams.forEach((team) => {
 
       home.innerHTML += `
+
         <option value="${team.name}">
           ${team.name}
         </option>
+
       `;
 
+
       away.innerHTML += `
+
         <option value="${team.name}">
           ${team.name}
         </option>
+
       `;
 
     });
@@ -270,21 +344,29 @@ async function loadFixtureTeams() {
 async function loadScorerTeams() {
 
   const select =
-    document.getElementById("scorerTeam");
+    document.getElementById(
+      "scorerTeam"
+    );
+
 
   try {
 
-    const teams = await getTeams();
+    const teams =
+      await getTeams();
+
 
     select.innerHTML =
       '<option value="">Select Team</option>';
 
+
     teams.forEach((team) => {
 
       select.innerHTML += `
+
         <option value="${team.name}">
           ${team.name}
         </option>
+
       `;
 
     });
@@ -293,6 +375,57 @@ async function loadScorerTeams() {
 
     showError(
       "Scorer teams: " +
+      error.message
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// LOAD PLAYER TEAMS
+// ==========================================
+
+async function loadPlayerTeams() {
+
+  const select =
+    document.getElementById(
+      "playerTeam"
+    );
+
+
+  if (!select) {
+    return;
+  }
+
+
+  try {
+
+    const teams =
+      await getTeams();
+
+
+    select.innerHTML =
+      '<option value="">Select Team</option>';
+
+
+    teams.forEach((team) => {
+
+      select.innerHTML += `
+
+        <option value="${team.name}">
+          ${team.name}
+        </option>
+
+      `;
+
+    });
+
+  } catch (error) {
+
+    showError(
+      "Player teams: " +
       error.message
     );
 
@@ -313,46 +446,63 @@ document
 
       event.preventDefault();
 
+
       try {
 
         const team = {
 
           name:
-            document.getElementById("name").value.trim(),
+            document.getElementById(
+              "name"
+            ).value.trim(),
 
           played:
             Number(
-              document.getElementById("played").value
+              document.getElementById(
+                "played"
+              ).value
             ),
 
           won:
             Number(
-              document.getElementById("wins").value
+              document.getElementById(
+                "wins"
+              ).value
             ),
 
           draw:
             Number(
-              document.getElementById("draws").value
+              document.getElementById(
+                "draws"
+              ).value
             ),
 
           lost:
             Number(
-              document.getElementById("losses").value
+              document.getElementById(
+                "losses"
+              ).value
             ),
 
           goalsFor:
             Number(
-              document.getElementById("goalsFor").value
+              document.getElementById(
+                "goalsFor"
+              ).value
             ),
 
           goalsAgainst:
             Number(
-              document.getElementById("goalsAgainst").value
+              document.getElementById(
+                "goalsAgainst"
+              ).value
             ),
 
           points:
             Number(
-              document.getElementById("points").value
+              document.getElementById(
+                "points"
+              ).value
             )
 
         };
@@ -373,8 +523,12 @@ document
 
 
         await loadTeams();
+
         await loadFixtureTeams();
+
         await loadScorerTeams();
+
+        await loadPlayerTeams();
 
       } catch (error) {
 
@@ -382,6 +536,7 @@ document
           "Error saving team: " +
           error.message
         );
+
 
         showError(
           error.message
@@ -391,6 +546,528 @@ document
 
     }
   );
+
+
+// ==========================================
+// ADD PLAYER
+// ==========================================
+
+document
+  .getElementById("playerForm")
+  .addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      try {
+
+        const name =
+          document
+            .getElementById(
+              "playerNameAdmin"
+            )
+            .value
+            .trim();
+
+
+        const team =
+          document
+            .getElementById(
+              "playerTeam"
+            )
+            .value;
+
+
+        const number =
+          Number(
+            document
+              .getElementById(
+                "playerNumber"
+              )
+              .value
+          );
+
+
+        const position =
+          document
+            .getElementById(
+              "playerPosition"
+            )
+            .value;
+
+
+        const starting =
+          document
+            .getElementById(
+              "playerStarting"
+            )
+            .checked;
+
+
+        const captain =
+          document
+            .getElementById(
+              "playerCaptain"
+            )
+            .checked;
+
+
+        if (
+          !name ||
+          !team ||
+          !number ||
+          !position
+        ) {
+
+          alert(
+            "Please fill all player fields."
+          );
+
+          return;
+
+        }
+
+
+        await addDoc(
+          collection(db, "players"),
+          {
+
+            name:
+              name,
+
+            team:
+              team,
+
+            number:
+              number,
+
+            position:
+              position,
+
+            starting:
+              starting,
+
+            captain:
+              captain
+
+          }
+        );
+
+
+        alert(
+          "Player saved successfully! 👤⚽"
+        );
+
+
+        event.target.reset();
+
+
+        await loadPlayers();
+
+      } catch (error) {
+
+        alert(
+          "Error saving player: " +
+          error.message
+        );
+
+
+        showError(
+          "Player: " +
+          error.message
+        );
+
+      }
+
+    }
+  );
+
+
+// ==========================================
+// LOAD PLAYERS
+// ==========================================
+
+async function loadPlayers() {
+
+  const list =
+    document.getElementById(
+      "playersList"
+    );
+
+
+  if (!list) {
+    return;
+  }
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "players")
+      );
+
+
+    list.innerHTML = "";
+
+
+    if (snapshot.empty) {
+
+      list.innerHTML =
+        "<p>No players added yet.</p>";
+
+      return;
+
+    }
+
+
+    snapshot.forEach((playerDoc) => {
+
+      const player =
+        playerDoc.data();
+
+
+      const startingText =
+        player.starting
+          ? "Starting XI"
+          : "Substitute";
+
+
+      const captainText =
+        player.captain
+          ? " ⭐ Captain"
+          : "";
+
+
+      list.innerHTML += `
+
+        <div style="
+          margin-bottom:15px;
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        ">
+
+          <p>
+
+            👤
+
+            <strong>
+              ${player.name || ""}
+            </strong>
+
+            —
+
+            ${player.team || ""}
+
+          </p>
+
+
+          <p>
+
+            #${player.number || ""}
+
+            —
+
+            ${player.position || ""}
+
+            —
+
+            ${startingText}
+
+            ${captainText}
+
+          </p>
+
+
+          <button
+            onclick="editPlayer('${playerDoc.id}')"
+          >
+
+            ✏️ Edit
+
+          </button>
+
+
+          <button
+            onclick="deletePlayer('${playerDoc.id}')"
+          >
+
+            🗑️ Delete
+
+          </button>
+
+        </div>
+
+      `;
+
+    });
+
+  } catch (error) {
+
+    list.innerHTML =
+      "<p>Error loading players.</p>";
+
+
+    showError(
+      "Players: " +
+      error.message
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// EDIT PLAYER
+// ==========================================
+
+window.editPlayer =
+  async function(playerId) {
+
+    try {
+
+      const snapshot =
+        await getDocs(
+          collection(db, "players")
+        );
+
+
+      let player = null;
+
+
+      snapshot.forEach((item) => {
+
+        if (
+          item.id === playerId
+        ) {
+
+          player =
+            item.data();
+
+        }
+
+      });
+
+
+      if (!player) {
+
+        alert(
+          "Player not found."
+        );
+
+        return;
+
+      }
+
+
+      const newName =
+        prompt(
+          "Player name:",
+          player.name || ""
+        );
+
+
+      if (newName === null) {
+        return;
+      }
+
+
+      const newTeam =
+        prompt(
+          "Team:",
+          player.team || ""
+        );
+
+
+      if (newTeam === null) {
+        return;
+      }
+
+
+      const newNumber =
+        prompt(
+          "Jersey number:",
+          player.number || ""
+        );
+
+
+      if (newNumber === null) {
+        return;
+      }
+
+
+      const newPosition =
+        prompt(
+          "Position (GK, DEF, MID, FWD):",
+          player.position || ""
+        );
+
+
+      if (newPosition === null) {
+        return;
+      }
+
+
+      const newStarting =
+        confirm(
+          "Is this player in Starting XI?\n\nOK = Starting XI\nCancel = Substitute"
+        );
+
+
+      const newCaptain =
+        confirm(
+          "Is this player Captain?\n\nOK = Captain\nCancel = Not Captain"
+        );
+
+
+      await updateDoc(
+        doc(
+          db,
+          "players",
+          playerId
+        ),
+        {
+
+          name:
+            newName.trim(),
+
+          team:
+            newTeam.trim(),
+
+          number:
+            Number(newNumber),
+
+          position:
+            newPosition.trim().toUpperCase(),
+
+          starting:
+            newStarting,
+
+          captain:
+            newCaptain
+
+        }
+      );
+
+
+      alert(
+        "Player updated successfully! ✅"
+      );
+
+
+      await loadPlayers();
+
+    } catch (error) {
+
+      alert(
+        "Error editing player: " +
+        error.message
+      );
+
+
+      showError(
+        "Edit Player: " +
+        error.message
+      );
+
+    }
+
+  };
+
+
+// ==========================================
+// DELETE PLAYER
+// ==========================================
+
+window.deletePlayer =
+  async function(playerId) {
+
+    try {
+
+      const snapshot =
+        await getDocs(
+          collection(db, "players")
+        );
+
+
+      let player = null;
+
+
+      snapshot.forEach((item) => {
+
+        if (
+          item.id === playerId
+        ) {
+
+          player =
+            item.data();
+
+        }
+
+      });
+
+
+      if (!player) {
+
+        alert(
+          "Player not found."
+        );
+
+        return;
+
+      }
+
+
+      const answer =
+        confirm(
+          "Are you sure you want to delete " +
+          player.name +
+          "?\n\nThis action cannot be undone."
+        );
+
+
+      if (!answer) {
+        return;
+      }
+
+
+      await deleteDoc(
+        doc(
+          db,
+          "players",
+          playerId
+        )
+      );
+
+
+      alert(
+        player.name +
+        " deleted successfully! 🗑️"
+      );
+
+
+      await loadPlayers();
+
+    } catch (error) {
+
+      alert(
+        "Error deleting player: " +
+        error.message
+      );
+
+
+      showError(
+        "Delete Player: " +
+        error.message
+      );
+
+    }
+
+  };
 
 
 // ==========================================
@@ -407,16 +1084,28 @@ document
 
 
       const home =
-        document.getElementById("fixtureHome").value;
+        document.getElementById(
+          "fixtureHome"
+        ).value;
+
 
       const away =
-        document.getElementById("fixtureAway").value;
+        document.getElementById(
+          "fixtureAway"
+        ).value;
+
 
       const date =
-        document.getElementById("fixtureDate").value;
+        document.getElementById(
+          "fixtureDate"
+        ).value;
 
 
-      if (!home || !away || !date) {
+      if (
+        !home ||
+        !away ||
+        !date
+      ) {
 
         alert(
           "Please select both teams and date."
@@ -427,7 +1116,9 @@ document
       }
 
 
-      if (home === away) {
+      if (
+        home === away
+      ) {
 
         alert(
           "A team cannot play against itself."
@@ -443,10 +1134,19 @@ document
         await addDoc(
           collection(db, "fixtures"),
           {
-            homeTeam: home,
-            awayTeam: away,
-            date: date,
-            createdAt: new Date()
+
+            homeTeam:
+              home,
+
+            awayTeam:
+              away,
+
+            date:
+              date,
+
+            createdAt:
+              new Date()
+
           }
         );
 
@@ -458,6 +1158,7 @@ document
 
         event.target.reset();
 
+
         await loadFixtures();
 
       } catch (error) {
@@ -466,6 +1167,7 @@ document
           "Error saving fixture: " +
           error.message
         );
+
 
         showError(
           error.message
@@ -484,7 +1186,10 @@ document
 async function loadFixtures() {
 
   const list =
-    document.getElementById("fixturesList");
+    document.getElementById(
+      "fixturesList"
+    );
+
 
   try {
 
@@ -493,7 +1198,9 @@ async function loadFixtures() {
         collection(db, "fixtures")
       );
 
+
     list.innerHTML = "";
+
 
     if (snapshot.empty) {
 
@@ -512,6 +1219,7 @@ async function loadFixtures() {
 
 
       list.innerHTML += `
+
         <div style="
           margin-bottom:15px;
           padding:12px;
@@ -520,7 +1228,9 @@ async function loadFixtures() {
         ">
 
           <p>
+
             📅
+
             <strong>
               ${fixture.date || ""}
             </strong>
@@ -532,21 +1242,29 @@ async function loadFixtures() {
             vs
 
             ${fixture.awayTeam || ""}
+
           </p>
+
 
           <button
             onclick="editFixture('${fixtureDoc.id}')"
           >
+
             ✏️ Edit
+
           </button>
+
 
           <button
             onclick="deleteFixture('${fixtureDoc.id}')"
           >
+
             🗑️ Delete
+
           </button>
 
         </div>
+
       `;
 
     });
@@ -555,6 +1273,7 @@ async function loadFixtures() {
 
     list.innerHTML =
       "<p>Error loading fixtures.</p>";
+
 
     showError(
       "Fixtures: " +
@@ -570,148 +1289,156 @@ async function loadFixtures() {
 // EDIT FIXTURE
 // ==========================================
 
-window.editFixture = async function(fixtureId) {
+window.editFixture =
+  async function(fixtureId) {
 
-  try {
+    try {
 
-    const fixtureRef =
-      doc(
-        db,
-        "fixtures",
-        fixtureId
-      );
-
-
-    const snapshot =
-      await getDocs(
-        collection(db, "fixtures")
-      );
+      const fixtureRef =
+        doc(
+          db,
+          "fixtures",
+          fixtureId
+        );
 
 
-    let fixture = null;
+      const snapshot =
+        await getDocs(
+          collection(db, "fixtures")
+        );
 
 
-    snapshot.forEach((item) => {
+      let fixture = null;
 
-      if (item.id === fixtureId) {
 
-        fixture = item.data();
+      snapshot.forEach((item) => {
+
+        if (
+          item.id === fixtureId
+        ) {
+
+          fixture =
+            item.data();
+
+        }
+
+      });
+
+
+      if (!fixture) {
+
+        alert(
+          "Fixture not found."
+        );
+
+        return;
 
       }
 
-    });
+
+      const newDate =
+        prompt(
+          "Enter new match date:",
+          fixture.date || ""
+        );
 
 
-    if (!fixture) {
-
-      alert(
-        "Fixture not found."
-      );
-
-      return;
-
-    }
-
-
-    const newDate =
-      prompt(
-        "Enter new match date:",
-        fixture.date || ""
-      );
-
-
-    if (newDate === null) {
-
-      return;
-
-    }
-
-
-    const newHome =
-      prompt(
-        "Enter Home Team:",
-        fixture.homeTeam || ""
-      );
-
-
-    if (newHome === null) {
-
-      return;
-
-    }
-
-
-    const newAway =
-      prompt(
-        "Enter Away Team:",
-        fixture.awayTeam || ""
-      );
-
-
-    if (newAway === null) {
-
-      return;
-
-    }
-
-
-    if (
-      !newDate ||
-      !newHome ||
-      !newAway
-    ) {
-
-      alert(
-        "All fields are required."
-      );
-
-      return;
-
-    }
-
-
-    if (newHome === newAway) {
-
-      alert(
-        "A team cannot play against itself."
-      );
-
-      return;
-
-    }
-
-
-    await updateDoc(
-      fixtureRef,
-      {
-        date: newDate,
-        homeTeam: newHome,
-        awayTeam: newAway
+      if (newDate === null) {
+        return;
       }
-    );
 
 
-    alert(
-      "Fixture updated successfully! ✅"
-    );
+      const newHome =
+        prompt(
+          "Enter Home Team:",
+          fixture.homeTeam || ""
+        );
 
 
-    await loadFixtures();
+      if (newHome === null) {
+        return;
+      }
 
-  } catch (error) {
 
-    alert(
-      "Error editing fixture: " +
-      error.message
-    );
+      const newAway =
+        prompt(
+          "Enter Away Team:",
+          fixture.awayTeam || ""
+        );
 
-    showError(
-      error.message
-    );
 
-  }
+      if (newAway === null) {
+        return;
+      }
 
-};
+
+      if (
+        !newDate ||
+        !newHome ||
+        !newAway
+      ) {
+
+        alert(
+          "All fields are required."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        newHome === newAway
+      ) {
+
+        alert(
+          "A team cannot play against itself."
+        );
+
+        return;
+
+      }
+
+
+      await updateDoc(
+        fixtureRef,
+        {
+
+          date:
+            newDate,
+
+          homeTeam:
+            newHome,
+
+          awayTeam:
+            newAway
+
+        }
+      );
+
+
+      alert(
+        "Fixture updated successfully! ✅"
+      );
+
+
+      await loadFixtures();
+
+    } catch (error) {
+
+      alert(
+        "Error editing fixture: " +
+        error.message
+      );
+
+
+      showError(
+        error.message
+      );
+
+    }
+
+  };
 
 
 // ==========================================
@@ -730,9 +1457,7 @@ window.deleteFixture =
 
 
       if (!answer) {
-
         return;
-
       }
 
 
@@ -758,6 +1483,7 @@ window.deleteFixture =
         "Error deleting fixture: " +
         error.message
       );
+
 
       showError(
         error.message
@@ -801,7 +1527,10 @@ document
         );
 
 
-      if (!playerName || !team) {
+      if (
+        !playerName ||
+        !team
+      ) {
 
         alert(
           "Please enter player name and select team."
@@ -817,9 +1546,16 @@ document
         await addDoc(
           collection(db, "scorers"),
           {
-            playerName: playerName,
-            team: team,
-            goals: goals
+
+            playerName:
+              playerName,
+
+            team:
+              team,
+
+            goals:
+              goals
+
           }
         );
 
@@ -831,6 +1567,7 @@ document
 
         event.target.reset();
 
+
         await loadScorers();
 
       } catch (error) {
@@ -839,6 +1576,7 @@ document
           "Error saving scorer: " +
           error.message
         );
+
 
         showError(
           error.message
@@ -857,7 +1595,10 @@ document
 async function loadScorers() {
 
   const list =
-    document.getElementById("scorersList");
+    document.getElementById(
+      "scorersList"
+    );
+
 
   try {
 
@@ -887,26 +1628,37 @@ async function loadScorers() {
 
 
       list.innerHTML += `
-        <p>
 
-          🥇
+        <div style="
+          margin-bottom:10px;
+          padding:10px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        ">
 
-          <strong>
-            ${data.playerName || ""}
-          </strong>
+          <p>
 
-          —
+            🥇
 
-          ${data.team || ""}
+            <strong>
+              ${data.playerName || ""}
+            </strong>
 
-          —
+            —
 
-          <strong>
-            ${data.goals || 0}
-            goals
-          </strong>
+            ${data.team || ""}
 
-        </p>
+            —
+
+            <strong>
+              ${data.goals || 0}
+              goals
+            </strong>
+
+          </p>
+
+        </div>
+
       `;
 
     });
@@ -915,6 +1667,7 @@ async function loadScorers() {
 
     list.innerHTML =
       "<p>Error loading scorers.</p>";
+
 
     showError(
       "Scorers: " +
@@ -935,6 +1688,10 @@ async function startAdmin() {
   try {
 
     await loadTeams();
+
+    await loadPlayerTeams();
+
+    await loadPlayers();
 
     await loadFixtureTeams();
 

@@ -27,7 +27,35 @@
 
   <h2>Teams</h2>
   <div id="teamsList"></div>
+<hr>
 
+<h2>📅 Add Fixture</h2>
+
+<form id="fixtureForm">
+
+  <select id="fixtureHome" required>
+    <option value="">Select Home Team</option>
+  </select>
+
+  <select id="fixtureAway" required>
+    <option value="">Select Away Team</option>
+  </select>
+
+  <input
+    type="date"
+    id="fixtureDate"
+    required
+  >
+
+  <button type="submit">
+    Save Fixture
+  </button>
+
+</form>
+
+<h2>📅 Fixtures</h2>
+
+<div id="fixturesList"></div>
   <script type="module" src="admin.js"></script>
 
 </body>

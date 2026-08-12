@@ -5,11 +5,17 @@
 
   <meta charset="UTF-8">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Lamu West Premier League</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 
   <style>
 
@@ -31,7 +37,7 @@
       padding: 45px 20px;
     }
 
-    header .logo {
+    .logo {
       font-size: 48px;
     }
 
@@ -124,6 +130,11 @@
       border-bottom: 1px solid #e5e9e7;
     }
 
+    td a {
+      color: #075e3d;
+      text-decoration: none;
+    }
+
     #fixturesList,
     #resultsList,
     #scorersList {
@@ -144,7 +155,7 @@
         font-size: 25px;
       }
 
-      header .logo {
+      .logo {
         font-size: 40px;
       }
 
@@ -194,31 +205,31 @@
 
   <nav>
 
-    <a href="index.html">
+    <a href="./index.html">
       🏠 Home
     </a>
 
-    <a href="#standings">
+    <a href="./index.html#standings">
       🏆 Standings
     </a>
 
-    <a href="fixtures.html">
+    <a href="./fixtures.html">
       📅 Fixtures
     </a>
 
-    <a href="#latestResults">
+    <a href="./index.html#latestResults">
       ⚽ Results
     </a>
 
-    <a href="#topScorers">
+    <a href="./index.html#topScorers">
       🥇 Top Scorers
     </a>
 
-    <a href="teams.html">
+    <a href="./teams.html">
       👥 Team Profiles
     </a>
 
-    <a href="admin.html">
+    <a href="./admin.html">
       🔐 Admin Panel
     </a>
 
@@ -237,8 +248,8 @@
       </h2>
 
       <p>
-        Follow standings, fixtures, results, teams and top scorers
-        all in one place.
+        Follow standings, fixtures, results,
+        teams and top scorers all in one place.
       </p>
 
     </div>
@@ -274,7 +285,7 @@
     </section>
 
 
-    <!-- FIXTURES PREVIEW -->
+    <!-- FIXTURES -->
 
     <section id="upcomingFixtures">
 
@@ -289,3 +300,78 @@
         </p>
 
       </div>
+
+    </section>
+
+
+    <!-- RESULTS -->
+
+    <section id="latestResults">
+
+      <h2>
+        ⚽ Match Results
+      </h2>
+
+      <div id="resultsList">
+
+        <p>
+          Loading results...
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- TOP SCORERS -->
+
+    <section id="topScorers">
+
+      <h2>
+        🥇 Top Scorers
+      </h2>
+
+      <div id="scorersList">
+
+        <p>
+          Loading top scorers...
+        </p>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <p>
+      ⚽ Lamu West Premier League
+    </p>
+
+    <p>
+      Official League Website
+    </p>
+
+    <p>
+      © 2026 Lamu West Premier League
+    </p>
+
+  </footer>
+
+
+  <!-- JAVASCRIPT -->
+
+  <script
+    type="module"
+    src="./script.js?v=12">
+  </script>
+
+
+</body>
+
+</html>

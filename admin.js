@@ -6,6 +6,7 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -39,16 +40,11 @@ async function getTeams() {
 
   snapshot.forEach((teamDoc) => {
 
-    const data =
-      teamDoc.data();
+    const data = teamDoc.data();
 
     teams.push({
-
       id: teamDoc.id,
-
-      name:
-        data.name
-
+      name: data.name
     });
 
   });
@@ -59,15 +55,13 @@ async function getTeams() {
 
 
 // ==========================
-// LOAD TEAM LIST
+// LOAD TEAMS
 // ==========================
 
 async function loadTeams() {
 
   const teamsList =
-    document.getElementById(
-      "teamsList"
-    );
+    document.getElementById("teamsList");
 
   const teams =
     await getTeams();
@@ -77,13 +71,9 @@ async function loadTeams() {
   teams.forEach((team) => {
 
     teamsList.innerHTML += `
-
       <p>
-        <strong>
-          ${team.name}
-        </strong>
+        <strong>${team.name}</strong>
       </p>
-
     `;
 
   });
@@ -98,14 +88,10 @@ async function loadTeams() {
 async function loadFixtureTeams() {
 
   const home =
-    document.getElementById(
-      "fixtureHome"
-    );
+    document.getElementById("fixtureHome");
 
   const away =
-    document.getElementById(
-      "fixtureAway"
-    );
+    document.getElementById("fixtureAway");
 
   const teams =
     await getTeams();
@@ -121,9 +107,7 @@ async function loadFixtureTeams() {
   teams.forEach((team) => {
 
     const homeOption =
-      document.createElement(
-        "option"
-      );
+      document.createElement("option");
 
     homeOption.value =
       team.name;
@@ -131,15 +115,11 @@ async function loadFixtureTeams() {
     homeOption.textContent =
       team.name;
 
-    home.appendChild(
-      homeOption
-    );
+    home.appendChild(homeOption);
 
 
     const awayOption =
-      document.createElement(
-        "option"
-      );
+      document.createElement("option");
 
     awayOption.value =
       team.name;
@@ -147,9 +127,7 @@ async function loadFixtureTeams() {
     awayOption.textContent =
       team.name;
 
-    away.appendChild(
-      awayOption
-    );
+    away.appendChild(awayOption);
 
   });
 
@@ -163,9 +141,7 @@ async function loadFixtureTeams() {
 async function loadScorerTeams() {
 
   const scorerTeam =
-    document.getElementById(
-      "scorerTeam"
-    );
+    document.getElementById("scorerTeam");
 
   const teams =
     await getTeams();
@@ -178,9 +154,7 @@ async function loadScorerTeams() {
   teams.forEach((team) => {
 
     const option =
-      document.createElement(
-        "option"
-      );
+      document.createElement("option");
 
     option.value =
       team.name;
@@ -188,9 +162,7 @@ async function loadScorerTeams() {
     option.textContent =
       team.name;
 
-    scorerTeam.appendChild(
-      option
-    );
+    scorerTeam.appendChild(option);
 
   });
 
@@ -203,227 +175,181 @@ async function loadScorerTeams() {
 
 document
   .getElementById("teamForm")
-  .addEventListener(
-    "submit",
-    async (e) => {
+  .addEventListener("submit", async (e) => {
 
-      e.preventDefault();
+    e.preventDefault();
 
 
-      const team = {
+    const team = {
 
-        name:
-          document.getElementById(
-            "name"
-          ).value,
+      name:
+        document.getElementById("name").value,
 
-        played:
-          Number(
-            document.getElementById(
-              "played"
-            ).value
-          ),
+      played:
+        Number(
+          document.getElementById("played").value
+        ),
 
-        won:
-          Number(
-            document.getElementById(
-              "wins"
-            ).value
-          ),
+      won:
+        Number(
+          document.getElementById("wins").value
+        ),
 
-        draw:
-          Number(
-            document.getElementById(
-              "draws"
-            ).value
-          ),
+      draw:
+        Number(
+          document.getElementById("draws").value
+        ),
 
-        lost:
-          Number(
-            document.getElementById(
-              "losses"
-            ).value
-          ),
+      lost:
+        Number(
+          document.getElementById("losses").value
+        ),
 
-        goalsFor:
-          Number(
-            document.getElementById(
-              "goalsFor"
-            ).value
-          ),
+      goalsFor:
+        Number(
+          document.getElementById("goalsFor").value
+        ),
 
-        goalsAgainst:
-          Number(
-            document.getElementById(
-              "goalsAgainst"
-            ).value
-          ),
+      goalsAgainst:
+        Number(
+          document.getElementById("goalsAgainst").value
+        ),
 
-        points:
-          Number(
-            document.getElementById(
-              "points"
-            ).value
-          )
+      points:
+        Number(
+          document.getElementById("points").value
+        )
 
-      };
+    };
 
 
-      try {
+    try {
 
-        await addDoc(
-          collection(
-            db,
-            "teams"
-          ),
-          team
-        );
+      await addDoc(
+        collection(db, "teams"),
+        team
+      );
 
 
-        alert(
-          "Team saved successfully! ⚽"
-        );
+      alert(
+        "Team saved successfully! ⚽"
+      );
 
 
-        e.target.reset();
+      e.target.reset();
 
 
-        await loadTeams();
-
-        await loadFixtureTeams();
-
-        await loadScorerTeams();
+      await loadTeams();
+      await loadFixtureTeams();
+      await loadScorerTeams();
 
 
-      } catch (error) {
+    } catch (error) {
 
-        console.error(
-          error
-        );
+      console.error(error);
 
-
-        alert(
-          "Error saving team: " +
-          error.message
-        );
-
-      }
+      alert(
+        "Error saving team: " +
+        error.message
+      );
 
     }
-  );
+
+  });
 
 
 // ==========================
-// SAVE FIXTURE
+// ADD FIXTURE
 // ==========================
 
 document
   .getElementById("fixtureForm")
-  .addEventListener(
-    "submit",
-    async (e) => {
+  .addEventListener("submit", async (e) => {
 
-      e.preventDefault();
+    e.preventDefault();
 
 
-      const home =
-        document.getElementById(
-          "fixtureHome"
-        ).value;
+    const home =
+      document.getElementById(
+        "fixtureHome"
+      ).value;
 
 
-      const away =
-        document.getElementById(
-          "fixtureAway"
-        ).value;
+    const away =
+      document.getElementById(
+        "fixtureAway"
+      ).value;
 
 
-      const date =
-        document.getElementById(
-          "fixtureDate"
-        ).value;
+    const date =
+      document.getElementById(
+        "fixtureDate"
+      ).value;
 
 
-      if (
-        !home ||
-        !away ||
-        !date
-      ) {
+    if (!home || !away || !date) {
 
-        alert(
-          "Please select both teams and date."
-        );
+      alert(
+        "Please select both teams and date."
+      );
 
-        return;
-
-      }
-
-
-      if (
-        home === away
-      ) {
-
-        alert(
-          "A team cannot play against itself."
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        await addDoc(
-          collection(
-            db,
-            "fixtures"
-          ),
-          {
-
-            homeTeam:
-              home,
-
-            awayTeam:
-              away,
-
-            date:
-              date,
-
-            createdAt:
-              new Date()
-
-          }
-        );
-
-
-        alert(
-          "Fixture saved successfully! ⚽🔥"
-        );
-
-
-        e.target.reset();
-
-
-        await loadFixtures();
-
-
-      } catch (error) {
-
-        console.error(
-          error
-        );
-
-
-        alert(
-          "Error saving fixture: " +
-          error.message
-        );
-
-      }
+      return;
 
     }
-  );
+
+
+    if (home === away) {
+
+      alert(
+        "A team cannot play against itself."
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      await addDoc(
+        collection(db, "fixtures"),
+        {
+
+          homeTeam: home,
+
+          awayTeam: away,
+
+          date: date,
+
+          createdAt: new Date()
+
+        }
+      );
+
+
+      alert(
+        "Fixture saved successfully! ⚽🔥"
+      );
+
+
+      e.target.reset();
+
+
+      await loadFixtures();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Error saving fixture: " +
+        error.message
+      );
+
+    }
+
+  });
 
 
 // ==========================
@@ -440,19 +366,14 @@ async function loadFixtures() {
 
   const snapshot =
     await getDocs(
-      collection(
-        db,
-        "fixtures"
-      )
+      collection(db, "fixtures")
     );
 
 
   list.innerHTML = "";
 
 
-  if (
-    snapshot.empty
-  ) {
+  if (snapshot.empty) {
 
     list.innerHTML =
       "<p>No fixtures added yet.</p>";
@@ -462,164 +383,115 @@ async function loadFixtures() {
   }
 
 
-  snapshot.forEach(
-    (fixtureDoc) => {
+  snapshot.forEach((fixtureDoc) => {
 
-      const fixture =
-        fixtureDoc.data();
+    const fixture =
+      fixtureDoc.data();
 
 
-      list.innerHTML += `
+    list.innerHTML += `
 
-        <div
+      <div
+        style="
+          margin-bottom:15px;
+          padding:12px;
+          border:1px solid #ddd;
+          border-radius:8px;
+        "
+      >
+
+        <p>
+
+          📅 <strong>
+            ${fixture.date || ""}
+          </strong>
+
+          —
+
+          ${fixture.homeTeam || ""}
+
+          vs
+
+          ${fixture.awayTeam || ""}
+
+        </p>
+
+
+        <button
+          onclick="editFixture('${fixtureDoc.id}')"
           style="
-            margin-bottom:15px;
-            padding:10px;
-            border:1px solid #ddd;
-            border-radius:8px;
+            background:#1976d2;
+            color:white;
+            border:none;
+            padding:7px 12px;
+            border-radius:5px;
+            margin-right:6px;
           "
         >
-
-          <p>
-
-            📅
-
-            <strong>
-              ${fixture.date || ""}
-            </strong>
-
-            —
-
-            ${fixture.homeTeam || ""}
-
-            vs
-
-            ${fixture.awayTeam || ""}
-
-          </p>
+          ✏️ Edit
+        </button>
 
 
-          <button
-            onclick="deleteFixture('${fixtureDoc.id}')"
-            style="
-              background:#d32f2f;
-              color:white;
-              border:none;
-              padding:7px 12px;
-              border-radius:5px;
-              cursor:pointer;
-            "
-          >
+        <button
+          onclick="deleteFixture('${fixtureDoc.id}')"
+          style="
+            background:#d32f2f;
+            color:white;
+            border:none;
+            padding:7px 12px;
+            border-radius:5px;
+          "
+        >
+          🗑️ Delete
+        </button>
 
-            🗑️ Delete
+      </div>
 
-          </button>
+    `;
 
-        </div>
-
-      `;
-
-    }
-  );
+  });
 
 }
 
 
 // ==========================
-// DELETE FIXTURE
+// EDIT FIXTURE
 // ==========================
 
-window.deleteFixture =
+window.editFixture =
   async function(fixtureId) {
-
-    const confirmDelete =
-      confirm(
-        "Are you sure you want to delete this fixture?"
-      );
-
-
-    if (!confirmDelete) {
-      return;
-    }
-
 
     try {
 
-      await deleteDoc(
-        doc(
-          db,
-          "fixtures",
-          fixtureId
-        )
-      );
-
-
-      alert(
-        "Fixture deleted successfully! 🗑️"
-      );
-
-
-      await loadFixtures();
-
-
-    } catch (error) {
-
-      console.error(
-        "Delete fixture error:",
-        error
-      );
-
-
-      alert(
-        "Error deleting fixture: " +
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ==========================
-// SAVE TOP SCORER
-// ==========================
-
-document
-  .getElementById("scorerForm")
-  .addEventListener(
-    "submit",
-    async (e) => {
-
-      e.preventDefault();
-
-
-      const playerName =
-        document.getElementById(
-          "playerName"
-        ).value.trim();
-
-
-      const team =
-        document.getElementById(
-          "scorerTeam"
-        ).value;
-
-
-      const goals =
-        Number(
-          document.getElementById(
-            "playerGoals"
-          ).value
+      const snapshot =
+        await getDocs(
+          collection(db, "fixtures")
         );
 
 
-      if (
-        !playerName ||
-        !team
-      ) {
+      let selectedFixture = null;
+
+
+      snapshot.forEach((fixtureDoc) => {
+
+        if (
+          fixtureDoc.id === fixtureId
+        ) {
+
+          selectedFixture = {
+            id: fixtureDoc.id,
+            ...fixtureDoc.data()
+          };
+
+        }
+
+      });
+
+
+      if (!selectedFixture) {
 
         alert(
-          "Please enter player name and select team."
+          "Fixture not found."
         );
 
         return;
@@ -627,186 +499,60 @@ document
       }
 
 
-      try {
-
-        await addDoc(
-          collection(
-            db,
-            "scorers"
-          ),
-          {
-
-            playerName:
-              playerName,
-
-            team:
-              team,
-
-            goals:
-              goals,
-
-            createdAt:
-              new Date()
-
-          }
+      const newDate =
+        prompt(
+          "Enter new match date:",
+          selectedFixture.date || ""
         );
 
+
+      if (newDate === null) {
+        return;
+      }
+
+
+      const newHome =
+        prompt(
+          "Enter Home Team:",
+          selectedFixture.homeTeam || ""
+        );
+
+
+      if (newHome === null) {
+        return;
+      }
+
+
+      const newAway =
+        prompt(
+          "Enter Away Team:",
+          selectedFixture.awayTeam || ""
+        );
+
+
+      if (newAway === null) {
+        return;
+      }
+
+
+      if (
+        !newHome ||
+        !newAway ||
+        !newDate
+      ) {
 
         alert(
-          "Top scorer saved successfully! 🥇⚽"
+          "All fields are required."
         );
 
-
-        e.target.reset();
-
-
-        await loadScorers();
-
-
-      } catch (error) {
-
-        console.error(
-          error
-        );
-
-
-        alert(
-          "Error saving scorer: " +
-          error.message
-        );
+        return;
 
       }
 
-    }
-  );
 
+      if (
+        newHome === newAway
+      ) {
 
-// ==========================
-// LOAD TOP SCORERS
-// ==========================
-
-async function loadScorers() {
-
-  const list =
-    document.getElementById(
-      "scorersList"
-    );
-
-
-  const snapshot =
-    await getDocs(
-      collection(
-        db,
-        "scorers"
-      )
-    );
-
-
-  list.innerHTML = "";
-
-
-  if (
-    snapshot.empty
-  ) {
-
-    list.innerHTML =
-      "<p>No scorers added yet.</p>";
-
-    return;
-
-  }
-
-
-  const scorers = [];
-
-
-  snapshot.forEach(
-    (scorerDoc) => {
-
-      scorers.push(
-        scorerDoc.data()
-      );
-
-    }
-  );
-
-
-  scorers.sort(
-    (a, b) => {
-
-      return (
-        Number(
-          b.goals || 0
-        ) -
-        Number(
-          a.goals || 0
-        )
-      );
-
-    }
-  );
-
-
-  scorers.forEach(
-    (scorer, index) => {
-
-      list.innerHTML += `
-
-        <p>
-
-          ${index + 1}.
-
-          <strong>
-            ${scorer.playerName}
-          </strong>
-
-          —
-
-          ${scorer.team}
-
-          —
-
-          ${scorer.goals}
-          goals
-
-        </p>
-
-      `;
-
-    }
-  );
-
-}
-
-
-// ==========================
-// START
-// ==========================
-
-async function start() {
-
-  try {
-
-    await loadTeams();
-
-    await loadFixtureTeams();
-
-    await loadFixtures();
-
-    await loadScorerTeams();
-
-    await loadScorers();
-
-  } catch (error) {
-
-    console.error(
-      "Startup error:",
-      error
-    );
-
-  }
-
-}
-
-
-start();
+        alert(
+          "

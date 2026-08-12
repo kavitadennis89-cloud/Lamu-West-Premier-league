@@ -675,7 +675,43 @@ async function loadTopScorers() {
 // LOAD WEBSITE
 // ==========================================
 
-async function loadWebsite() {
+async function loadTopScorers() {
+
+  try {
+
+    const snapshot = await getDocs(
+      collection(db, "scorers")
+    );
+
+    const list = document.getElementById("scorersList");
+
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    snapshot.forEach((doc) => {
+
+      const data = doc.data();
+
+      const row = document.createElement("p");
+
+      row.innerHTML = `
+        🥇 <strong>${data.playerName}</strong>
+        — ${data.team}
+        — <strong>${data.goals} goals</strong>
+      `;
+
+      list.appendChild(row);
+
+    });
+
+  } catch (error) {
+
+    console.error("SCORERS ERROR:", error);
+
+  }
+
+}
 
   await loadTeams();
 

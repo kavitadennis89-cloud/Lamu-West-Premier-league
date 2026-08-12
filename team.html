@@ -17,19 +17,140 @@
     href="style.css"
   >
 
+  <style>
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f5f3;
+      color: #17221f;
+    }
+
+    .team-header {
+      background: linear-gradient(
+        135deg,
+        #064d32,
+        #087f50
+      );
+
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .team-header h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    .team-header p {
+      margin: 8px 0 0;
+      opacity: 0.9;
+    }
+
+    main {
+      width: 95%;
+      max-width: 1000px;
+      margin: 25px auto;
+    }
+
+    #teamName {
+      background: white;
+      color: #075e3d;
+      text-align: center;
+      padding: 25px 15px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    section {
+      background: white;
+      padding: 22px;
+      margin-bottom: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    section h3 {
+      color: #075e3d;
+      margin-top: 0;
+      border-bottom: 2px solid #075e3d;
+      padding-bottom: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #075e3d;
+      color: white;
+      padding: 13px 8px;
+    }
+
+    td {
+      padding: 13px 8px;
+      text-align: center;
+      border-bottom: 1px solid #e2e7e4;
+      font-weight: bold;
+    }
+
+    .back-link {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .back-link a {
+      display: inline-block;
+      background: #075e3d;
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .back-link a:hover {
+      background: #043d28;
+    }
+
+    @media (max-width: 600px) {
+
+      .team-header h1 {
+        font-size: 25px;
+      }
+
+      section {
+        padding: 15px;
+        overflow-x: auto;
+      }
+
+      table {
+        min-width: 500px;
+      }
+
+    }
+
+  </style>
+
 </head>
 
 
 <body>
 
-  <header>
+
+  <!-- TEAM HEADER -->
+
+  <header class="team-header">
 
     <h1>
       🏆 Lamu West Premier League
     </h1>
 
     <p>
-      Team Profile
+      Official Team Profile
     </p>
 
   </header>
@@ -37,22 +158,31 @@
 
   <main>
 
+
+    <!-- TEAM NAME -->
+
     <h2 id="teamName">
       Loading team...
     </h2>
 
 
+    <!-- TEAM STATISTICS -->
+
     <section>
 
-      <h3>📊 Team Statistics</h3>
+      <h3>
+        📊 Team Statistics
+      </h3>
 
       <table>
 
         <tr>
+
           <th>Played</th>
           <th>Won</th>
           <th>Draw</th>
           <th>Lost</th>
+
         </tr>
 
         <tr>
@@ -72,17 +202,23 @@
     </section>
 
 
+    <!-- GOALS -->
+
     <section>
 
-      <h3>⚽ Goals</h3>
+      <h3>
+        ⚽ Goals & Points
+      </h3>
 
       <table>
 
         <tr>
+
           <th>GF</th>
           <th>GA</th>
           <th>GD</th>
           <th>Points</th>
+
         </tr>
 
         <tr>
@@ -102,13 +238,16 @@
     </section>
 
 
-    <p>
+    <!-- BACK BUTTON -->
+
+    <div class="back-link">
 
       <a href="index.html">
         ← Back to League
       </a>
 
-    </p>
+    </div>
+
 
   </main>
 
@@ -117,6 +256,7 @@
     type="module"
     src="team.js?v=1">
   </script>
+
 
 </body>
 

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Team Profiles - Lamu West Premier League</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <style>
+
+    .teams-page {
+      width: 95%;
+      max-width: 1100px;
+      margin: 30px auto;
+    }
+
+    .teams-title {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+    }
+
+    .teams-title h2 {
+      margin: 0;
+      color: #075e3d;
+      border: none;
+      text-align: center;
+    }
+
+    .teams-title p {
+      margin-bottom: 0;
+      color: #555;
+    }
+
+    #teamsList {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(230px, 1fr));
+
+      gap: 18px;
+    }
+
+    .team-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px 18px;
+      text-align: center;
+
+      box-shadow:
+        0 3px 15px rgba(0,0,0,0.08);
+
+      transition: 0.2s;
+    }
+
+    .team-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .team-icon {
+      font-size: 45px;
+      margin-bottom: 10px;
+    }
+
+    .team-card h3 {
+      color: #075e3d;
+      margin: 10px 0;
+    }
+
+    .team-card a {
+      display: inline-block;
+
+      background: #075e3d;
+      color: white;
+
+      text-decoration: none;
+
+      padding: 10px 18px;
+
+      border-radius: 7px;
+
+      font-weight: bold;
+
+      margin-top: 8px;
+    }
+
+    .team-card a:hover {
+      background: #043d28;
+    }
+
+    .back-home {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .back-home a {
+      color: #075e3d;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- HEADER -->
+
+  <header>
+
+    <h1>
+      🏆 Lamu West Premier League
+    </h1>
+
+    <p>
+      Team Profiles
+    </p>
+
+  </header>
+
+
+  <!-- TEAM PROFILES -->
+
+  <main class="teams-page">
+
+
+    <div class="teams-title">
+
+      <h2>
+        👥 League Teams
+      </h2>
+
+      <p>
+        Explore all teams competing in the
+        Lamu West Premier League.
+      </p>
+
+    </div>
+
+
+    <div id="teamsList">
+
+      <p>
+        Loading teams...
+      </p>
+
+    </div>
+
+
+    <div class="back-home">
+
+      <a href="index.html">
+        ← Back to League
+      </a>
+
+    </div>
+
+
+  </main>
+
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+    import {
+      getFirestore,
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+    const firebaseConfig = {
+
+      apiKey:
+        "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+
+      authDomain:
+        "lamu-west-premier-league.firebaseapp.com",
+
+      projectId:
+        "lamu-west-premier-league",
+
+      storageBucket:
+        "lamu-west-premier-league.firebasestorage.app",
+
+      messagingSenderId:
+        "280853181931",
+
+      appId:
+        "1:280853181931:web:8c411d3528bddadd2d15ae"
+
+    };
+
+
+    const app =
+      initializeApp(firebaseConfig);
+
+    const db =
+      getFirestore(app);
+
+
+    async function loadTeams() {
+
+      const list =
+        document.getElementById(
+          "teamsList"
+        );
+
+
+      try {
+
+        const snapshot =
+          await getDocs(
+            collection(db, "teams")
+          );
+
+
+        list.innerHTML = "";
+
+
+        if (snapshot.empty) {
+
+          list.innerHTML =
+            "<p>No teams found.</p>";
+
+          return;
+
+        }
+
+
+        snapshot.forEach((teamDoc) => {
+
+          const team =
+            teamDoc.data();
+
+
+          const card =
+            document.createElement("div");
+
+          card.className =
+            "team-card";
+
+
+          const name =
+            team.name ||
+            "Unknown Team";
+
+
+          card.innerHTML = `
+
+            <div class="team-icon">
+              ⚽
+            </div>
+
+            <h3>
+              ${name}
+            </h3>
+
+            <a href="team.html?team=${encodeURIComponent(name)}">
+              View Team Profile
+            </a>
+
+          `;
+
+
+          list.appendChild(card);
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Error loading teams:",
+          error
+        );
+
+
+        list.innerHTML =
+          "<p>Error loading teams.</p>";
+
+      }
+
+    }
+
+
+    loadTeams();
+
+  </script>
+
+
+</body>
+
+  </html>

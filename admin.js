@@ -121,7 +121,7 @@ function loadFixtureTeams(snapshot) {
 
   homeSelect.innerHTML =
     '<option value="">Select Home Team</option>';
-
+alert("Teams found: " + snapshot.size);
   awaySelect.innerHTML =
     '<option value="">Select Away Team</option>';
 

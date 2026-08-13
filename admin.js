@@ -85,4 +85,141 @@ async function loadTeams(){
   }
 
 }
-         
+ // =========================
+// ADD TEAM
+// =========================
+
+const addTeamForm = document.getElementById("addTeamForm");
+
+if(addTeamForm){
+
+addTeamForm.addEventListener("submit", async(e)=>{
+
+e.preventDefault();
+
+const teamName=document.getElementById("teamName").value.trim();
+
+if(teamName===""){
+alert("Enter team name");
+return;
+}
+
+try{
+
+await addDoc(collection(db,"teams"),{
+
+name:teamName,
+played:0,
+won:0,
+draw:0,
+lost:0,
+goalsFor:0,
+goalsAgainst:0,
+points:0
+
+});
+
+addTeamForm.reset();
+
+loadTeams();
+
+}
+catch(err){
+showError(err.message);
+}
+
+});
+
+}
+
+
+
+// =========================
+// DELETE TEAM
+// =========================
+
+window.deleteTeam=async(id)=>{
+
+const ok=confirm("Delete this team?");
+
+if(!ok) return;
+
+try{
+
+await deleteDoc(doc(db,"teams",id));
+
+loadTeams();
+
+}
+catch(err){
+showError(err.message);
+}
+
+};
+
+
+
+// =========================
+// PLAYERS SECTION
+// =========================
+
+async function loadPlayers(){
+
+const list=document.getElementById("playersList");
+
+if(!list) return;
+
+list.innerHTML="Loading players...";
+
+try{
+
+const snap=await getDocs(collection(db,"players"));
+
+if(snap.empty){
+
+list.innerHTML="No players found.";
+
+return;
+
+}
+
+list.innerHTML="";
+
+snap.forEach(player=>{
+
+const p=player.data();
+
+list.innerHTML+=`
+
+<div class="card">
+
+<b>${p.name}</b><br>
+
+Team: ${p.team}<br>
+
+Number: ${p.number}<br>
+
+Position: ${p.position}<br>
+
+Captain: ${p.captain?"Yes":"No"}<br>
+
+Starter: ${p.starting?"Yes":"No"}
+
+<br><br>
+
+<button onclick="deletePlayer('${player.id}')">
+Delete
+</button>
+
+</div><br>
+
+`;
+
+});
+
+}
+catch(err){
+showError(err.message);
+}
+
+                  }        

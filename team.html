@@ -97,23 +97,72 @@
       font-weight: bold;
     }
 
-    .player-number {
+    /* =========================
+       PLAYER CARDS
+    ========================= */
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .player-card {
+      background: #f7faf8;
+      border: 1px solid #e1e8e4;
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .player-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .player-number-big {
+      width: 55px;
+      height: 55px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
       background: #075e3d;
       color: white;
-      border-radius: 50%;
-      width: 35px;
-      height: 35px;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
     }
 
-    .starting {
+    .player-card h4 {
+      margin: 8px 0;
       color: #075e3d;
+      font-size: 18px;
     }
 
-    .captain {
+    .player-position {
+      color: #555;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .player-status {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .captain-badge {
       color: #b8860b;
+      font-weight: bold;
+    }
+
+    .starting-badge {
+      color: #075e3d;
+      font-weight: bold;
+    }
+
+    .substitute-badge {
+      color: #666;
     }
 
     .no-players {
@@ -121,6 +170,10 @@
       padding: 20px;
       color: #666;
     }
+
+    /* =========================
+       BACK BUTTON
+    ========================= */
 
     .back-link {
       text-align: center;
@@ -141,7 +194,19 @@
       background: #043d28;
     }
 
-    @media (max-width: 600px) {
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 700px) {
+
+      .players-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+    }
+
+    @media (max-width: 450px) {
 
       .team-header h1 {
         font-size: 25px;
@@ -149,11 +214,10 @@
 
       section {
         padding: 15px;
-        overflow-x: auto;
       }
 
-      table {
-        min-width: 550px;
+      .players-grid {
+        grid-template-columns: 1fr;
       }
 
     }
@@ -165,6 +229,8 @@
 
 <body>
 
+
+  <!-- HEADER -->
 
   <header class="team-header">
 
@@ -182,6 +248,8 @@
   <main>
 
 
+    <!-- TEAM NAME -->
+
     <h2 id="teamName">
       Loading team...
     </h2>
@@ -198,17 +266,24 @@
       <table>
 
         <tr>
+
           <th>Played</th>
           <th>Won</th>
           <th>Draw</th>
           <th>Lost</th>
+
         </tr>
 
         <tr>
+
           <td id="played">0</td>
+
           <td id="won">0</td>
+
           <td id="draw">0</td>
+
           <td id="lost">0</td>
+
         </tr>
 
       </table>
@@ -216,7 +291,7 @@
     </section>
 
 
-    <!-- GOALS -->
+    <!-- GOALS & POINTS -->
 
     <section>
 
@@ -227,17 +302,24 @@
       <table>
 
         <tr>
+
           <th>GF</th>
           <th>GA</th>
           <th>GD</th>
           <th>Points</th>
+
         </tr>
 
         <tr>
+
           <td id="goalsFor">0</td>
+
           <td id="goalsAgainst">0</td>
+
           <td id="goalDifference">0</td>
+
           <td id="points">0</td>
+
         </tr>
 
       </table>
@@ -245,7 +327,7 @@
     </section>
 
 
-    <!-- SQUAD -->
+    <!-- TEAM SQUAD -->
 
     <section>
 
@@ -253,7 +335,10 @@
         👥 Team Squad
       </h3>
 
-      <div id="playersList">
+      <div
+        id="playersList"
+        class="players-grid"
+      >
 
         <p class="no-players">
           Loading players...
@@ -263,6 +348,8 @@
 
     </section>
 
+
+    <!-- BACK -->
 
     <div class="back-link">
 
@@ -278,8 +365,8 @@
 
   <script
     type="module"
-    src="team.js?v=2">
-  </script>
+    src="team.js?v=3"
+  ></script>
 
 
 </body>

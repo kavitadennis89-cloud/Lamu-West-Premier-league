@@ -26,6 +26,10 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
     await signInWithEmailAndPassword(auth, email, password);
 
+    // Hifadhi kuwa admin ameingia
+    localStorage.setItem("adminLoggedIn", "true");
+
+    // Fungua Admin Panel
     window.location.href = "admin.html";
 
   } catch (error) {

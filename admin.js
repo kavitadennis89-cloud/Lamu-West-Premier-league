@@ -223,3 +223,81 @@ showError(err.message);
 }
 
                   }        
+// =========================
+// ADD PLAYER
+// =========================
+
+const addPlayerForm = document.getElementById("addPlayerForm");
+
+if (addPlayerForm) {
+
+  addPlayerForm.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    try {
+
+      await addDoc(collection(db, "players"), {
+
+        name: document.getElementById("playerName").value.trim(),
+        team: document.getElementById("playerTeam").value,
+        number: Number(document.getElementById("playerNumber").value),
+        position: document.getElementById("playerPosition").value,
+        starting: document.getElementById("playerStarting").checked,
+        captain: document.getElementById("playerCaptain").checked
+
+      });
+
+      addPlayerForm.reset();
+
+      loadPlayers();
+
+    } catch (err) {
+
+      showError(err.message);
+
+    }
+
+  });
+
+}
+
+
+
+// =========================
+// DELETE PLAYER
+// =========================
+
+window.deletePlayer = async (id) => {
+
+  const ok = confirm("Delete this player?");
+
+  if (!ok) return;
+
+  try {
+
+    await deleteDoc(doc(db, "players", id));
+
+    loadPlayers();
+
+  } catch (err) {
+
+    showError(err.message);
+
+  }
+
+};
+
+
+
+// =========================
+// PAGE LOAD
+// =========================
+
+window.addEventListener("load", () => {
+
+  loadTeams();
+
+  loadPlayers();
+
+});

@@ -1,278 +1,253 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-import {
-    getFirestore,
-    collection,
-    getDocs
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-
-// ===============================
-// FIREBASE CONFIG
-// ===============================
-
-const firebaseConfig = {
-    apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
-    authDomain: "lamu-west-premier-league.firebaseapp.com",
-    projectId: "lamu-west-premier-league",
-    storageBucket: "lamu-west-premier-league.firebasestorage.app",
-
-    // IMPORTANT:
-    // Keep these two values exactly as they are
-    // in your previous working team.js
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
-
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-
-// ===============================
-// GET SELECTED TEAM
-// ===============================
-
-const params = new URLSearchParams(window.location.search);
-const selectedTeam = params.get("team");
-
-const teamName = document.getElementById("teamName");
-
-if (selectedTeam) {
-    teamName.textContent = selectedTeam;
-} else {
-    teamName.textContent = "Team Squad";
-}
-
-
-// ===============================
-// PLAYER CARD
-// ===============================
-
-function createPlayerCard(player) {
-
-    const card = document.createElement("div");
-
-    card.className = "player-card";
-
-
-    // Captain badge
-    let captainBadge = "";
-
-    if (player.captain === true) {
-        captainBadge = `
-            <span class="captain-badge">
-                ⭐ CAPTAIN
-            </span>
-        `;
-    }
-
-
-    // Starting badge
-    let startingBadge = "";
-
-    if (player.starting === true) {
-        startingBadge = `
-            <span class="starting-badge">
-                STARTING XI
-            </span>
-        `;
-    } else {
-        startingBadge = `
-            <span class="sub-badge">
-                SUBSTITUTE
-            </span>
-        `;
-    }
-
-
-    card.innerHTML = `
-
-        <div class="player-number">
-            ${player.number || "-"}
-        </div>
-
-        <div class="player-details">
-
-            <h3>
-                ${player.name || "Unnamed Player"}
-            </h3>
-
-            <p class="position">
-                ${player.position || "Player"}
-            </p>
-
-            <div class="badges">
-
-                ${startingBadge}
-
-                ${captainBadge}
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    return card;
-}
-
-
-// ===============================
-// LOAD SQUAD
-// ===============================
-
-async function loadSquad() {
-
-    if (!selectedTeam) {
-        teamName.textContent = "No Team Selected";
-        return;
-    }
-
-
-    try {
-
-        const playersSnapshot =
-            await getDocs(collection(db, "players"));
-
-
-        const goalkeepers =
-            document.getElementById("goalkeepers");
-
-        const defenders =
-            document.getElementById("defenders");
-
-        const midfielders =
-            document.getElementById("midfielders");
-
-        const forwards =
-            document.getElementById("forwards");
-
-
-        goalkeepers.innerHTML = "";
-        defenders.innerHTML = "";
-        midfielders.innerHTML = "";
-        forwards.innerHTML = "";
-
-
-        let foundPlayers = false;
-
-
-        playersSnapshot.forEach((doc) => {
-
-            const player = doc.data();
-
-
-            // Only players from selected team
-            if (
-                String(player.team).trim().toLowerCase() !==
-                String(selectedTeam).trim().toLowerCase()
-            ) {
-                return;
-            }
-
-
-            foundPlayers = true;
-
-
-            const card = createPlayerCard(player);
-
-
-            const position =
-                String(player.position || "")
-                .trim()
-                .toLowerCase();
-
-
-            // ===============================
-            // POSITION
-            // ===============================
-
-            if (
-                position.includes("goal") ||
-                position.includes("keeper") ||
-                position === "gk"
-            ) {
-
-                goalkeepers.appendChild(card);
-
-            }
-
-            else if (
-                position.includes("def") ||
-                position === "cb" ||
-                position === "lb" ||
-                position === "rb"
-            ) {
-
-                defenders.appendChild(card);
-
-            }
-
-            else if (
-                position.includes("mid") ||
-                position === "cm" ||
-                position === "dm" ||
-                position === "am"
-            ) {
-
-                midfielders.appendChild(card);
-
-            }
-
-            else if (
-                position.includes("for") ||
-                position.includes("attack") ||
-                position === "fw" ||
-                position === "st"
-            ) {
-
-                forwards.appendChild(card);
-
-            }
-
-            else {
-
-                midfielders.appendChild(card);
-
-            }
-
-        });
-
-
-        // ===============================
-        // NO PLAYERS
-        // ===============================
-
-        if (!foundPlayers) {
-
-            const message = `
-                <div class="empty">
-                    No players registered for this team yet.
-                </div>
-            `;
-
-            goalkeepers.innerHTML = message;
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Team Squad | Lamu West Premier League</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7f6;
+            color: #17221c;
+        }
 
-    }
+        header {
+            background: linear-gradient(135deg, #087f3f, #043d25);
+            color: white;
+            padding: 28px 15px;
+            text-align: center;
+        }
 
-    catch (error) {
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
 
-        console.error("Error loading squad:", error);
+        header p {
+            opacity: 0.85;
+            font-size: 14px;
+        }
 
-        teamName.textContent = "Unable to load squad";
+        .container {
+            width: 94%;
+            max-width: 1000px;
+            margin: 25px auto 50px;
+        }
 
-    }
+        .team-header {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
 
-}
+        .team-header h2 {
+            font-size: 30px;
+            color: #087f3f;
+            text-transform: uppercase;
+        }
+
+        .team-header span {
+            display: block;
+            margin-top: 7px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            background: #087f3f;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .player-card {
+            background: white;
+            border-radius: 14px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            border-left: 5px solid #087f3f;
+            transition: transform 0.2s ease;
+        }
+
+        .player-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .player-number {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #087f3f;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .player-details h3 {
+            font-size: 17px;
+            margin-bottom: 4px;
+        }
+
+        .position {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .starting-badge,
+        .sub-badge,
+        .captain-badge {
+            display: inline-block;
+            padding: 4px 7px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .starting-badge {
+            background: #dff5e8;
+            color: #087f3f;
+        }
+
+        .sub-badge {
+            background: #eeeeee;
+            color: #666;
+        }
+
+        .captain-badge {
+            background: #fff1b8;
+            color: #8a6800;
+        }
+
+        .empty {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            color: #777;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 18px;
+            background: #087f3f;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #055c2d;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #043d25;
+            color: white;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 23px;
+            }
+
+            .team-header h2 {
+                font-size: 24px;
+            }
+
+            .players {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>LAMU WEST PREMIER LEAGUE</h1>
+    <p>Official Team Squad</p>
+</header>
+
+<div class="container">
+
+    <div class="team-header">
+        <h2 id="teamName">Team Squad</h2>
+        <span>2026 Season • Official Squad</span>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🧤 Goalkeepers</div>
+        <div id="goalkeepers" class="players"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">🛡️ Defenders</div>
+        <div id="defenders" class="players"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">⚙️ Midfielders</div>
+        <div id="midfielders" class="players"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">⚽ Forwards</div>
+        <div id="forwards" class="players"></div>
+    </div>
+
+    <a href="index.html" class="back-btn">← Back to Home</a>
+
+</div>
+
+<footer>
+    © 2026 Lamu West Premier League
+</footer>
+
+<script type="module" src="team.js"></script>
+
+</body>
+</html>
 
 
-// ===============================
-// START
-// ===============================
 
-loadSquad();

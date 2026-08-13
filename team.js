@@ -22,22 +22,19 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-// ==========================
-// GET TEAM NAME FROM URL
-// ==========================
-
 const params =
   new URLSearchParams(
     window.location.search
   );
 
+
 const teamName =
   params.get("team");
 
 
-// ==========================
-// LOAD TEAM
-// ==========================
+/* ==========================
+   LOAD TEAM
+========================== */
 
 async function loadTeam() {
 
@@ -68,7 +65,7 @@ async function loadTeam() {
     let teamFound = null;
 
 
-    snapshot.forEach((teamDoc) => {
+    snapshot.forEach(teamDoc => {
 
       const data =
         teamDoc.data();
@@ -95,22 +92,21 @@ async function loadTeam() {
     }
 
 
-    // ==========================
-    // TEAM NAME
-    // ==========================
+    /* TEAM NAME */
 
     nameElement.textContent =
-      teamFound.name || "Unknown Team";
+      teamFound.name ||
+      "Unknown Team";
 
 
-    // ==========================
-    // STATISTICS
-    // ==========================
+    /* STATISTICS */
 
     document.getElementById(
       "played"
     ).textContent =
-      Number(teamFound.played || 0);
+      Number(
+        teamFound.played || 0
+      );
 
 
     document.getElementById(
@@ -143,9 +139,7 @@ async function loadTeam() {
       );
 
 
-    // ==========================
-    // GOALS
-    // ==========================
+    /* GOALS */
 
     const goalsFor =
       Number(
@@ -157,11 +151,6 @@ async function loadTeam() {
       Number(
         teamFound.goalsAgainst || 0
       );
-
-
-    const goalDifference =
-      goalsFor -
-      goalsAgainst;
 
 
     document.getElementById(
@@ -179,7 +168,7 @@ async function loadTeam() {
     document.getElementById(
       "goalDifference"
     ).textContent =
-      goalDifference;
+      goalsFor - goalsAgainst;
 
 
     document.getElementById(
@@ -190,7 +179,13 @@ async function loadTeam() {
       );
 
 
-  } catch (error) {
+    /* LOAD PLAYERS */
+
+    await loadPlayers(teamFound.name);
+
+  }
+
+  catch(error) {
 
     console.error(
       "Error loading team:",
@@ -206,8 +201,195 @@ async function loadTeam() {
 }
 
 
-// ==========================
-// START
-// ==========================
+/* ==========================
+   LOAD PLAYERS
+========================== */
+
+async function loadPlayers(team) {
+
+  const playersList =
+    document.getElementById(
+      "playersList"
+    );
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        collection(db, "players")
+      );
+
+
+    const players = [];
+
+
+    snapshot.forEach(playerDoc => {
+
+      const player =
+        playerDoc.data();
+
+
+      if (
+        player.team === team
+      ) {
+
+        players.push(player);
+
+      }
+
+    });
+
+
+    if (players.length === 0) {
+
+      playersList.innerHTML = `
+
+        <p class="no-players">
+          👤 No players registered
+          for this team yet.
+        </p>
+
+      `;
+
+      return;
+
+    }
+
+
+    players.sort(
+      (a, b) =>
+        Number(a.number || 999) -
+        Number(b.number || 999)
+    );
+
+
+    let html = `
+
+      <table>
+
+        <tr>
+
+          <th>No.</th>
+
+          <th>Player</th>
+
+          <th>Position</th>
+
+          <th>Status</th>
+
+        </tr>
+
+    `;
+
+
+    players.forEach(player => {
+
+      let status = "";
+
+
+      if (player.captain) {
+
+        status +=
+          `<span class="captain">
+             ©️ Captain
+           </span>`;
+
+      }
+
+
+      if (player.starting) {
+
+        if (status) {
+          status += "<br>";
+        }
+
+        status +=
+          `<span class="starting">
+             ⭐ Starting XI
+           </span>`;
+
+      }
+
+
+      if (!status) {
+
+        status =
+          "🔄 Substitute";
+
+      }
+
+
+      html += `
+
+        <tr>
+
+          <td>
+
+            <span class="player-number">
+
+              ${player.number || "-"}
+
+            </span>
+
+          </td>
+
+          <td>
+            ${player.name || "Unknown"}
+          </td>
+
+          <td>
+            ${player.position || "-"}
+          </td>
+
+          <td>
+            ${status}
+          </td>
+
+        </tr>
+
+      `;
+
+    });
+
+
+    html += `
+
+      </table>
+
+    `;
+
+
+    playersList.innerHTML =
+      html;
+
+  }
+
+  catch(error) {
+
+    console.error(
+      "Error loading players:",
+      error
+    );
+
+
+    playersList.innerHTML = `
+
+      <p class="no-players">
+
+        ❌ Unable to load players.
+
+      </p>
+
+    `;
+
+  }
+
+}
+
+
+/* ==========================
+   START
+========================== */
 
 loadTeam();

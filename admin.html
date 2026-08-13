@@ -126,23 +126,6 @@
 
 
 </body>
-<script>
-document.querySelectorAll(".sidebar li").forEach(item => {
 
-    item.addEventListener("click", function() {
 
-        document.getElementById("pageTitle").textContent =
-            this.textContent.trim();
-
-        document.getElementById("content").innerHTML = `
-            <div class="card">
-                <h3>${this.textContent.trim()}</h3>
-                <p>✅ Menu is working!</p>
-            </div>
-        `;
-
-    });
-
-});
-</script>
 </html>

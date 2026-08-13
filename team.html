@@ -1,165 +1,278 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
-    <title>Team Squad - Lamu West Premier League</title>
+import {
+    getFirestore,
+    collection,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #222;
+
+// ===============================
+// FIREBASE CONFIG
+// ===============================
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+    authDomain: "lamu-west-premier-league.firebaseapp.com",
+    projectId: "lamu-west-premier-league",
+    storageBucket: "lamu-west-premier-league.firebasestorage.app",
+
+    // IMPORTANT:
+    // Keep these two values exactly as they are
+    // in your previous working team.js
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// ===============================
+// GET SELECTED TEAM
+// ===============================
+
+const params = new URLSearchParams(window.location.search);
+const selectedTeam = params.get("team");
+
+const teamName = document.getElementById("teamName");
+
+if (selectedTeam) {
+    teamName.textContent = selectedTeam;
+} else {
+    teamName.textContent = "Team Squad";
+}
+
+
+// ===============================
+// PLAYER CARD
+// ===============================
+
+function createPlayerCard(player) {
+
+    const card = document.createElement("div");
+
+    card.className = "player-card";
+
+
+    // Captain badge
+    let captainBadge = "";
+
+    if (player.captain === true) {
+        captainBadge = `
+            <span class="captain-badge">
+                ⭐ CAPTAIN
+            </span>
+        `;
+    }
+
+
+    // Starting badge
+    let startingBadge = "";
+
+    if (player.starting === true) {
+        startingBadge = `
+            <span class="starting-badge">
+                STARTING XI
+            </span>
+        `;
+    } else {
+        startingBadge = `
+            <span class="sub-badge">
+                SUBSTITUTE
+            </span>
+        `;
+    }
+
+
+    card.innerHTML = `
+
+        <div class="player-number">
+            ${player.number || "-"}
+        </div>
+
+        <div class="player-details">
+
+            <h3>
+                ${player.name || "Unnamed Player"}
+            </h3>
+
+            <p class="position">
+                ${player.position || "Player"}
+            </p>
+
+            <div class="badges">
+
+                ${startingBadge}
+
+                ${captainBadge}
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    return card;
+}
+
+
+// ===============================
+// LOAD SQUAD
+// ===============================
+
+async function loadSquad() {
+
+    if (!selectedTeam) {
+        teamName.textContent = "No Team Selected";
+        return;
+    }
+
+
+    try {
+
+        const playersSnapshot =
+            await getDocs(collection(db, "players"));
+
+
+        const goalkeepers =
+            document.getElementById("goalkeepers");
+
+        const defenders =
+            document.getElementById("defenders");
+
+        const midfielders =
+            document.getElementById("midfielders");
+
+        const forwards =
+            document.getElementById("forwards");
+
+
+        goalkeepers.innerHTML = "";
+        defenders.innerHTML = "";
+        midfielders.innerHTML = "";
+        forwards.innerHTML = "";
+
+
+        let foundPlayers = false;
+
+
+        playersSnapshot.forEach((doc) => {
+
+            const player = doc.data();
+
+
+            // Only players from selected team
+            if (
+                String(player.team).trim().toLowerCase() !==
+                String(selectedTeam).trim().toLowerCase()
+            ) {
+                return;
+            }
+
+
+            foundPlayers = true;
+
+
+            const card = createPlayerCard(player);
+
+
+            const position =
+                String(player.position || "")
+                .trim()
+                .toLowerCase();
+
+
+            // ===============================
+            // POSITION
+            // ===============================
+
+            if (
+                position.includes("goal") ||
+                position.includes("keeper") ||
+                position === "gk"
+            ) {
+
+                goalkeepers.appendChild(card);
+
+            }
+
+            else if (
+                position.includes("def") ||
+                position === "cb" ||
+                position === "lb" ||
+                position === "rb"
+            ) {
+
+                defenders.appendChild(card);
+
+            }
+
+            else if (
+                position.includes("mid") ||
+                position === "cm" ||
+                position === "dm" ||
+                position === "am"
+            ) {
+
+                midfielders.appendChild(card);
+
+            }
+
+            else if (
+                position.includes("for") ||
+                position.includes("attack") ||
+                position === "fw" ||
+                position === "st"
+            ) {
+
+                forwards.appendChild(card);
+
+            }
+
+            else {
+
+                midfielders.appendChild(card);
+
+            }
+
+        });
+
+
+        // ===============================
+        // NO PLAYERS
+        // ===============================
+
+        if (!foundPlayers) {
+
+            const message = `
+                <div class="empty">
+                    No players registered for this team yet.
+                </div>
+            `;
+
+            goalkeepers.innerHTML = message;
+
         }
 
-        header {
-            background: #0b5d1e;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
 
-        header h1 {
-            margin: 0;
-            font-size: 26px;
-        }
+    }
 
-        .team-header {
-            background: white;
-            margin: 20px auto;
-            padding: 25px;
-            max-width: 900px;
-            text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
+    catch (error) {
 
-        .team-header h2 {
-            margin: 5px 0;
-            color: #0b5d1e;
-            font-size: 28px;
-        }
+        console.error("Error loading squad:", error);
 
-        .team-header p {
-            color: #777;
-        }
+        teamName.textContent = "Unable to load squad";
 
-        .squad {
-            max-width: 900px;
-            margin: auto;
-            padding: 0 15px 30px;
-        }
+    }
 
-        .section-title {
-            margin-top: 25px;
-            background: #0b5d1e;
-            color: white;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-size: 18px;
-        }
+}
 
-        .players {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
 
-        .player-card {
-            background: white;
-            border-radius: 12px;
-            padding: 18px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
+// ===============================
+// START
+// ===============================
 
-        .number {
-            background: #0b5d1e;
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .player-info h3 {
-            margin: 0 0 5px;
-            font-size: 17px;
-        }
-
-        .player-info p {
-            margin: 0;
-            color: #777;
-            font-size: 14px;
-        }
-
-        .captain {
-            color: #d89b00;
-            font-weight: bold;
-            font-size: 12px;
-            margin-top: 5px !important;
-        }
-
-        .empty {
-            background: white;
-            padding: 20px;
-            text-align: center;
-            color: #777;
-            border-radius: 10px;
-        }
-
-        .back {
-            display: block;
-            width: fit-content;
-            margin: 20px auto;
-            padding: 10px 18px;
-            background: #222;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-    </style>
-</head>
-
-<body>
-
-<header>
-    <h1>Lamu West Premier League</h1>
-</header>
-
-<div class="team-header">
-    <h2 id="teamName">Loading Team...</h2>
-    <p>Official Team Squad</p>
-</div>
-
-<div class="squad">
-
-    <div class="section-title">🧤 Goalkeepers</div>
-    <div id="goalkeepers" class="players"></div>
-
-    <div class="section-title">🛡️ Defenders</div>
-    <div id="defenders" class="players"></div>
-
-    <div class="section-title">⚽ Midfielders</div>
-    <div id="midfielders" class="players"></div>
-
-    <div class="section-title">🔥 Forwards</div>
-    <div id="forwards" class="players"></div>
-
-    <a href="index.html" class="back">← Back to Home</a>
-
-</div>
-
-<script type="module" src="team.js"></script>
-
-</body>
-</html>
+loadSquad();

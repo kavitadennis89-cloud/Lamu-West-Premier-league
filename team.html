@@ -97,6 +97,31 @@
       font-weight: bold;
     }
 
+    .player-number {
+      background: #075e3d;
+      color: white;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .starting {
+      color: #075e3d;
+    }
+
+    .captain {
+      color: #b8860b;
+    }
+
+    .no-players {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
     .back-link {
       text-align: center;
       margin: 30px 0;
@@ -128,7 +153,7 @@
       }
 
       table {
-        min-width: 500px;
+        min-width: 550px;
       }
 
     }
@@ -140,8 +165,6 @@
 
 <body>
 
-
-  <!-- TEAM HEADER -->
 
   <header class="team-header">
 
@@ -159,8 +182,6 @@
   <main>
 
 
-    <!-- TEAM NAME -->
-
     <h2 id="teamName">
       Loading team...
     </h2>
@@ -177,24 +198,17 @@
       <table>
 
         <tr>
-
           <th>Played</th>
           <th>Won</th>
           <th>Draw</th>
           <th>Lost</th>
-
         </tr>
 
         <tr>
-
           <td id="played">0</td>
-
           <td id="won">0</td>
-
           <td id="draw">0</td>
-
           <td id="lost">0</td>
-
         </tr>
 
       </table>
@@ -213,24 +227,17 @@
       <table>
 
         <tr>
-
           <th>GF</th>
           <th>GA</th>
           <th>GD</th>
           <th>Points</th>
-
         </tr>
 
         <tr>
-
           <td id="goalsFor">0</td>
-
           <td id="goalsAgainst">0</td>
-
           <td id="goalDifference">0</td>
-
           <td id="points">0</td>
-
         </tr>
 
       </table>
@@ -238,7 +245,24 @@
     </section>
 
 
-    <!-- BACK BUTTON -->
+    <!-- SQUAD -->
+
+    <section>
+
+      <h3>
+        👥 Team Squad
+      </h3>
+
+      <div id="playersList">
+
+        <p class="no-players">
+          Loading players...
+        </p>
+
+      </div>
+
+    </section>
+
 
     <div class="back-link">
 
@@ -254,7 +278,7 @@
 
   <script
     type="module"
-    src="team.js?v=1">
+    src="team.js?v=2">
   </script>
 
 

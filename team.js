@@ -1,510 +1,139 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 import {
-  getFirestore,
-  collection,
-  getDocs
+    getFirestore,
+    collection,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
-  authDomain: "lamu-west-premier-league.firebaseapp.com",
-  projectId: "lamu-west-premier-league",
-  storageBucket: "lamu-west-premier-league.firebasestorage.app",
-  messagingSenderId: "280853181931",
-  appId: "1:280853181931:web:8c411d3528bddadd2d15ae"
+    apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+    authDomain: "lamu-west-premier-league.firebaseapp.com",
+    projectId: "lamu-west-premier-league",
+    storageBucket: "lamu-west-premier-league.firebasestorage.app",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
-
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
-/* =========================
-   GET TEAM FROM URL
-========================= */
-
-const params = new URLSearchParams(
-  window.location.search
-);
-
-const teamName = params.get("team");
+// Get selected team from URL
+const params = new URLSearchParams(window.location.search);
+const selectedTeam = params.get("team");
 
 
-/* =========================
-   LOAD TEAM
-========================= */
-
-async function loadTeam() {
-
-  const nameElement =
-    document.getElementById("teamName");
+// Show team name
+document.getElementById("teamName").textContent =
+    selectedTeam || "Team Squad";
 
 
-  if (!teamName) {
+async function loadSquad() {
 
-    nameElement.textContent =
-      "Team not selected";
+    if (!selectedTeam) {
+        document.getElementById("teamName").textContent = "No Team Selected";
+        return;
+    }
 
-    return;
-  }
+    const playersSnapshot = await getDocs(collection(db, "players"));
 
+    const goalkeepers = document.getElementById("goalkeepers");
+    const defenders = document.getElementById("defenders");
+    const midfielders = document.getElementById("midfielders");
+    const forwards = document.getElementById("forwards");
 
-  try {
+    goalkeepers.innerHTML = "";
+    defenders.innerHTML = "";
+    midfielders.innerHTML = "";
+    forwards.innerHTML = "";
 
-    const snapshot =
-      await getDocs(
-        collection(db, "teams")
-      );
+    let foundPlayers = false;
 
+    playersSnapshot.forEach((doc) => {
 
-    let teamFound = null;
+        const player = doc.data();
 
+        // Only show players belonging to selected team
+        if (player.team !== selectedTeam) {
+            return;
+        }
 
-    snapshot.forEach(teamDoc => {
+        foundPlayers = true;
 
-      const data = teamDoc.data();
+        const card = document.createElement("div");
+        card.className = "player-card";
 
+        card.innerHTML = `
+            <div class="number">
+                ${player.number || "-"}
+            </div>
 
-      if (data.name === teamName) {
+            <div class="player-info">
+                <h3>${player.name || "Unnamed Player"}</h3>
 
-        teamFound = data;
+                <p>
+                    ${player.position || "Player"}
+                </p>
 
-      }
+                ${
+                    player.captain
+                    ? `<p class="captain">⭐ CAPTAIN</p>`
+                    : ""
+                }
+            </div>
+        `;
+
+        const position = (player.position || "").toLowerCase();
+
+        if (
+            position.includes("goal") ||
+            position === "gk" ||
+            position.includes("keeper")
+        ) {
+            goalkeepers.appendChild(card);
+
+        } else if (
+            position.includes("def") ||
+            position === "cb" ||
+            position === "lb" ||
+            position === "rb"
+        ) {
+            defenders.appendChild(card);
+
+        } else if (
+            position.includes("mid") ||
+            position === "cm" ||
+            position === "dm" ||
+            position === "am"
+        ) {
+            midfielders.appendChild(card);
+
+        } else if (
+            position.includes("for") ||
+            position.includes("attack") ||
+            position === "fw" ||
+            position === "st"
+        ) {
+            forwards.appendChild(card);
+
+        } else {
+            midfielders.appendChild(card);
+        }
 
     });
 
 
-    if (!teamFound) {
+    if (!foundPlayers) {
 
-      nameElement.textContent =
-        "Team not found";
+        goalkeepers.innerHTML =
+            `<div class="empty">No players registered for this team yet.</div>`;
 
-      return;
     }
-
-
-    /* =========================
-       TEAM NAME
-    ========================= */
-
-    nameElement.textContent =
-      teamFound.name || "Unknown Team";
-
-
-    /* =========================
-       STATISTICS
-    ========================= */
-
-    document.getElementById("played").textContent =
-      Number(teamFound.played || 0);
-
-
-    document.getElementById("won").textContent =
-      Number(
-        teamFound.won ||
-        teamFound.wins ||
-        0
-      );
-
-
-    document.getElementById("draw").textContent =
-      Number(
-        teamFound.draw ||
-        teamFound.draws ||
-        0
-      );
-
-
-    document.getElementById("lost").textContent =
-      Number(
-        teamFound.lost ||
-        teamFound.losses ||
-        0
-      );
-
-
-    /* =========================
-       GOALS
-    ========================= */
-
-    const goalsFor =
-      Number(teamFound.goalsFor || 0);
-
-
-    const goalsAgainst =
-      Number(teamFound.goalsAgainst || 0);
-
-
-    document.getElementById("goalsFor").textContent =
-      goalsFor;
-
-
-    document.getElementById("goalsAgainst").textContent =
-      goalsAgainst;
-
-
-    document.getElementById("goalDifference").textContent =
-      goalsFor - goalsAgainst;
-
-
-    document.getElementById("points").textContent =
-      Number(teamFound.points || 0);
-
-
-    /* =========================
-       LOAD SQUAD
-    ========================= */
-
-    await loadPlayers(teamFound.name);
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Error loading team:",
-      error
-    );
-
-
-    nameElement.textContent =
-      "Error loading team";
-
-  }
 
 }
 
 
-/* =========================
-   LOAD PLAYERS
-========================= */
-
-async function loadPlayers(team) {
-
-  const playersList =
-    document.getElementById("playersList");
-
-
-  if (!playersList) return;
-
-
-  try {
-
-    const snapshot =
-      await getDocs(
-        collection(db, "players")
-      );
-
-
-    const players = [];
-
-
-    snapshot.forEach(playerDoc => {
-
-      const player =
-        playerDoc.data();
-
-
-      if (player.team === team) {
-
-        players.push(player);
-
-      }
-
-    });
-
-
-    /* =========================
-       NO PLAYERS
-    ========================= */
-
-    if (players.length === 0) {
-
-      playersList.innerHTML = `
-
-        <p class="no-players">
-
-          👤 No players registered
-          for this team yet.
-
-        </p>
-
-      `;
-
-      return;
-
-    }
-
-
-    /* =========================
-       SORT BY JERSEY NUMBER
-    ========================= */
-
-    players.sort(
-      (a, b) =>
-        Number(a.number || 999) -
-        Number(b.number || 999)
-    );
-
-
-    /* =========================
-       STARTING XI
-    ========================= */
-
-    const startingPlayers =
-      players.filter(
-        player => player.starting === true
-      );
-
-
-    /* =========================
-       SUBSTITUTES
-    ========================= */
-
-    const substitutePlayers =
-      players.filter(
-        player => player.starting !== true
-      );
-
-
-    let html = "";
-
-
-    /* =========================
-       STARTING XI TITLE
-    ========================= */
-
-    if (startingPlayers.length > 0) {
-
-      html += `
-
-        <div style="
-          grid-column: 1 / -1;
-          margin-bottom: 5px;
-        ">
-
-          <h3 style="
-            color:#075e3d;
-            margin-bottom:10px;
-          ">
-
-            ⭐ Starting XI
-
-          </h3>
-
-        </div>
-
-      `;
-
-
-      startingPlayers.forEach(player => {
-
-        html += createPlayerCard(
-          player,
-          true
-        );
-
-      });
-
-    }
-
-
-    /* =========================
-       SUBSTITUTE TITLE
-    ========================= */
-
-    if (substitutePlayers.length > 0) {
-
-      html += `
-
-        <div style="
-          grid-column: 1 / -1;
-          margin-top:20px;
-          margin-bottom:5px;
-        ">
-
-          <h3 style="
-            color:#075e3d;
-            margin-bottom:10px;
-          ">
-
-            🔄 Substitutes
-
-          </h3>
-
-        </div>
-
-      `;
-
-
-      substitutePlayers.forEach(player => {
-
-        html += createPlayerCard(
-          player,
-          false
-        );
-
-      });
-
-    }
-
-
-    playersList.innerHTML =
-      html;
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Error loading players:",
-      error
-    );
-
-
-    playersList.innerHTML = `
-
-      <p class="no-players">
-
-        ❌ Unable to load players.
-
-      </p>
-
-    `;
-
-  }
-
-}
-
-
-/* =========================
-   PLAYER CARD
-========================= */
-
-function createPlayerCard(
-  player,
-  isStarting
-) {
-
-  let status = "";
-
-
-  /* =========================
-     CAPTAIN
-  ========================= */
-
-  if (player.captain) {
-
-    status += `
-
-      <span class="captain-badge">
-
-        👑 Captain
-
-      </span>
-
-    `;
-
-  }
-
-
-  /* =========================
-     STARTING / SUBSTITUTE
-  ========================= */
-
-  if (isStarting) {
-
-    if (status) {
-
-      status += "<br>";
-
-    }
-
-
-    status += `
-
-      <span class="starting-badge">
-
-        ⭐ Starting XI
-
-      </span>
-
-    `;
-
-  }
-
-  else {
-
-    if (status) {
-
-      status += "<br>";
-
-    }
-
-
-    status += `
-
-      <span class="substitute-badge">
-
-        🔄 Substitute
-
-      </span>
-
-    `;
-
-  }
-
-
-  /* =========================
-     PLAYER CARD HTML
-  ========================= */
-
-  return `
-
-    <div class="player-card">
-
-      <div class="player-number">
-
-        ${player.number || "-"}
-
-      </div>
-
-
-      <div class="player-info">
-
-        <h4>
-
-          ${player.name || "Unknown Player"}
-
-        </h4>
-
-
-        <p>
-
-          ${player.position || "Player"}
-
-        </p>
-
-
-        <div class="player-status">
-
-          ${status}
-
-        </div>
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-/* =========================
-   START TEAM PAGE
-========================= */
-
-loadTeam();
+// Load squad
+loadSquad();

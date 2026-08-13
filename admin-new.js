@@ -24,7 +24,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
+// Linda Admin Panel
+if (localStorage.getItem("adminLoggedIn") !== "true") {
+    window.location.href = "login.html";
+}
 
 const menuItems = document.querySelectorAll(".sidebar li");
 const pageTitle = document.getElementById("pageTitle");

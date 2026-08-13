@@ -18,7 +18,6 @@ const firebaseConfig = {
 
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
 
@@ -26,14 +25,11 @@ const db = getFirestore(app);
    GET TEAM FROM URL
 ========================= */
 
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
+const params = new URLSearchParams(
+  window.location.search
+);
 
-
-const teamName =
-  params.get("team");
+const teamName = params.get("team");
 
 
 /* =========================
@@ -69,14 +65,10 @@ async function loadTeam() {
 
     snapshot.forEach(teamDoc => {
 
-      const data =
-        teamDoc.data();
-
+      const data = teamDoc.data();
 
       if (data.name === teamName) {
-
         teamFound = data;
-
       }
 
     });
@@ -95,15 +87,13 @@ async function loadTeam() {
     /* TEAM NAME */
 
     nameElement.textContent =
-      teamFound.name ||
-      "Unknown Team";
+      teamFound.name || "Unknown Team";
 
 
     /* STATISTICS */
 
     document.getElementById("played").textContent =
       Number(teamFound.played || 0);
-
 
     document.getElementById("won").textContent =
       Number(
@@ -112,14 +102,12 @@ async function loadTeam() {
         0
       );
 
-
     document.getElementById("draw").textContent =
       Number(
         teamFound.draw ||
         teamFound.draws ||
         0
       );
-
 
     document.getElementById("lost").textContent =
       Number(
@@ -132,40 +120,28 @@ async function loadTeam() {
     /* GOALS */
 
     const goalsFor =
-      Number(
-        teamFound.goalsFor || 0
-      );
-
+      Number(teamFound.goalsFor || 0);
 
     const goalsAgainst =
-      Number(
-        teamFound.goalsAgainst || 0
-      );
+      Number(teamFound.goalsAgainst || 0);
 
 
     document.getElementById("goalsFor").textContent =
       goalsFor;
 
-
     document.getElementById("goalsAgainst").textContent =
       goalsAgainst;
-
 
     document.getElementById("goalDifference").textContent =
       goalsFor - goalsAgainst;
 
-
     document.getElementById("points").textContent =
-      Number(
-        teamFound.points || 0
-      );
+      Number(teamFound.points || 0);
 
 
     /* LOAD SQUAD */
 
-    await loadPlayers(
-      teamFound.name
-    );
+    await loadPlayers(teamFound.name);
 
   }
 
@@ -175,7 +151,6 @@ async function loadTeam() {
       "Error loading team:",
       error
     );
-
 
     nameElement.textContent =
       "Error loading team";
@@ -192,9 +167,7 @@ async function loadTeam() {
 async function loadPlayers(team) {
 
   const playersList =
-    document.getElementById(
-      "playersList"
-    );
+    document.getElementById("playersList");
 
 
   if (!playersList) return;
@@ -217,12 +190,8 @@ async function loadPlayers(team) {
         playerDoc.data();
 
 
-      if (
-        player.team === team
-      ) {
-
+      if (player.team === team) {
         players.push(player);
-
       }
 
     });
@@ -255,100 +224,106 @@ async function loadPlayers(team) {
     );
 
 
+    /* =========================
+       STARTING XI
+    ========================= */
+
+    const startingPlayers =
+      players.filter(
+        player => player.starting === true
+      );
+
+
+    /* =========================
+       SUBSTITUTES
+    ========================= */
+
+    const substitutePlayers =
+      players.filter(
+        player => player.starting !== true
+      );
+
+
     let html = "";
 
 
-    players.forEach(player => {
+    /* =========================
+       STARTING XI SECTION
+    ========================= */
 
-      let status = "";
-
-
-      /* CAPTAIN */
-
-      if (player.captain) {
-
-        status += `
-
-          <span class="captain-badge">
-            ©️ Captain
-          </span>
-
-        `;
-
-      }
-
-
-      /* STARTING XI */
-
-      if (player.starting) {
-
-        if (status) {
-          status += "<br>";
-        }
-
-
-        status += `
-
-          <span class="starting-badge">
-            ⭐ Starting XI
-          </span>
-
-        `;
-
-      }
-
-
-      /* SUBSTITUTE */
-
-      if (!status) {
-
-        status = `
-
-          <span class="substitute-badge">
-            🔄 Substitute
-          </span>
-
-        `;
-
-      }
-
+    if (startingPlayers.length > 0) {
 
       html += `
 
-        <div class="player-card">
+        <div style="
+          grid-column: 1 / -1;
+          margin-bottom: 5px;
+        ">
 
-          <div class="player-number-big">
+          <h3 style="
+            color:#075e3d;
+            margin-bottom:10px;
+          ">
 
-            ${player.number || "-"}
+            ⭐ Starting XI
 
-          </div>
-
-
-          <h4>
-
-            ${player.name || "Unknown Player"}
-
-          </h4>
-
-
-          <div class="player-position">
-
-            ${player.position || "-"}
-
-          </div>
-
-
-          <div class="player-status">
-
-            ${status}
-
-          </div>
+          </h3>
 
         </div>
 
       `;
 
-    });
+
+      startingPlayers.forEach(player => {
+
+        html += createPlayerCard(
+          player,
+          true
+        );
+
+      });
+
+    }
+
+
+    /* =========================
+       SUBSTITUTE SECTION
+    ========================= */
+
+    if (substitutePlayers.length > 0) {
+
+      html += `
+
+        <div style="
+          grid-column: 1 / -1;
+          margin-top:20px;
+          margin-bottom:5px;
+        ">
+
+          <h3 style="
+            color:#075e3d;
+            margin-bottom:10px;
+          ">
+
+            🔄 Substitutes
+
+          </h3>
+
+        </div>
+
+      `;
+
+
+      substitutePlayers.forEach(player => {
+
+        html += createPlayerCard(
+          player,
+          false
+        );
+
+      });
+
+    }
 
 
     playersList.innerHTML =
@@ -380,7 +355,59 @@ async function loadPlayers(team) {
 
 
 /* =========================
-   START
+   PLAYER CARD
 ========================= */
 
-loadTeam();
+function createPlayerCard(
+  player,
+  isStarting
+) {
+
+  let status = "";
+
+
+  /* CAPTAIN */
+
+  if (player.captain) {
+
+    status += `
+
+      <span class="captain-badge">
+
+        👑 Captain
+
+      </span>
+
+    `;
+
+  }
+
+
+  /* STARTING / SUBSTITUTE */
+
+  if (isStarting) {
+
+    if (status) {
+      status += "<br>";
+    }
+
+    status += `
+
+      <span class="starting-badge">
+
+        ⭐ Starting XI
+
+      </span>
+
+    `;
+
+  }
+  else {
+
+    if (status) {
+      status += "<br>";
+    }
+
+    status += `
+
+      <span

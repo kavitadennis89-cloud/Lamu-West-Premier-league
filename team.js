@@ -22,6 +22,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 
+/* =========================
+   GET TEAM FROM URL
+========================= */
+
 const params =
   new URLSearchParams(
     window.location.search
@@ -32,16 +36,14 @@ const teamName =
   params.get("team");
 
 
-/* ==========================
+/* =========================
    LOAD TEAM
-========================== */
+========================= */
 
 async function loadTeam() {
 
   const nameElement =
-    document.getElementById(
-      "teamName"
-    );
+    document.getElementById("teamName");
 
 
   if (!teamName) {
@@ -71,9 +73,7 @@ async function loadTeam() {
         teamDoc.data();
 
 
-      if (
-        data.name === teamName
-      ) {
+      if (data.name === teamName) {
 
         teamFound = data;
 
@@ -101,17 +101,11 @@ async function loadTeam() {
 
     /* STATISTICS */
 
-    document.getElementById(
-      "played"
-    ).textContent =
-      Number(
-        teamFound.played || 0
-      );
+    document.getElementById("played").textContent =
+      Number(teamFound.played || 0);
 
 
-    document.getElementById(
-      "won"
-    ).textContent =
+    document.getElementById("won").textContent =
       Number(
         teamFound.won ||
         teamFound.wins ||
@@ -119,9 +113,7 @@ async function loadTeam() {
       );
 
 
-    document.getElementById(
-      "draw"
-    ).textContent =
+    document.getElementById("draw").textContent =
       Number(
         teamFound.draw ||
         teamFound.draws ||
@@ -129,9 +121,7 @@ async function loadTeam() {
       );
 
 
-    document.getElementById(
-      "lost"
-    ).textContent =
+    document.getElementById("lost").textContent =
       Number(
         teamFound.lost ||
         teamFound.losses ||
@@ -153,35 +143,29 @@ async function loadTeam() {
       );
 
 
-    document.getElementById(
-      "goalsFor"
-    ).textContent =
+    document.getElementById("goalsFor").textContent =
       goalsFor;
 
 
-    document.getElementById(
-      "goalsAgainst"
-    ).textContent =
+    document.getElementById("goalsAgainst").textContent =
       goalsAgainst;
 
 
-    document.getElementById(
-      "goalDifference"
-    ).textContent =
+    document.getElementById("goalDifference").textContent =
       goalsFor - goalsAgainst;
 
 
-    document.getElementById(
-      "points"
-    ).textContent =
+    document.getElementById("points").textContent =
       Number(
         teamFound.points || 0
       );
 
 
-    /* LOAD PLAYERS */
+    /* LOAD SQUAD */
 
-    await loadPlayers(teamFound.name);
+    await loadPlayers(
+      teamFound.name
+    );
 
   }
 
@@ -201,9 +185,9 @@ async function loadTeam() {
 }
 
 
-/* ==========================
+/* =========================
    LOAD PLAYERS
-========================== */
+========================= */
 
 async function loadPlayers(team) {
 
@@ -211,6 +195,9 @@ async function loadPlayers(team) {
     document.getElementById(
       "playersList"
     );
+
+
+  if (!playersList) return;
 
 
   try {
@@ -246,8 +233,10 @@ async function loadPlayers(team) {
       playersList.innerHTML = `
 
         <p class="no-players">
+
           👤 No players registered
           for this team yet.
+
         </p>
 
       `;
@@ -257,6 +246,8 @@ async function loadPlayers(team) {
     }
 
 
+    /* SORT BY JERSEY NUMBER */
+
     players.sort(
       (a, b) =>
         Number(a.number || 999) -
@@ -264,23 +255,7 @@ async function loadPlayers(team) {
     );
 
 
-    let html = `
-
-      <table>
-
-        <tr>
-
-          <th>No.</th>
-
-          <th>Player</th>
-
-          <th>Position</th>
-
-          <th>Status</th>
-
-        </tr>
-
-    `;
+    let html = "";
 
 
     players.forEach(player => {
@@ -288,15 +263,22 @@ async function loadPlayers(team) {
       let status = "";
 
 
+      /* CAPTAIN */
+
       if (player.captain) {
 
-        status +=
-          `<span class="captain">
-             ©️ Captain
-           </span>`;
+        status += `
+
+          <span class="captain-badge">
+            ©️ Captain
+          </span>
+
+        `;
 
       }
 
+
+      /* STARTING XI */
 
       if (player.starting) {
 
@@ -304,60 +286,69 @@ async function loadPlayers(team) {
           status += "<br>";
         }
 
-        status +=
-          `<span class="starting">
-             ⭐ Starting XI
-           </span>`;
+
+        status += `
+
+          <span class="starting-badge">
+            ⭐ Starting XI
+          </span>
+
+        `;
 
       }
 
 
+      /* SUBSTITUTE */
+
       if (!status) {
 
-        status =
-          "🔄 Substitute";
+        status = `
+
+          <span class="substitute-badge">
+            🔄 Substitute
+          </span>
+
+        `;
 
       }
 
 
       html += `
 
-        <tr>
+        <div class="player-card">
 
-          <td>
+          <div class="player-number-big">
 
-            <span class="player-number">
+            ${player.number || "-"}
 
-              ${player.number || "-"}
+          </div>
 
-            </span>
 
-          </td>
+          <h4>
 
-          <td>
-            ${player.name || "Unknown"}
-          </td>
+            ${player.name || "Unknown Player"}
 
-          <td>
+          </h4>
+
+
+          <div class="player-position">
+
             ${player.position || "-"}
-          </td>
 
-          <td>
+          </div>
+
+
+          <div class="player-status">
+
             ${status}
-          </td>
 
-        </tr>
+          </div>
+
+        </div>
 
       `;
 
     });
-
-
-    html += `
-
-      </table>
-
-    `;
 
 
     playersList.innerHTML =
@@ -388,8 +379,8 @@ async function loadPlayers(team) {
 }
 
 
-/* ==========================
+/* =========================
    START
-========================== */
+========================= */
 
 loadTeam();

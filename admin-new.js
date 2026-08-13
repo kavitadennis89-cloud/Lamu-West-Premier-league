@@ -944,3 +944,82 @@ async function deletePlayer(id) {
 ========================= */
 
 showDashboard();
+/* =========================
+   TEAMS PAGE
+========================= */
+
+async function showTeams() {
+
+    content.innerHTML = `
+        <div class="card">
+
+            <h3>⚽ Teams Management</h3>
+
+            <button id="refreshTeamsBtn">
+                🔄 Refresh Teams
+            </button>
+
+            <br><br>
+
+            <div id="teamsList">
+                Loading teams...
+            </div>
+
+        </div>
+    `;
+
+    document
+        .getElementById("refreshTeamsBtn")
+        .addEventListener("click", loadTeams);
+
+    await loadTeams();
+}
+
+async function loadTeams() {
+
+    const teamsList =
+        document.getElementById("teamsList");
+
+    teamsList.innerHTML = "<p>Loading teams...</p>";
+
+    try {
+
+        const snapshot =
+            await getDocs(collection(db, "teams"));
+
+        if (snapshot.empty) {
+
+            teamsList.innerHTML =
+                "<p>No teams found.</p>";
+
+            return;
+
+        }
+
+        teamsList.innerHTML = "";
+
+        snapshot.forEach(teamDoc => {
+
+            const team = teamDoc.data();
+
+            teamsList.innerHTML += `
+                <div class="card">
+                    <h3>${team.name}</h3>
+
+                    <p>Played: ${team.played || 0}</p>
+                    <p>Won: ${team.won || 0}</p>
+                    <p>Draw: ${team.draw || 0}</p>
+                    <p>Lost: ${team.lost || 0}</p>
+                    <p>Points: ${team.points || 0}</p>
+                </div>
+            `;
+        });
+
+    } catch(error) {
+
+        teamsList.innerHTML =
+            "<p>Failed to load teams.</p>";
+
+        console.error(error);
+    }
+}

@@ -52,23 +52,26 @@ menuItems.forEach(item => {
 
         if (page === "dashboard") {
 
-            showDashboard();
+    showDashboard();
 
-        } else if (page === "players") {
+} else if (page === "teams") {
 
-            showPlayers();
+    showTeams();
 
-        } else {
+} else if (page === "players") {
 
-            content.innerHTML = `
-                <div class="card">
-                    <h3>${item.textContent.trim()}</h3>
-                    <p>Coming soon...</p>
-                </div>
-            `;
+    showPlayers();
+
+} else {
+
+    content.innerHTML = `
+        <div class="card">
+            <h3>${item.textContent.trim()}</h3>
+            <p>This module is under development.</p>
+        </div>
+    `;
 
         }
-
     });
 
 });

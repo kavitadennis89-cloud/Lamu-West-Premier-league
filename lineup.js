@@ -607,7 +607,8 @@ function renderSubstitutes(players) {
 function renderPitch(players) {
 
     const pitch =
-        document.getElementById("pitch");
+    document.getElementById("pitch") ||
+    document.querySelector(".pitch");
 
 
     if (!pitch) {

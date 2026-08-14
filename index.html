@@ -446,5 +446,69 @@
 
 
 </body>
+<script>
 
+let deferredPrompt;
+
+const installBox =
+  document.getElementById("installBox");
+
+const installButton =
+  document.getElementById("installButton");
+
+
+window.addEventListener(
+  "beforeinstallprompt",
+  (event) => {
+
+    event.preventDefault();
+
+    deferredPrompt = event;
+
+    installBox.style.display = "block";
+
+  }
+);
+
+
+installButton.addEventListener(
+  "click",
+  async () => {
+
+    if (!deferredPrompt) {
+      return;
+    }
+
+    deferredPrompt.prompt();
+
+    const result =
+      await deferredPrompt.userChoice;
+
+    console.log(
+      "Install result:",
+      result.outcome
+    );
+
+    deferredPrompt = null;
+
+    installBox.style.display = "none";
+
+  }
+);
+
+
+window.addEventListener(
+  "appinstalled",
+  () => {
+
+    installBox.style.display = "none";
+
+    console.log(
+      "✅ LWPL App Installed"
+    );
+
+  }
+);
+
+</script>
 </html>

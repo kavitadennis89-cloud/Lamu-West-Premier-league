@@ -1,0 +1,10 @@
+{
+  "name": "Lamu West Premier League",
+  "short_name": "LWPL",
+  "description": "Official Lamu West Premier League App",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0b5d1e",
+  "orientation": "portrait"
+}

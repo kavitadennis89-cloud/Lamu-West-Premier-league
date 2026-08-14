@@ -1,6 +1,6 @@
 /* =========================================================
    LWPL - LINEUP PAGE
-   CLEAN FOOTBALL MATCH LINEUP DESIGN
+   MATCH LINEUP / FOOTBALL PITCH DESIGN
 ========================================================= */
 
 * {
@@ -13,14 +13,13 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background: #eef2f7;
     color: #17221f;
-    min-height: 100vh;
 }
 
 .container {
     width: 100%;
     max-width: 1450px;
     margin: auto;
-    padding: 18px;
+    padding: 15px;
 }
 
 /* =========================================================
@@ -29,118 +28,124 @@ body {
 
 .match-header {
     background: linear-gradient(135deg, #061b45, #0b3d91);
-    border-radius: 16px;
-    overflow: hidden;
     color: white;
+    border-radius: 15px;
+    overflow: hidden;
     box-shadow: 0 8px 25px rgba(0,0,0,.18);
-    margin-bottom: 22px;
 }
 
 .league-title {
-    min-height: 55px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-
-    font-size: 25px;
-    font-weight: 900;
-    letter-spacing: .5px;
-
-    background: rgba(0,0,0,.18);
-    border-bottom: 1px solid rgba(255,255,255,.15);
-}
-
-.league-title .trophy {
-    color: #ffd21c;
-    font-size: 28px;
-}
-
-.teams-area {
-    min-height: 125px;
-
-    display: grid;
-    grid-template-columns: 1fr 130px 1fr;
-    align-items: center;
+    padding: 18px;
     text-align: center;
-
-    padding: 12px 30px;
-}
-
-.team {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-}
-
-.team-logo {
-    width: 82px;
-    height: 82px;
-    object-fit: contain;
-    filter: drop-shadow(0 5px 6px rgba(0,0,0,.4));
-}
-
-.team-name {
-    font-size: 29px;
+    font-size: 27px;
     font-weight: 900;
-}
-
-.vs {
-    font-size: 38px;
-    font-weight: 1000;
-    color: #ffffff;
+    letter-spacing: 1px;
 }
 
 .match-info {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-
-    background: #061b45;
-    border-top: 1px solid rgba(255,255,255,.15);
+    gap: 12px;
+    padding: 11px;
+    background: rgba(0,0,0,.20);
+    font-size: 14px;
+    font-weight: 700;
 }
 
-.info-item {
-    min-height: 45px;
-    padding: 8px 20px;
+.separator {
+    color: #b8ef24;
+    font-size: 18px;
+}
+
+/* =========================================================
+   TEAMS HEADER
+========================================================= */
+
+.teams-header {
+    margin-top: 15px;
+    padding: 20px;
+
+    display: grid;
+    grid-template-columns: 1fr 150px 1fr;
+    align-items: center;
+
+    background: white;
+    border-radius: 15px;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,.10);
+}
+
+.team {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.team-home {
+    justify-content: flex-end;
+}
+
+.team-away {
+    justify-content: flex-start;
+}
+
+.team-logo {
+    width: 80px;
+    height: 80px;
 
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-
-    font-size: 15px;
-    font-weight: 700;
-
-    border-right: 1px solid rgba(255,255,255,.15);
 }
 
-.info-item:last-child {
-    border-right: none;
+.team-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-.info-icon {
-    color: #b6ef27;
-    font-size: 19px;
+.team-name {
+    font-size: 25px;
+    font-weight: 900;
 }
 
-.matchday {
-    background: #123b78;
-    padding: 6px 13px;
-    border-radius: 7px;
+.match-center {
+    text-align: center;
+}
+
+.vs {
+    font-size: 32px;
+    font-weight: 1000;
+    color: #071b35;
+}
+
+.match-time {
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #667085;
 }
 
 /* =========================================================
-   MAIN LAYOUT
+   LINEUP TITLE
 ========================================================= */
 
-.lineup-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 350px;
-    gap: 22px;
-    align-items: start;
+.lineup-title-section {
+    text-align: center;
+    margin: 25px 0 15px;
+}
+
+.lineup-title-section h1 {
+    font-size: 27px;
+    font-weight: 900;
+    color: #071b35;
+}
+
+.lineup-title-section p {
+    margin-top: 5px;
+    color: #667085;
+    font-size: 14px;
 }
 
 /* =========================================================
@@ -148,32 +153,13 @@ body {
 ========================================================= */
 
 .pitch-section {
-    position: relative;
-    min-width: 0;
+    width: 100%;
 }
 
-.formation {
-    position: absolute;
-    top: 0;
-    left: 18px;
-    z-index: 50;
-
-    background: #071b35;
-    color: white;
-
-    padding: 10px 20px;
-
-    border-radius: 9px 9px 0 0;
-
-    font-size: 17px;
-    font-weight: 900;
-
-    box-shadow: 0 4px 10px rgba(0,0,0,.2);
-}
-
-.formation span {
-    color: #b8ef24;
-    margin-left: 7px;
+.pitch-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 /* =========================================================
@@ -184,31 +170,30 @@ body {
     position: relative;
 
     width: 100%;
+    max-width: 1000px;
     height: 720px;
-
-    margin-top: 27px;
 
     overflow: hidden;
 
-    border-radius: 14px;
-    border: 5px solid #ffffff;
+    border: 5px solid white;
+    border-radius: 15px;
 
     background:
         repeating-linear-gradient(
             90deg,
-            #3d970f 0px,
-            #3d970f 85px,
-            #429f11 85px,
-            #429f11 170px
+            #388d0d 0px,
+            #388d0d 85px,
+            #429b11 85px,
+            #429b11 170px
         );
 
     box-shadow:
-        0 10px 25px rgba(0,0,0,.25),
-        inset 0 0 35px rgba(0,0,0,.15);
+        0 10px 30px rgba(0,0,0,.25),
+        inset 0 0 45px rgba(0,0,0,.15);
 }
 
 /* =========================================================
-   PITCH OUTER LINE
+   OUTER PITCH LINE
 ========================================================= */
 
 .pitch::before {
@@ -216,50 +201,21 @@ body {
 
     position: absolute;
 
-    top: 18px;
     left: 18px;
     right: 18px;
+    top: 18px;
     bottom: 18px;
 
     border: 3px solid rgba(255,255,255,.95);
 
-    border-radius: 2px;
-
     pointer-events: none;
-
-    z-index: 1;
 }
 
 /* =========================================================
-   CENTER CIRCLE
+   HALF WAY LINE
 ========================================================= */
 
-.pitch::after {
-    content: "";
-
-    position: absolute;
-
-    width: 125px;
-    height: 125px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    border: 3px solid white;
-    border-radius: 50%;
-
-    pointer-events: none;
-
-    z-index: 2;
-}
-
-/* =========================================================
-   CENTER LINE
-========================================================= */
-
-.center-line {
+.halfway-line {
     position: absolute;
 
     left: 18px;
@@ -271,29 +227,45 @@ body {
 
     background: white;
 
-    z-index: 2;
-
     transform: translateY(-50%);
+
+    z-index: 2;
 }
 
 /* =========================================================
-   CENTER SPOT
+   CENTER CIRCLE
 ========================================================= */
 
-.pitch .center-spot {
+.center-circle {
     position: absolute;
 
-    width: 9px;
-    height: 9px;
-
-    background: white;
-
-    border-radius: 50%;
+    width: 135px;
+    height: 135px;
 
     left: 50%;
     top: 50%;
 
     transform: translate(-50%, -50%);
+
+    border: 3px solid white;
+    border-radius: 50%;
+
+    z-index: 2;
+}
+
+.center-spot {
+    position: absolute;
+
+    width: 9px;
+    height: 9px;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    background: white;
+    border-radius: 50%;
 
     z-index: 4;
 }
@@ -302,98 +274,121 @@ body {
    PENALTY AREAS
 ========================================================= */
 
-.penalty-top,
-.penalty-bottom {
+.penalty-area {
     position: absolute;
 
     left: 50%;
 
-    width: 250px;
-    height: 105px;
+    width: 270px;
+    height: 110px;
 
     transform: translateX(-50%);
 
     border: 3px solid white;
 
     z-index: 2;
-
-    pointer-events: none;
 }
 
-.penalty-top {
+.home-area {
     top: 18px;
     border-top: none;
 }
 
-.penalty-bottom {
+.away-area {
     bottom: 18px;
     border-bottom: none;
 }
 
 /* =========================================================
-   SIX YARD BOXES
+   GOAL AREAS
 ========================================================= */
 
-.goal-area-top,
-.goal-area-bottom {
+.goal-area {
     position: absolute;
 
     left: 50%;
 
-    width: 105px;
-    height: 50px;
+    width: 110px;
+    height: 52px;
 
     transform: translateX(-50%);
-
-    border: 3px solid white;
-
-    z-index: 2;
-
-    pointer-events: none;
-}
-
-.goal-area-top {
-    top: 18px;
-    border-top: none;
-}
-
-.goal-area-bottom {
-    bottom: 18px;
-    border-bottom: none;
-}
-
-/* =========================================================
-   GOALS
-========================================================= */
-
-.goal-top,
-.goal-bottom {
-    position: absolute;
-
-    left: 50%;
-
-    width: 62px;
-    height: 15px;
-
-    transform: translateX(-50%);
-
-    background: rgba(255,255,255,.15);
 
     border: 3px solid white;
 
     z-index: 3;
 }
 
-.goal-top {
+.home-goal-area {
+    top: 18px;
+    border-top: none;
+}
+
+.away-goal-area {
+    bottom: 18px;
+    border-bottom: none;
+}
+
+/* =========================================================
+   PENALTY SPOTS
+========================================================= */
+
+.penalty-spot {
+    position: absolute;
+
+    left: 50%;
+
+    width: 9px;
+    height: 9px;
+
+    transform: translateX(-50%);
+
+    background: white;
+
+    border-radius: 50%;
+
+    z-index: 4;
+}
+
+.home-penalty-spot {
+    top: 88px;
+}
+
+.away-penalty-spot {
+    bottom: 88px;
+}
+
+/* =========================================================
+   GOALS
+========================================================= */
+
+.goal {
+    position: absolute;
+
+    left: 50%;
+
+    width: 65px;
+    height: 17px;
+
+    transform: translateX(-50%);
+
+    border: 3px solid white;
+
+    background: rgba(255,255,255,.10);
+
+    z-index: 3;
+}
+
+.home-goal {
     top: 1px;
 }
 
-.goal-bottom {
+.away-goal {
     bottom: 1px;
 }
 
 /* =========================================================
-   PLAYER POSITIONS
+   PLAYER CARDS
+   Compatible with players generated by lineup.js
 ========================================================= */
 
 .player {
@@ -401,163 +396,121 @@ body {
 
     transform: translate(-50%, -50%);
 
-    z-index: 20;
-
-    width: 82px;
+    width: 85px;
 
     text-align: center;
 
-    cursor: pointer;
+    z-index: 20;
 }
 
-/* =========================================================
-   PLAYER CARD
-========================================================= */
-
 .player-card {
-    width: 70px;
-    min-height: 70px;
+    width: 68px;
+    min-height: 68px;
 
     margin: auto;
 
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 
-    background: #ffffff;
+    background: white;
 
     border: 3px solid #071b35;
-
     border-radius: 12px;
 
-    box-shadow:
-        0 5px 12px rgba(0,0,0,.35);
-
-    color: #101820;
+    box-shadow: 0 5px 12px rgba(0,0,0,.35);
 
     transition: .2s ease;
 }
 
-.player:hover .player-card {
+.player-card:hover {
     transform: scale(1.08);
 }
 
-/* =========================================================
-   PLAYER NUMBER
-========================================================= */
-
 .player-number {
-    width: 30px;
-    height: 30px;
+    width: 29px;
+    height: 29px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 50%;
-
     background: #071b35;
     color: white;
 
-    font-size: 14px;
+    border-radius: 50%;
+
+    font-size: 13px;
     font-weight: 900;
 }
-
-/* =========================================================
-   PLAYER NAME
-========================================================= */
 
 .player-name {
     margin-top: 5px;
 
     color: white;
 
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 900;
 
-    text-shadow:
-        0 1px 3px rgba(0,0,0,.9);
-    
+    text-shadow: 0 2px 4px rgba(0,0,0,.9);
+
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    max-width: 105px;
 }
 
 /* =========================================================
-   PLAYER POSITION COLORS
+   LINEUP INFORMATION
 ========================================================= */
 
-.player.goalkeeper .player-card {
-    border-color: #f7c928;
+.lineup-information {
+    margin-top: 25px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.player.defender .player-card {
-    border-color: #1683ff;
-}
-
-.player.midfielder .player-card {
-    border-color: #18a957;
-}
-
-.player.forward .player-card {
-    border-color: #e63838;
-}
-
-/* =========================================================
-   RIGHT SIDE PANEL
-========================================================= */
-
-.lineup-sidebar {
+.lineup-card {
     background: white;
 
     border-radius: 14px;
 
-    box-shadow: 0 7px 22px rgba(0,0,0,.12);
-
     overflow: hidden;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,.10);
 }
 
-.sidebar-title {
+.lineup-card-header {
+    padding: 17px;
+
     background: #071b35;
-
     color: white;
-
-    padding: 16px 18px;
-
-    font-size: 19px;
-    font-weight: 900;
 
     border-bottom: 4px solid #b8ef24;
 }
 
-.sidebar-section {
-    padding: 15px;
+.small-title {
+    display: block;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    color: #b8ef24;
 }
 
-.sidebar-section h3 {
-    font-size: 14px;
+.lineup-card-header h2 {
+    margin-top: 5px;
 
-    color: #52606d;
+    font-size: 20px;
+}
 
-    text-transform: uppercase;
-
-    letter-spacing: .8px;
-
-    margin-bottom: 10px;
+.players-list {
+    padding: 12px;
 }
 
 /* =========================================================
-   PLAYER LIST
+   PLAYER LIST ITEMS
 ========================================================= */
-
-.player-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
 
 .player-row {
     display: flex;
@@ -565,272 +518,287 @@ body {
 
     padding: 10px;
 
-    border-radius: 9px;
+    margin-bottom: 7px;
 
-    background: #f3f6fa;
+    background: #f4f6f8;
 
-    border: 1px solid #e1e7ee;
+    border-radius: 8px;
+
+    border: 1px solid #e2e7ec;
 }
 
 .player-row-number {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 50%;
-
     background: #071b35;
-
     color: white;
+
+    border-radius: 50%;
 
     font-weight: 900;
 
     margin-right: 10px;
 }
 
-.player-row-name {
-    font-size: 14px;
-    font-weight: 800;
-
-    color: #17221f;
-}
-
-.player-row-position {
-    margin-left: auto;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    color: #697586;
-}
-
 /* =========================================================
    SUBSTITUTES
 ========================================================= */
 
-.substitutes {
-    border-top: 1px solid #e5e9ef;
+.substitutes-section {
+    margin-top: 20px;
 
-    margin-top: 8px;
-    padding-top: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-.substitute-row {
-    display: flex;
-    align-items: center;
+.substitute-card {
+    background: white;
 
-    gap: 10px;
+    border-radius: 14px;
 
-    padding: 9px;
+    overflow: hidden;
 
-    border-bottom: 1px solid #edf0f4;
+    box-shadow: 0 6px 20px rgba(0,0,0,.10);
 }
 
-.substitute-row:last-child {
-    border-bottom: none;
+.substitute-header {
+    padding: 15px;
+
+    background: #102f5e;
+    color: white;
+}
+
+.substitute-header h2 {
+    font-size: 18px;
+}
+
+.substitute-header span {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #b8ef24;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.substitutes-list {
+    padding: 12px;
 }
 
 /* =========================================================
-   EMPTY PLAYER
+   FOOTER
 ========================================================= */
 
-.no-player {
-    opacity: .55;
+footer {
+    margin-top: 30px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    background: #071b35;
+
+    color: white;
+
+    border-radius: 14px;
+}
+
+.footer-title {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.footer-text {
+    margin-top: 5px;
+
+    color: #b8ef24;
+
     font-size: 13px;
-    font-style: italic;
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 1000px) {
-
-    .lineup-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .lineup-sidebar {
-        order: 2;
-    }
-
-    .pitch-section {
-        order: 1;
-    }
-
-    .pitch {
-        height: 680px;
-    }
 }
 
 /* =========================================================
    TABLET
 ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
 
-    .container {
-        padding: 10px;
-    }
-
-    .league-title {
-        font-size: 19px;
-        min-height: 48px;
-    }
-
-    .teams-area {
-        grid-template-columns: 1fr 60px 1fr;
-        padding: 10px;
-        min-height: 100px;
-    }
-
-    .team {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .team-logo {
-        width: 55px;
-        height: 55px;
+    .teams-header {
+        grid-template-columns: 1fr 100px 1fr;
     }
 
     .team-name {
-        font-size: 15px;
+        font-size: 19px;
     }
 
-    .vs {
-        font-size: 25px;
-    }
-
-    .match-info {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .info-item {
-        border-right: 1px solid rgba(255,255,255,.15);
-        border-bottom: 1px solid rgba(255,255,255,.15);
-
-        font-size: 12px;
-        padding: 7px;
-    }
-
-    .formation {
-        left: 8px;
-
-        padding: 8px 13px;
-
-        font-size: 14px;
+    .team-logo {
+        width: 65px;
+        height: 65px;
     }
 
     .pitch {
-        margin-top: 24px;
-        height: 620px;
-        border-width: 4px;
-    }
-
-    .pitch::before {
-        top: 14px;
-        left: 14px;
-        right: 14px;
-        bottom: 14px;
-    }
-
-    .center-line {
-        left: 14px;
-        right: 14px;
-    }
-
-    .penalty-top,
-    .penalty-bottom {
-        width: 190px;
-        height: 85px;
-    }
-
-    .goal-area-top,
-    .goal-area-bottom {
-        width: 85px;
-        height: 42px;
-    }
-
-    .player {
-        width: 65px;
-    }
-
-    .player-card {
-        width: 56px;
-        min-height: 56px;
-
-        border-width: 2px;
-
-        border-radius: 9px;
-    }
-
-    .player-number {
-        width: 25px;
-        height: 25px;
-
-        font-size: 12px;
-    }
-
-    .player-name {
-        font-size: 9px;
-        max-width: 75px;
+        height: 650px;
     }
 }
 
 /* =========================================================
-   SMALL PHONES
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .container {
+        padding: 8px;
+    }
+
+    .league-title {
+        font-size: 18px;
+        padding: 15px 8px;
+    }
+
+    .match-info {
+        font-size: 12px;
+    }
+
+    .teams-header {
+        grid-template-columns: 1fr 55px 1fr;
+        padding: 14px 6px;
+    }
+
+    .team {
+        gap: 5px;
+    }
+
+    .team-home {
+        flex-direction: column;
+    }
+
+    .team-away {
+        flex-direction: column;
+    }
+
+    .team-logo {
+        width: 52px;
+        height: 52px;
+    }
+
+    .team-name {
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .vs {
+        font-size: 23px;
+    }
+
+    .match-time {
+        font-size: 11px;
+    }
+
+    .lineup-title-section {
+        margin: 18px 0 12px;
+    }
+
+    .lineup-title-section h1 {
+        font-size: 21px;
+    }
+
+    .pitch {
+        height: 610px;
+        border-width: 4px;
+    }
+
+    .pitch::before {
+        left: 13px;
+        right: 13px;
+        top: 13px;
+        bottom: 13px;
+    }
+
+    .halfway-line {
+        left: 13px;
+        right: 13px;
+    }
+
+    .center-circle {
+        width: 105px;
+        height: 105px;
+    }
+
+    .penalty-area {
+        width: 205px;
+        height: 90px;
+    }
+
+    .goal-area {
+        width: 85px;
+        height: 43px;
+    }
+
+    .home-penalty-spot {
+        top: 75px;
+    }
+
+    .away-penalty-spot {
+        bottom: 75px;
+    }
+
+    .lineup-information,
+    .substitutes-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   SMALL PHONE
 ========================================================= */
 
 @media (max-width: 430px) {
-
-    .container {
-        padding: 7px;
-    }
 
     .pitch {
         height: 570px;
     }
 
-    .pitch::after {
-        width: 95px;
-        height: 95px;
+    .center-circle {
+        width: 90px;
+        height: 90px;
     }
 
-    .penalty-top,
-    .penalty-bottom {
-        width: 160px;
-        height: 75px;
+    .penalty-area {
+        width: 175px;
+        height: 78px;
     }
 
-    .goal-area-top,
-    .goal-area-bottom {
+    .goal-area {
         width: 70px;
         height: 38px;
     }
 
     .player {
-        width: 55px;
+        width: 60px;
     }
 
     .player-card {
-        width: 48px;
-        min-height: 48px;
+        width: 50px;
+        min-height: 50px;
+        border-width: 2px;
+        border-radius: 9px;
     }
 
     .player-number {
-        width: 22px;
-        height: 22px;
-
+        width: 23px;
+        height: 23px;
         font-size: 10px;
     }
 
     .player-name {
         font-size: 8px;
-        max-width: 65px;
     }
-   }
+       }

@@ -1,53 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>LWPL - Line Up</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Lamu West Premier League - Line Up</title>
 
     <link rel="stylesheet" href="lineup.css">
 </head>
+
 
 <body>
 
     <div class="container">
 
-        <!-- =========================
+        <!-- =================================
              MATCH HEADER
-        ========================== -->
-        <div class="match-header">
+        ================================== -->
+
+        <header class="match-header">
 
             <div class="league-title">
                 LAMU WEST PREMIER LEAGUE
             </div>
 
             <div class="match-info">
-                <span id="matchDate">Match Day</span>
-                <span class="separator">•</span>
-                <span id="matchVenue">Venue</span>
+
+                <span id="matchDate">
+                    Match Day
+                </span>
+
+                <span class="separator">
+                    •
+                </span>
+
+                <span id="matchVenue">
+                    Venue
+                </span>
+
             </div>
 
-        </div>
+        </header>
 
 
-        <!-- =========================
-             MATCH TEAMS
-        ========================== -->
-        <div class="teams-header">
+        <!-- =================================
+             TEAMS
+        ================================== -->
+
+        <section class="teams-header">
+
+            <!-- HOME -->
 
             <div class="team team-home">
 
                 <div class="team-logo">
-                    <img id="homeLogo" src="" alt="Home Team">
+
+                    <img
+                        id="homeLogo"
+                        src=""
+                        alt="Home Team"
+                    >
+
                 </div>
 
-                <div class="team-name" id="homeTeam">
-                    HOME TEAM
+                <div
+                    class="team-name"
+                    id="homeTeam"
+                >
+                    MAVUNO STARS
                 </div>
 
             </div>
 
+
+            <!-- CENTER -->
 
             <div class="match-center">
 
@@ -55,606 +86,249 @@
                     VS
                 </div>
 
-                <div class="match-time" id="matchTime">
+                <div
+                    class="match-time"
+                    id="matchTime"
+                >
                     00:00
                 </div>
 
             </div>
 
 
+            <!-- AWAY -->
+
             <div class="team team-away">
 
                 <div class="team-logo">
-                    <img id="awayLogo" src="" alt="Away Team">
+
+                    <img
+                        id="awayLogo"
+                        src=""
+                        alt="Away Team"
+                    >
+
                 </div>
 
-                <div class="team-name" id="awayTeam">
-                    AWAY TEAM
+                <div
+                    class="team-name"
+                    id="awayTeam"
+                >
+                    OPPONENT
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
 
-        <!-- =========================
+        <!-- =================================
              LINEUP TITLE
-        ========================== -->
-        <div class="lineup-title-section">
+        ================================== -->
 
-            <h1>STARTING LINEUPS</h1>
+        <section class="lineup-title-section">
+
+            <h1>
+                STARTING LINEUPS
+            </h1>
 
             <p>
                 Lamu West Premier League
             </p>
 
-        </div>
+        </section>
 
 
-        <!-- =========================
-             PLAYING XI
-        ========================== -->
-        <div class="lineups-wrapper">
+        <!-- =================================
+             PITCH AREA
+        ================================== -->
 
+        <section class="pitch-section">
+
+            <div class="pitch-wrapper">
+
+                <div class="pitch">
+
+                    <!-- Pitch markings -->
+
+                    <div class="pitch-line halfway-line"></div>
+
+                    <div class="center-circle"></div>
+
+                    <div class="center-spot"></div>
+
+
+                    <!-- HOME PENALTY AREA -->
+
+                    <div class="penalty-area home-area"></div>
+
+                    <div class="goal-area home-goal-area"></div>
+
+                    <div class="penalty-spot home-penalty-spot"></div>
+
+
+                    <!-- AWAY PENALTY AREA -->
+
+                    <div class="penalty-area away-area"></div>
+
+                    <div class="goal-area away-goal-area"></div>
+
+                    <div class="penalty-spot away-penalty-spot"></div>
+
+
+                    <!-- GOALS -->
+
+                    <div class="goal home-goal"></div>
+
+                    <div class="goal away-goal"></div>
+
+
+                    <!-- =================================
+                         PLAYERS ARE INSERTED BY lineup.js
+                    ================================== -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             STARTING XI INFORMATION
+        ================================== -->
+
+        <section class="lineup-information">
 
             <!-- HOME TEAM -->
+
             <div class="lineup-card home-lineup">
 
                 <div class="lineup-card-header">
 
-                    <div>
-                        <span class="small-title">
-                            STARTING XI
-                        </span>
+                    <span class="small-title">
+                        STARTING XI
+                    </span>
 
-                        <h2 id="homeLineupName">
-                            HOME TEAM
-                        </h2>
-                    </div>
+                    <h2 id="homeLineupName">
+                        MAVUNO STARS
+                    </h2>
 
                 </div>
 
 
-                <div class="players-list" id="homePlayers">
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            1
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                GK
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            2
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                DF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            3
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                DF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            4
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                DF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            5
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            6
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            7
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            8
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            9
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                FW
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            10
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                FW
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            11
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                FW
-                            </span>
-                        </div>
-
-                    </div>
+                <div
+                    class="players-list"
+                    id="homePlayers"
+                >
+
+                    <!-- Loaded by Firebase -->
 
                 </div>
 
             </div>
 
 
-
             <!-- AWAY TEAM -->
+
             <div class="lineup-card away-lineup">
 
                 <div class="lineup-card-header">
 
-                    <div>
-                        <span class="small-title">
-                            STARTING XI
-                        </span>
+                    <span class="small-title">
+                        STARTING XI
+                    </span>
 
-                        <h2 id="awayLineupName">
-                            AWAY TEAM
-                        </h2>
-                    </div>
+                    <h2 id="awayLineupName">
+                        OPPONENT
+                    </h2>
 
                 </div>
 
 
-                <div class="players-list" id="awayPlayers">
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            1
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                GK
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            2
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                DF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            3
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                DF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            4
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                DF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            5
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            6
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            7
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            8
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                MF
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            9
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                FW
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            10
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                FW
-                            </span>
-                        </div>
-
-                    </div>
-
-
-                    <div class="player">
-
-                        <div class="player-number">
-                            11
-                        </div>
-
-                        <div class="player-info">
-                            <span class="player-name">
-                                Player Name
-                            </span>
-
-                            <span class="player-position">
-                                FW
-                            </span>
-                        </div>
-
-                    </div>
+                <div
+                    class="players-list"
+                    id="awayPlayers"
+                >
+
+                    <!-- Loaded by Firebase -->
 
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
 
-        <!-- =========================
+        <!-- =================================
              SUBSTITUTES
-        ========================== -->
+        ================================== -->
 
-        <div class="substitutes-section">
+        <section class="substitutes-section">
+
+            <!-- HOME SUBSTITUTES -->
 
             <div class="substitute-card">
 
                 <div class="substitute-header">
-                    <h2>SUBSTITUTES</h2>
-                    <span id="homeSubsTitle">HOME TEAM</span>
+
+                    <h2>
+                        SUBSTITUTES
+                    </h2>
+
+                    <span id="homeSubsTitle">
+                        MAVUNO STARS
+                    </span>
+
                 </div>
 
-                <div class="substitutes-list" id="homeSubstitutes">
 
-                    <div class="substitute-player">
-                        <span class="sub-number">12</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
+                <div
+                    class="substitutes-list"
+                    id="homeSubstitutes"
+                >
 
-                    <div class="substitute-player">
-                        <span class="sub-number">13</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
-
-                    <div class="substitute-player">
-                        <span class="sub-number">14</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
-
-                    <div class="substitute-player">
-                        <span class="sub-number">15</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
-
-                    <div class="substitute-player">
-                        <span class="sub-number">16</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
+                    <!-- Loaded by Firebase -->
 
                 </div>
 
             </div>
 
 
+            <!-- AWAY SUBSTITUTES -->
+
             <div class="substitute-card">
 
                 <div class="substitute-header">
-                    <h2>SUBSTITUTES</h2>
-                    <span id="awaySubsTitle">AWAY TEAM</span>
+
+                    <h2>
+                        SUBSTITUTES
+                    </h2>
+
+                    <span id="awaySubsTitle">
+                        OPPONENT
+                    </span>
+
                 </div>
 
-                <div class="substitutes-list" id="awaySubstitutes">
 
-                    <div class="substitute-player">
-                        <span class="sub-number">12</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
+                <div
+                    class="substitutes-list"
+                    id="awaySubstitutes"
+                >
 
-                    <div class="substitute-player">
-                        <span class="sub-number">13</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
-
-                    <div class="substitute-player">
-                        <span class="sub-number">14</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
-
-                    <div class="substitute-player">
-                        <span class="sub-number">15</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
-
-                    <div class="substitute-player">
-                        <span class="sub-number">16</span>
-                        <span class="sub-name">Substitute Player</span>
-                    </div>
+                    <!-- Loaded by Firebase -->
 
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
 
-        <!-- =========================
+        <!-- =================================
              FOOTER
-        ========================== -->
+        ================================== -->
 
         <footer>
 
@@ -671,11 +345,18 @@
     </div>
 
 
-    <!-- =========================
-         FIREBASE / LINEUP JS
-    ========================== -->
+    <!-- =================================
+         FIREBASE / LINEUP JAVASCRIPT
+    ================================== -->
 
-    <script type="module" src="lineup.js"></script>
+    <script
+        type="module"
+        src="lineup.js"
+    ></script>
 
 </body>
-                        </html>
+
+</html>
+
+
+

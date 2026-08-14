@@ -280,3 +280,171 @@ body {
 }
 
 /* =========================
+/* =========================
+   MOBILE PITCH FIX
+========================= */
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 10px;
+        width: 100%;
+    }
+
+    .match-header {
+        grid-template-columns: 1fr;
+        padding: 18px 12px;
+        gap: 15px;
+    }
+
+    .team img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .match-info h1 {
+        font-size: 32px;
+    }
+
+    .content {
+        display: block;
+        width: 100%;
+    }
+
+    .pitch {
+        width: 100%;
+        min-height: 680px;
+        height: 680px;
+        border-width: 5px;
+        border-radius: 14px;
+        margin: 0;
+    }
+
+    /* Make the pitch use the entire phone width */
+
+    .player {
+        width: 46px;
+        height: 46px;
+        font-size: 14px;
+        border-width: 3px;
+    }
+
+    .player::after {
+        top: 50px;
+        font-size: 10px;
+    }
+
+    .pitch::after {
+        width: 120px;
+        height: 120px;
+    }
+
+    .penalty-top {
+        width: 50%;
+        left: 25%;
+        height: 105px;
+    }
+
+    .penalty-bottom {
+        width: 50%;
+        left: 25%;
+        height: 105px;
+    }
+
+    .goal-top,
+    .goal-bottom {
+        width: 22%;
+        left: 39%;
+        height: 42px;
+    }
+
+    /* 4-3-3 */
+
+    .gk {
+        left: 50%;
+        bottom: 6%;
+    }
+
+    .lb {
+        left: 15%;
+        bottom: 25%;
+    }
+
+    .cb1 {
+        left: 38%;
+        bottom: 22%;
+    }
+
+    .cb2 {
+        left: 62%;
+        bottom: 22%;
+    }
+
+    .rb {
+        left: 85%;
+        bottom: 25%;
+    }
+
+    .cm1 {
+        left: 27%;
+        bottom: 42%;
+    }
+
+    .cm2 {
+        left: 50%;
+        bottom: 45%;
+    }
+
+    .cm3 {
+        left: 73%;
+        bottom: 42%;
+    }
+
+    .lw {
+        left: 18%;
+        bottom: 65%;
+    }
+
+    .st {
+        left: 50%;
+        bottom: 70%;
+    }
+
+    .rw {
+        left: 82%;
+        bottom: 65%;
+    }
+}
+
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media (max-width: 400px) {
+
+    .container {
+        padding: 6px;
+    }
+
+    .pitch {
+        min-height: 620px;
+        height: 620px;
+    }
+
+    .player {
+        width: 42px;
+        height: 42px;
+        font-size: 13px;
+    }
+
+    .player::after {
+        top: 46px;
+        font-size: 9px;
+    }
+
+    .pitch::after {
+        width: 105px;
+        height: 105px;
+    }
+}

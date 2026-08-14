@@ -478,3 +478,110 @@ footer p {
   }
 
 }
+/* =========================================
+   PWA / APP MOBILE EXPERIENCE
+========================================= */
+
+@media (max-width: 700px) {
+
+  /* App-like header */
+  header {
+    padding-bottom: 38px;
+  }
+
+  /* Horizontal navigation */
+  nav {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+
+    padding: 10px;
+
+    position: sticky;
+    top: 0;
+  }
+
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+
+    min-height: 38px;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Better app spacing */
+  section {
+    box-shadow:
+      0 3px 14px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Prevent ugly horizontal overflow */
+  body {
+    overflow-x: hidden;
+  }
+
+}
+
+
+/* =========================================
+   INSTALL-APP FRIENDLY TOUCH
+========================================= */
+
+button,
+nav a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+nav a:active,
+button:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================
+   MOBILE TABLE SCROLL
+========================================= */
+
+@media (max-width: 700px) {
+
+  #standings {
+    overflow-x: auto;
+  }
+
+  #standings table {
+    min-width: 650px;
+  }
+
+}
+
+
+/* =========================================
+   PWA STANDALONE MODE
+========================================= */
+
+@media (display-mode: standalone) {
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  nav {
+    box-shadow:
+      0 4px 18px rgba(0, 0, 0, 0.15);
+  }
+
+}

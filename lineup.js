@@ -1,9 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 import {
-    getFirestore,
-    collection,
-    getDocs
+  getFirestore,
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
@@ -12,13 +12,13 @@ import {
 // ======================================================
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
-    authDomain: "lamu-west-premier-league.firebaseapp.com",
-    projectId: "lamu-west-premier-league",
-    storageBucket: "lamu-west-premier-league.firebasestorage.app",
-    messagingSenderId: "280853181931",
-    appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
-    measurementId: "G-HQ04SZWBBB"
+  apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
+  authDomain: "lamu-west-premier-league.firebaseapp.com",
+  projectId: "lamu-west-premier-league",
+  storageBucket: "lamu-west-premier-league.firebasestorage.app",
+  messagingSenderId: "280853181931",
+  appId: "1:280853181931:web:8c411d3528bddadd2d15ae",
+  measurementId: "G-HQ04SZWBBB"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -26,7 +26,7 @@ const db = getFirestore(app);
 
 
 // ======================================================
-// TEAMS
+// MATCH TEAMS
 // ======================================================
 
 const HOME_TEAM = "Mavuno Stars";
@@ -34,121 +34,193 @@ const AWAY_TEAM = "Opponent";
 
 
 // ======================================================
-// PLAYER POSITIONS - 4-3-3
-// ======================================================
-
-const formationPositions = [
-
-    // GK
-    { left: "50%", bottom: "7%" },
-
-    // DEFENCE
-    { left: "16%", bottom: "25%" },
-    { left: "38%", bottom: "21%" },
-    { left: "62%", bottom: "21%" },
-    { left: "84%", bottom: "25%" },
-
-    // MIDFIELD
-    { left: "28%", bottom: "43%" },
-    { left: "50%", bottom: "46%" },
-    { left: "72%", bottom: "43%" },
-
-    // ATTACK
-    { left: "18%", bottom: "67%" },
-    { left: "50%", bottom: "72%" },
-    { left: "82%", bottom: "67%" }
-];
-
-
-// ======================================================
-// NORMALIZE
+// HELPERS
 // ======================================================
 
 function normalize(value) {
+  if (!value) return "";
 
-    if (!value) return "";
-
-    return value
-        .toString()
-        .trim()
-        .toLowerCase();
+  return value
+    .toString()
+    .trim()
+    .toLowerCase();
 }
 
-
-// ======================================================
-// TEAM MATCH
-// ======================================================
 
 function belongsToTeam(player, teamName) {
+  if (!player.team) return false;
 
-    if (!player.team) return false;
+  const playerTeam = normalize(player.team);
+  const wantedTeam = normalize(teamName);
 
-    const playerTeam = normalize(player.team);
-    const wantedTeam = normalize(teamName);
-
-    return (
-        playerTeam === wantedTeam ||
-        playerTeam.includes(wantedTeam) ||
-        wantedTeam.includes(playerTeam)
-    );
+  return (
+    playerTeam === wantedTeam ||
+    playerTeam.includes(wantedTeam) ||
+    wantedTeam.includes(playerTeam)
+  );
 }
 
 
 // ======================================================
-// CREATE PLAYER
+// POSITION NORMALIZER
 // ======================================================
 
-function createPlayer(player, index) {
+function getPosition(player) {
 
-    const card = document.createElement("div");
+  const position = normalize(player.position);
 
-    card.className = "player";
+  if (
+    position.includes("goal") ||
+    position === "gk" ||
+    position.includes("keeper")
+  ) {
+    return "GK";
+  }
 
-    const position =
-        formationPositions[index] || {
-            left: "50%",
-            bottom: "50%"
-        };
+  if (
+    position.includes("def") ||
+    position === "cb" ||
+    position === "lb" ||
+    position === "rb" ||
+    position.includes("back")
+  ) {
+    return "DEF";
+  }
 
-    card.style.left = position.left;
-    card.style.bottom = position.bottom;
+  if (
+    position.includes("mid") ||
+    position === "cm" ||
+    position === "dm" ||
+    position === "am"
+  ) {
+    return "MID";
+  }
 
+  if (
+    position.includes("att") ||
+    position.includes("forward") ||
+    position.includes("striker") ||
+    position === "st" ||
+    position === "cf" ||
+    position.includes("wing")
+  ) {
+    return "ATT";
+  }
 
-    const number =
-        player.number ??
-        player.jerseyNumber ??
-        (index + 1);
-
-
-    const name =
-        player.name ||
-        player.playerName ||
-        "Player";
-
-
-    const isCaptain =
-        player.captain === true ||
-        player.captain === "true";
-
-
-    card.innerHTML = `
-        <div class="player-number">
-            ${number}
-        </div>
-
-        <div class="player-name">
-            ${isCaptain ? "© " : ""}
-            ${name}
-        </div>
-    `;
-
-
-    if (isCaptain) {
-        card.classList.add("captain");
-    }
+  return "MID";
+}
 
 
-    return card;
+// ======================================================
+// 4-3-3 PITCH POSITIONS
+// ======================================================
+
+const positions = {
+
+  GK: [
+    { left: "50%", bottom: "7%" }
+  ],
+
+  DEF: [
+    { left: "16%", bottom: "25%" },
+    { left: "38%", bottom: "21%" },
+    { left: "62%", bottom: "21%" },
+    { left: "84%", bottom: "25%" }
+  ],
+
+  MID: [
+    { left: "28%", bottom: "43%" },
+    { left: "50%", bottom: "46%" },
+    { left: "72%", bottom: "43%" }
+  ],
+
+  ATT: [
+    { left: "18%", bottom: "67%" },
+    { left: "50%", bottom: "72%" },
+    { left: "82%", bottom: "67%" }
+  ]
+
+};
+
+
+// ======================================================
+// CREATE PLAYER CARD
+// ======================================================
+
+function createPlayer(player, position) {
+
+  const card = document.createElement("div");
+
+  card.className = "player-card";
+
+  card.style.left = position.left;
+  card.style.bottom = position.bottom;
+
+
+  const number =
+    player.number ??
+    player.jerseyNumber ??
+    "—";
+
+
+  const name =
+    player.name ||
+    player.playerName ||
+    "Player";
+
+
+  const isCaptain =
+    player.captain === true ||
+    player.captain === "true";
+
+
+  card.innerHTML = `
+
+    <div class="player-number">
+      ${number}
+    </div>
+
+    <div class="player-name">
+      ${isCaptain ? "© " : ""}
+      ${name}
+    </div>
+
+  `;
+
+
+  if (isCaptain) {
+    card.classList.add("captain");
+  }
+
+
+  return card;
+}
+
+
+// ======================================================
+// SORT PLAYERS INTO 4-3-3
+// ======================================================
+
+function organizePlayers(players) {
+
+  const groups = {
+    GK: [],
+    DEF: [],
+    MID: [],
+    ATT: []
+  };
+
+
+  players.forEach(player => {
+
+    const position = getPosition(player);
+
+    groups[position].push(player);
+
+  });
+
+
+  return groups;
 }
 
 
@@ -158,363 +230,340 @@ function createPlayer(player, index) {
 
 function renderPitch(players) {
 
-    const pitch =
-        document.querySelector(".pitch");
+  const pitch =
+    document.querySelector(".pitch");
 
-    if (!pitch) {
-        console.error("PITCH NOT FOUND");
-        return;
-    }
+  const layer =
+    document.getElementById("homeLineup");
 
 
-    pitch
-        .querySelectorAll(".player")
-        .forEach(player => player.remove());
+  if (!pitch || !layer) {
+    console.error("Pitch elements not found.");
+    return;
+  }
 
 
-    players
-        .slice(0, 11)
-        .forEach((player, index) => {
-
-            const card =
-                createPlayer(
-                    player,
-                    index
-                );
-
-            pitch.appendChild(card);
-
-        });
+  layer.innerHTML = "";
 
 
-    console.log(
-        "Players rendered:",
-        players.length
-    );
+  const groups =
+    organizePlayers(players);
+
+
+  Object.keys(groups).forEach(positionType => {
+
+    const group =
+      groups[positionType];
+
+    const availablePositions =
+      positions[positionType];
+
+
+    group
+      .slice(0, availablePositions.length)
+      .forEach((player, index) => {
+
+        const card =
+          createPlayer(
+            player,
+            availablePositions[index]
+          );
+
+
+        layer.appendChild(card);
+
+      });
+
+  });
+
+
+  console.log(
+    "Players placed on pitch:",
+    players.length
+  );
+
 }
 
 
 // ======================================================
-// STARTING XI LIST
+// RENDER AWAY SECTION
 // ======================================================
 
-function renderStartingList(players) {
+function renderAwayTeam() {
 
-    const container =
-        document.getElementById("homePlayers");
+  const title =
+    document.getElementById("awayTitle");
 
-    if (!container) return;
-
-    container.innerHTML = "";
-
-
-    if (players.length === 0) {
-
-        container.innerHTML =
-            "<p>No starting lineup available.</p>";
-
-        return;
-    }
+  const container =
+    document.getElementById("awayLineup");
 
 
-    players.forEach((player, index) => {
-
-        const row =
-            document.createElement("div");
-
-        row.className =
-            "player-list-row";
+  if (title) {
+    title.textContent = AWAY_TEAM;
+  }
 
 
-        const number =
-            player.number ??
-            player.jerseyNumber ??
-            (index + 1);
+  if (container) {
 
+    container.innerHTML = `
+      <div class="away-player">
+        Away lineup will be added here.
+      </div>
+    `;
 
-        const name =
-            player.name ||
-            player.playerName ||
-            "Player";
+  }
 
-
-        const position =
-            player.position || "";
-
-
-        row.innerHTML = `
-            <div class="player-number">
-                ${number}
-            </div>
-
-            <div class="player-info">
-
-                <span class="player-name">
-                    ${name}
-                </span>
-
-                <span class="player-position">
-                    ${position}
-                </span>
-
-            </div>
-        `;
-
-
-        container.appendChild(row);
-
-    });
 }
 
 
 // ======================================================
-// SUBSTITUTES
+// RENDER SUBSTITUTES
 // ======================================================
 
 function renderSubstitutes(players) {
 
-    const container =
-        document.getElementById("homeSubstitutes");
-
-    if (!container) return;
-
-    container.innerHTML = "";
+  const container =
+    document.getElementById("substitutesList");
 
 
-    if (players.length === 0) {
-
-        container.innerHTML =
-            "<p>No substitutes available.</p>";
-
-        return;
-    }
+  if (!container) return;
 
 
-    players.forEach((player, index) => {
-
-        const row =
-            document.createElement("div");
-
-        row.className =
-            "substitute-player";
+  container.innerHTML = "";
 
 
-        const number =
-            player.number ??
-            player.jerseyNumber ??
-            (index + 12);
+  if (players.length === 0) {
+
+    container.innerHTML =
+      `<div class="sub-player">
+        No substitutes available.
+      </div>`;
+
+    return;
+  }
 
 
-        const name =
-            player.name ||
-            player.playerName ||
-            "Player";
+  players.forEach(player => {
+
+    const number =
+      player.number ??
+      player.jerseyNumber ??
+      "—";
 
 
-        row.innerHTML = `
-            <span class="sub-number">
-                ${number}
-            </span>
-
-            <span class="sub-name">
-                ${name}
-            </span>
-        `;
+    const name =
+      player.name ||
+      player.playerName ||
+      "Player";
 
 
-        container.appendChild(row);
+    const div =
+      document.createElement("div");
 
-    });
+
+    div.className = "sub-player";
+
+
+    div.innerHTML = `
+      <strong>#${number}</strong><br>
+      ${name}
+    `;
+
+
+    container.appendChild(div);
+
+  });
+
 }
 
 
 // ======================================================
-// UPDATE TEAM
+// UPDATE MATCH HEADER
 // ======================================================
 
-function updateTeam(teamName) {
+function updateHeader() {
 
-    const ids = [
-        "homeTeam",
-        "homeLineupName",
-        "homeSubsTitle"
-    ];
+  const home =
+    document.getElementById("homeTeam");
 
-    ids.forEach(id => {
+  const away =
+    document.getElementById("awayTeam");
 
-        const element =
-            document.getElementById(id);
 
-        if (element) {
-            element.textContent =
-                teamName;
-        }
+  if (home) {
+    home.textContent = HOME_TEAM;
+  }
 
-    });
+
+  if (away) {
+    away.textContent = AWAY_TEAM;
+  }
+
 }
 
 
 // ======================================================
-// LOAD FIREBASE PLAYERS
+// LOAD PLAYERS FROM FIRESTORE
 // ======================================================
 
 async function loadPlayers() {
 
-    try {
+  try {
 
-        console.log(
-            "Loading LWPL players..."
-        );
+    console.log("Loading LWPL players...");
 
 
-        const snapshot =
-            await getDocs(
-                collection(
-                    db,
-                    "players"
-                )
-            );
+    const snapshot =
+      await getDocs(
+        collection(db, "players")
+      );
 
 
-        const players = [];
+    const players = [];
 
 
-        snapshot.forEach(doc => {
+    snapshot.forEach(doc => {
 
-            players.push({
-                id: doc.id,
-                ...doc.data()
-            });
+      players.push({
+        id: doc.id,
+        ...doc.data()
+      });
 
-        });
-
-
-        console.log(
-            "TOTAL PLAYERS:",
-            players.length
-        );
+    });
 
 
-        // ----------------------------------------------
-        // MAVUNO STARS
-        // ----------------------------------------------
-
-        const teamPlayers =
-            players.filter(
-                player =>
-                    belongsToTeam(
-                        player,
-                        HOME_TEAM
-                    )
-            );
+    console.log(
+      "TOTAL PLAYERS:",
+      players.length
+    );
 
 
-        console.log(
-            "MAVUNO PLAYERS:",
-            teamPlayers.length
-        );
+    // ----------------------------------------------
+    // GET MAVUNO STARS PLAYERS
+    // ----------------------------------------------
+
+    const teamPlayers =
+      players.filter(player =>
+        belongsToTeam(
+          player,
+          HOME_TEAM
+        )
+      );
 
 
-        // ----------------------------------------------
-        // STARTING XI
-        // ----------------------------------------------
-
-        let starting =
-            teamPlayers.filter(
-                player =>
-                    player.starting === true ||
-                    player.starting === "true" ||
-                    player.isStarting === true ||
-                    player.lineup === true
-            );
+    console.log(
+      "MAVUNO STARS PLAYERS:",
+      teamPlayers.length
+    );
 
 
-        // If no starting flag,
-        // use first 11 players
+    // ----------------------------------------------
+    // STARTING XI
+    // ----------------------------------------------
 
-        if (
-            starting.length === 0 &&
-            teamPlayers.length > 0
-        ) {
+    let starting =
+      teamPlayers.filter(player =>
 
-            starting =
-                teamPlayers.slice(0, 11);
+        player.starting === true ||
+        player.starting === "true" ||
+        player.isStarting === true ||
+        player.lineup === true
 
-        }
-
-
-        starting =
-            starting.slice(0, 11);
+      );
 
 
-        // ----------------------------------------------
-        // SUBSTITUTES
-        // ----------------------------------------------
+    // If starting has not been selected,
+    // use first 11 players.
 
-        const startingIds =
-            new Set(
-                starting.map(
-                    player => player.id
-                )
-            );
+    if (
+      starting.length === 0 &&
+      teamPlayers.length > 0
+    ) {
 
-
-        const substitutes =
-            teamPlayers.filter(
-                player =>
-                    !startingIds.has(
-                        player.id
-                    )
-            );
-
-
-        // ----------------------------------------------
-        // UPDATE
-        // ----------------------------------------------
-
-        updateTeam(HOME_TEAM);
-
-        renderPitch(starting);
-
-        renderStartingList(starting);
-
-        renderSubstitutes(substitutes);
-
-
-        console.log(
-            "STARTING XI:",
-            starting
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "LINEUP ERROR:",
-            error
-        );
-
-        const pitch =
-            document.querySelector(".pitch");
-
-        if (pitch) {
-
-            const errorBox =
-                document.createElement("div");
-
-            errorBox.className =
-                "lineup-error";
-
-            errorBox.textContent =
-                "Unable to load players.";
-
-            pitch.appendChild(
-                errorBox
-            );
-
-        }
+      starting =
+        teamPlayers.slice(0, 11);
 
     }
+
+
+    starting =
+      starting.slice(0, 11);
+
+
+    // ----------------------------------------------
+    // SUBSTITUTES
+    // ----------------------------------------------
+
+    const startingIds =
+      new Set(
+        starting.map(player => player.id)
+      );
+
+
+    const substitutes =
+      teamPlayers.filter(player =>
+        !startingIds.has(player.id)
+      );
+
+
+    // ----------------------------------------------
+    // UPDATE PAGE
+    // ----------------------------------------------
+
+    updateHeader();
+
+    renderPitch(starting);
+
+    renderSubstitutes(substitutes);
+
+    renderAwayTeam();
+
+
+    console.log(
+      "STARTING XI:",
+      starting
+    );
+
+
+    console.log(
+      "SUBSTITUTES:",
+      substitutes
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "LINEUP ERROR:",
+      error
+    );
+
+
+    const pitch =
+      document.querySelector(".pitch");
+
+
+    if (pitch) {
+
+      const errorBox =
+        document.createElement("div");
+
+
+      errorBox.className =
+        "lineup-error";
+
+
+      errorBox.textContent =
+        "Unable to load players.";
+
+
+      pitch.appendChild(
+        errorBox
+      );
+
+    }
+
+  }
 
 }
 
@@ -524,6 +573,6 @@ async function loadPlayers() {
 // ======================================================
 
 document.addEventListener(
-    "DOMContentLoaded",
-    loadPlayers
+  "DOMContentLoaded",
+  loadPlayers
 );

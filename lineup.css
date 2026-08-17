@@ -1,6 +1,5 @@
 /* =========================================================
-   LWPL - LINEUP PAGE
-   PROFESSIONAL FOOTBALL LINEUP
+   LWPL - PROFESSIONAL MATCH LINEUP
 ========================================================= */
 
 * {
@@ -22,7 +21,6 @@ body {
     padding: 15px;
 }
 
-
 /* =========================================================
    MATCH HEADER
 ========================================================= */
@@ -30,17 +28,17 @@ body {
 .match-header {
     background: linear-gradient(135deg, #061b45, #0b3d91);
     color: white;
-    border-radius: 15px;
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 8px 25px rgba(0,0,0,.18);
 }
 
 .league-title {
-    padding: 18px;
+    padding: 20px;
     text-align: center;
-    font-size: 27px;
+    font-size: 28px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
 }
 
 .match-info {
@@ -48,7 +46,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 12px;
-    padding: 11px;
+    padding: 12px;
     background: rgba(0,0,0,.20);
     font-size: 14px;
     font-weight: 700;
@@ -59,21 +57,20 @@ body {
     font-size: 18px;
 }
 
-
 /* =========================================================
-   TEAMS HEADER
+   TEAMS
 ========================================================= */
 
 .teams-header {
     margin-top: 15px;
-    padding: 20px;
+    padding: 22px;
 
     display: grid;
     grid-template-columns: 1fr 150px 1fr;
     align-items: center;
 
     background: white;
-    border-radius: 15px;
+    border-radius: 16px;
 
     box-shadow: 0 6px 20px rgba(0,0,0,.10);
 }
@@ -93,9 +90,8 @@ body {
 }
 
 .team-logo {
-    width: 80px;
-    height: 80px;
-
+    width: 82px;
+    height: 82px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,396 +102,3 @@ body {
     height: 100%;
     object-fit: contain;
 }
-
-.team-name {
-    font-size: 25px;
-    font-weight: 900;
-}
-
-.match-center {
-    text-align: center;
-}
-
-.vs {
-    font-size: 32px;
-    font-weight: 1000;
-    color: #071b35;
-}
-
-.match-time {
-    margin-top: 5px;
-    font-size: 14px;
-    font-weight: 800;
-    color: #667085;
-}
-
-
-/* =========================================================
-   LINEUP TITLE
-========================================================= */
-
-.lineup-title-section {
-    text-align: center;
-    margin: 25px 0 15px;
-}
-
-.lineup-title-section h1 {
-    font-size: 27px;
-    font-weight: 900;
-    color: #071b35;
-}
-
-.lineup-title-section p {
-    margin-top: 5px;
-    color: #667085;
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   PITCH SECTION
-========================================================= */
-
-.pitch-section {
-    width: 100%;
-}
-
-.pitch-wrapper {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-
-/* =========================================================
-   FOOTBALL PITCH
-========================================================= */
-
-.pitch {
-    position: relative;
-
-    width: 100%;
-    max-width: 1000px;
-    height: 720px;
-
-    overflow: hidden;
-
-    border: 5px solid white;
-    border-radius: 15px;
-
-    background:
-        repeating-linear-gradient(
-            90deg,
-            #32840c 0px,
-            #32840c 85px,
-            #3d9410 85px,
-            #3d9410 170px
-        );
-
-    box-shadow:
-        0 12px 35px rgba(0,0,0,.25),
-        inset 0 0 50px rgba(0,0,0,.15);
-}
-
-
-/* =========================================================
-   OUTER PITCH LINE
-========================================================= */
-
-.pitch::before {
-    content: "";
-
-    position: absolute;
-
-    left: 18px;
-    right: 18px;
-    top: 18px;
-    bottom: 18px;
-
-    border: 3px solid rgba(255,255,255,.95);
-
-    pointer-events: none;
-
-    z-index: 1;
-}
-
-
-/* =========================================================
-   HALF WAY LINE
-========================================================= */
-
-.halfway-line {
-    position: absolute;
-
-    left: 18px;
-    right: 18px;
-    top: 50%;
-
-    height: 3px;
-
-    background: white;
-
-    transform: translateY(-50%);
-
-    z-index: 2;
-}
-
-
-/* =========================================================
-   CENTER CIRCLE
-========================================================= */
-
-.center-circle {
-    position: absolute;
-
-    width: 135px;
-    height: 135px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    border: 3px solid white;
-    border-radius: 50%;
-
-    z-index: 2;
-}
-
-.center-spot {
-    position: absolute;
-
-    width: 9px;
-    height: 9px;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    background: white;
-    border-radius: 50%;
-
-    z-index: 4;
-}
-
-
-/* =========================================================
-   PENALTY AREAS
-========================================================= */
-
-.penalty-area {
-    position: absolute;
-
-    left: 50%;
-
-    width: 270px;
-    height: 110px;
-
-    transform: translateX(-50%);
-
-    border: 3px solid white;
-
-    z-index: 2;
-}
-
-.home-area {
-    top: 18px;
-    border-top: none;
-}
-
-.away-area {
-    bottom: 18px;
-    border-bottom: none;
-}
-
-
-/* =========================================================
-   GOAL AREAS
-========================================================= */
-
-.goal-area {
-    position: absolute;
-
-    left: 50%;
-
-    width: 110px;
-    height: 52px;
-
-    transform: translateX(-50%);
-
-    border: 3px solid white;
-
-    z-index: 3;
-}
-
-.home-goal-area {
-    top: 18px;
-    border-top: none;
-}
-
-.away-goal-area {
-    bottom: 18px;
-    border-bottom: none;
-}
-
-
-/* =========================================================
-   PENALTY SPOTS
-========================================================= */
-
-.penalty-spot {
-    position: absolute;
-
-    left: 50%;
-
-    width: 9px;
-    height: 9px;
-
-    transform: translateX(-50%);
-
-    background: white;
-
-    border-radius: 50%;
-
-    z-index: 4;
-}
-
-.home-penalty-spot {
-    top: 88px;
-}
-
-.away-penalty-spot {
-    bottom: 88px;
-}
-
-
-/* =========================================================
-   GOALS
-========================================================= */
-
-.goal {
-    position: absolute;
-
-    left: 50%;
-
-    width: 65px;
-    height: 17px;
-
-    transform: translateX(-50%);
-
-    border: 3px solid white;
-
-    background: rgba(255,255,255,.10);
-
-    z-index: 3;
-}
-
-.home-goal {
-    top: 1px;
-}
-
-.away-goal {
-    bottom: 1px;
-}
-
-
-/* =========================================================
-   PLAYER
-========================================================= */
-
-.player {
-    position: absolute;
-
-    transform: translate(-50%, 50%);
-
-    width: 90px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    text-align: center;
-
-    z-index: 20;
-
-    pointer-events: none;
-}
-
-
-/* =========================================================
-   PLAYER NUMBER
-========================================================= */
-
-.player-number {
-    width: 46px;
-    height: 46px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: white;
-
-    color: #071b35;
-
-    border: 4px solid #071b35;
-
-    border-radius: 50%;
-
-    font-size: 15px;
-    font-weight: 900;
-
-    box-shadow:
-        0 4px 10px rgba(0,0,0,.35);
-
-    position: relative;
-    z-index: 2;
-}
-
-
-/* =========================================================
-   PLAYER NAME
-========================================================= */
-
-.player-name {
-    margin-top: 5px;
-
-    padding: 4px 8px;
-
-    max-width: 120px;
-
-    background: rgba(7,27,53,.92);
-
-    color: white;
-
-    border-radius: 5px;
-
-    font-size: 11px;
-
-    font-weight: 900;
-
-    line-height: 1.2;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-
-    text-shadow: none;
-
-    box-shadow:
-        0 3px 7px rgba(0,0,0,.30);
-}
-
-
-/* =========================================================
-   CAPTAIN
-========================================================= */
-
-.player.captain .player-number {
-    border-color: #b8ef24;
-}
-
-.player.captain .player-name::first

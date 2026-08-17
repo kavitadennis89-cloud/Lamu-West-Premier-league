@@ -1,362 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Lamu West Premier League - Line Up</title>
-
-    <link rel="stylesheet" href="lineup.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LWPL - Match Lineup</title>
+  <link rel="stylesheet" href="lineup.css">
 </head>
-
 
 <body>
 
-    <div class="container">
-
-        <!-- =================================
-             MATCH HEADER
-        ================================== -->
-
-        <header class="match-header">
-
-            <div class="league-title">
-                LAMU WEST PREMIER LEAGUE
-            </div>
-
-            <div class="match-info">
-
-                <span id="matchDate">
-                    Match Day
-                </span>
-
-                <span class="separator">
-                    •
-                </span>
-
-                <span id="matchVenue">
-                    Venue
-                </span>
-
-            </div>
-
-        </header>
-
-
-        <!-- =================================
-             TEAMS
-        ================================== -->
-
-        <section class="teams-header">
-
-            <!-- HOME -->
-
-            <div class="team team-home">
-
-                <div class="team-logo">
-
-                    <img
-                        id="homeLogo"
-                        src=""
-                        alt="Home Team"
-                    >
-
-                </div>
-
-                <div
-                    class="team-name"
-                    id="homeTeam"
-                >
-                    MAVUNO STARS
-                </div>
-
-            </div>
-
-
-            <!-- CENTER -->
-
-            <div class="match-center">
-
-                <div class="vs">
-                    VS
-                </div>
-
-                <div
-                    class="match-time"
-                    id="matchTime"
-                >
-                    00:00
-                </div>
-
-            </div>
-
-
-            <!-- AWAY -->
-
-            <div class="team team-away">
-
-                <div class="team-logo">
-
-                    <img
-                        id="awayLogo"
-                        src=""
-                        alt="Away Team"
-                    >
-
-                </div>
-
-                <div
-                    class="team-name"
-                    id="awayTeam"
-                >
-                    OPPONENT
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================
-             LINEUP TITLE
-        ================================== -->
-
-        <section class="lineup-title-section">
-
-            <h1>
-                STARTING LINEUPS
-            </h1>
-
-            <p>
-                Lamu West Premier League
-            </p>
-
-        </section>
-
-
-        <!-- =================================
-             PITCH AREA
-        ================================== -->
-
-        <section class="pitch-section">
-
-            <div class="pitch-wrapper">
-
-                <div class="pitch">
-
-                    <!-- Pitch markings -->
-
-                    <div class="pitch-line halfway-line"></div>
-
-                    <div class="center-circle"></div>
-
-                    <div class="center-spot"></div>
-
-
-                    <!-- HOME PENALTY AREA -->
-
-                    <div class="penalty-area home-area"></div>
-
-                    <div class="goal-area home-goal-area"></div>
-
-                    <div class="penalty-spot home-penalty-spot"></div>
-
-
-                    <!-- AWAY PENALTY AREA -->
-
-                    <div class="penalty-area away-area"></div>
-
-                    <div class="goal-area away-goal-area"></div>
-
-                    <div class="penalty-spot away-penalty-spot"></div>
-
-
-                    <!-- GOALS -->
-
-                    <div class="goal home-goal"></div>
-
-                    <div class="goal away-goal"></div>
-
-
-                    <!-- =================================
-                         PLAYERS ARE INSERTED BY lineup.js
-                    ================================== -->
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================
-             STARTING XI INFORMATION
-        ================================== -->
-
-        <section class="lineup-information">
-
-            <!-- HOME TEAM -->
-
-            <div class="lineup-card home-lineup">
-
-                <div class="lineup-card-header">
-
-                    <span class="small-title">
-                        STARTING XI
-                    </span>
-
-                    <h2 id="homeLineupName">
-                        MAVUNO STARS
-                    </h2>
-
-                </div>
-
-
-                <div
-                    class="players-list"
-                    id="homePlayers"
-                >
-
-                    <!-- Loaded by Firebase -->
-
-                </div>
-
-            </div>
-
-
-            <!-- AWAY TEAM -->
-
-            <div class="lineup-card away-lineup">
-
-                <div class="lineup-card-header">
-
-                    <span class="small-title">
-                        STARTING XI
-                    </span>
-
-                    <h2 id="awayLineupName">
-                        OPPONENT
-                    </h2>
-
-                </div>
-
-
-                <div
-                    class="players-list"
-                    id="awayPlayers"
-                >
-
-                    <!-- Loaded by Firebase -->
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================
-             SUBSTITUTES
-        ================================== -->
-
-        <section class="substitutes-section">
-
-            <!-- HOME SUBSTITUTES -->
-
-            <div class="substitute-card">
-
-                <div class="substitute-header">
-
-                    <h2>
-                        SUBSTITUTES
-                    </h2>
-
-                    <span id="homeSubsTitle">
-                        MAVUNO STARS
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="substitutes-list"
-                    id="homeSubstitutes"
-                >
-
-                    <!-- Loaded by Firebase -->
-
-                </div>
-
-            </div>
-
-
-            <!-- AWAY SUBSTITUTES -->
-
-            <div class="substitute-card">
-
-                <div class="substitute-header">
-
-                    <h2>
-                        SUBSTITUTES
-                    </h2>
-
-                    <span id="awaySubsTitle">
-                        OPPONENT
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="substitutes-list"
-                    id="awaySubstitutes"
-                >
-
-                    <!-- Loaded by Firebase -->
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================
-             FOOTER
-        ================================== -->
-
-        <footer>
-
-            <div class="footer-title">
-                LAMU WEST PREMIER LEAGUE
-            </div>
-
-            <div class="footer-text">
-                Official Match Lineups
-            </div>
-
-        </footer>
+  <div class="lineup-page">
+
+    <!-- MATCH HEADER -->
+    <div class="match-header">
+
+      <div class="team">
+        <div class="team-logo">⚽</div>
+        <h2 id="homeTeam">Home Team</h2>
+      </div>
+
+      <div class="match-info">
+        <span>LWPL</span>
+        <strong>VS</strong>
+        <small id="matchDate">Match Lineup</small>
+      </div>
+
+      <div class="team">
+        <div class="team-logo">⚽</div>
+        <h2 id="awayTeam">Away Team</h2>
+      </div>
 
     </div>
 
 
-    <!-- =================================
-         FIREBASE / LINEUP JAVASCRIPT
-    ================================== -->
+    <!-- FORMATION -->
+    <div class="formation-bar">
+      <span>FORMATION</span>
+      <strong>4 - 3 - 3</strong>
+    </div>
 
-    <script
-        type="module"
-        src="lineup.js"
-    ></script>
+
+    <!-- PITCH -->
+    <div class="pitch-wrapper">
+
+      <div class="pitch">
+
+        <div class="center-line"></div>
+        <div class="center-circle"></div>
+        <div class="center-dot"></div>
+
+        <div class="penalty-box top-box"></div>
+        <div class="goal-box top-goal-box"></div>
+        <div class="goal top-goal"></div>
+
+        <div class="penalty-box bottom-box"></div>
+        <div class="goal-box bottom-goal-box"></div>
+        <div class="goal bottom-goal"></div>
+
+        <!-- HOME PLAYERS -->
+        <div id="homeLineup" class="players-layer"></div>
+
+      </div>
+
+    </div>
+
+
+    <!-- AWAY TEAM -->
+    <div class="away-section">
+
+      <h2 id="awayTitle">Away Team</h2>
+
+      <div id="awayLineup" class="away-players"></div>
+
+    </div>
+
+
+    <!-- SUBSTITUTES -->
+    <div class="substitutes">
+
+      <h2>SUBSTITUTES</h2>
+
+      <div id="substitutesList" class="sub-list">
+        Loading players...
+      </div>
+
+    </div>
+
+  </div>
+
+  <script type="module" src="lineup.js"></script>
 
 </body>
-
 </html>
-
-
-

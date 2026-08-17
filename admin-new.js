@@ -11,6 +11,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
+/* =========================
+   FIREBASE
+========================= */
+
 const firebaseConfig = {
     apiKey: "AIzaSyBQIYS4TaMNIokWDCn0EJhlaA6KBxCmyaQ",
     authDomain: "lamu-west-premier-league.firebaseapp.com",
@@ -21,13 +25,22 @@ const firebaseConfig = {
     measurementId: "G-HQ04SZWBBB"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// Linda Admin Panel
+
+
+/* =========================
+   AUTH CHECK
+========================= */
+
 if (localStorage.getItem("adminLoggedIn") !== "true") {
     window.location.href = "login.html";
 }
+
+
+/* =========================
+   ELEMENTS
+========================= */
 
 const menuItems = document.querySelectorAll(".sidebar li");
 const pageTitle = document.getElementById("pageTitle");
@@ -52,29 +65,16 @@ menuItems.forEach(item => {
 
         pageTitle.textContent = item.textContent.trim();
 
+        if (page === "dashboard") showDashboard();
+        if (page === "teams") showTeams();
+        if (page === "players") showPlayers();
+        if (page === "fixtures") showFixtures();
+        if (page === "results") showResults();
+        if (page === "scorers") showScorers();
+        if (page === "logos") showLogos();
+        if (page === "lineups") showLineups();
+        if (page === "settings") showSettings();
 
-        if (page === "dashboard") {
-
-    showDashboard();
-
-} else if (page === "teams") {
-
-    showTeams();
-
-} else if (page === "players") {
-
-    showPlayers();
-
-} else {
-
-    content.innerHTML = `
-        <div class="card">
-            <h3>${item.textContent.trim()}</h3>
-            <p>This module is under development.</p>
-        </div>
-    `;
-
-        }
     });
 
 });
@@ -84,31 +84,137 @@ menuItems.forEach(item => {
    DASHBOARD
 ========================= */
 
-function showDashboard() {
+async function showDashboard() {
 
     content.innerHTML = `
         <div class="card">
-
             <h3>🏆 LWPL Dashboard</h3>
+            <p>Lamu West Premier League Administration</p>
 
-            <p>
-                Lamu West Premier League Administration
-            </p>
-
+            <div id="dashboardStats">
+                Loading statistics...
+            </div>
         </div>
     `;
+
+    try {
+
+        const teams = await getDocs(collection(db, "teams"));
+        const players = await getDocs(collection(db, "players"));
+        const fixtures = await getDocs(collection(db, "fixtures"));
+        const results = await getDocs(collection(db, "results"));
+        const scorers = await getDocs(collection(db, "scorers"));
+
+        document.getElementById("dashboardStats").innerHTML = `
+            <hr>
+            <p>⚽ Teams: <strong>${teams.size}</strong></p>
+            <p>👕 Players: <strong>${players.size}</strong></p>
+            <p>📅 Fixtures: <strong>${fixtures.size}</strong></p>
+            <p>🥅 Results: <strong>${results.size}</strong></p>
+            <p>⚽ Top Scorers: <strong>${scorers.size}</strong></p>
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("dashboardStats").innerHTML =
+            `<p>❌ Unable to load dashboard.</p>`;
+    }
 
 }
 
 
 /* =========================
-   PLAYERS PAGE
+   TEAMS
+========================= */
+
+async function showTeams() {
+
+    content.innerHTML = `
+        <div class="card">
+            <h3>⚽ Teams Management</h3>
+
+            <button id="refreshTeams">
+                🔄 Refresh Teams
+            </button>
+
+            <div id="teamsList">
+                Loading teams...
+            </div>
+        </div>
+    `;
+
+    document
+        .getElementById("refreshTeams")
+        .addEventListener("click", loadTeams);
+
+    await loadTeams();
+}
+
+
+async function loadTeams() {
+
+    const list = document.getElementById("teamsList");
+
+    if (!list) return;
+
+    list.innerHTML = "<p>⏳ Loading teams...</p>";
+
+    try {
+
+        const snapshot =
+            await getDocs(collection(db, "teams"));
+
+        if (snapshot.empty) {
+
+            list.innerHTML = "<p>No teams found.</p>";
+
+            return;
+        }
+
+        list.innerHTML = "";
+
+        snapshot.forEach(teamDoc => {
+
+            const team = teamDoc.data();
+
+            list.innerHTML += `
+                <div class="card">
+
+                    <h3>⚽ ${team.name || "Unnamed Team"}</h3>
+
+                    <p>Played: ${team.played || 0}</p>
+                    <p>Won: ${team.won || 0}</p>
+                    <p>Draw: ${team.draw || 0}</p>
+                    <p>Lost: ${team.lost || 0}</p>
+                    <p>GF: ${team.goalsFor || 0}</p>
+                    <p>GA: ${team.goalsAgainst || 0}</p>
+                    <p>Points: ${team.points || 0}</p>
+
+                </div>
+            `;
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        list.innerHTML = `
+            <p>❌ Failed to load teams.</p>
+            <p>${error.message}</p>
+        `;
+    }
+}
+
+
+/* =========================
+   PLAYERS
 ========================= */
 
 async function showPlayers() {
 
     content.innerHTML = `
-
         <div class="card">
 
             <h3>👕 Players Management</h3>
@@ -121,824 +227,1047 @@ async function showPlayers() {
                 🔄 Refresh
             </button>
 
-            <br><br>
-
             <div id="playersList">
                 Loading players...
             </div>
 
         </div>
-
     `;
-
 
     document
         .getElementById("addPlayerBtn")
-        .addEventListener(
-            "click",
-            showPlayerForm
-        );
-
+        .addEventListener("click", showPlayerForm);
 
     document
         .getElementById("refreshPlayersBtn")
-        .addEventListener(
-            "click",
-            loadPlayers
-        );
-
+        .addEventListener("click", loadPlayers);
 
     await loadPlayers();
-
 }
 
 
-/* =========================
-   ADD PLAYER FORM
-========================= */
+async function loadPlayers() {
 
-function showPlayerForm() {
+    const list = document.getElementById("playersList");
 
-    const form = document.createElement("div");
+    if (!list) return;
 
-    form.className = "card";
-
-    form.innerHTML = `
-
-        <h3>➕ Add New Player</h3>
-
-        <label>Player Name</label>
-
-        <input
-            id="playerName"
-            type="text"
-            placeholder="Enter player name"
-        >
-
-        <br><br>
-
-        <label>Team</label>
-
-        <select id="playerTeam">
-
-            <option value="">
-                Select Team
-            </option>
-
-        </select>
-
-        <br><br>
-
-        <label>Jersey Number</label>
-
-        <input
-            id="playerNumber"
-            type="number"
-            placeholder="e.g. 10"
-        >
-
-        <br><br>
-
-        <label>Position</label>
-
-        <select id="playerPosition">
-
-            <option value="">
-                Select Position
-            </option>
-
-            <option value="GK">
-                🧤 Goalkeeper
-            </option>
-
-            <option value="DEF">
-                🛡️ Defender
-            </option>
-
-            <option value="MID">
-                ⚙️ Midfielder
-            </option>
-
-            <option value="FW">
-                ⚡ Forward
-            </option>
-
-        </select>
-
-        <br><br>
-
-        <label>
-            <input
-                id="playerStarting"
-                type="checkbox"
-            >
-            Starting XI
-        </label>
-
-        <br><br>
-
-        <label>
-            <input
-                id="playerCaptain"
-                type="checkbox"
-            >
-            Captain
-        </label>
-
-        <br><br>
-
-        <button id="savePlayerBtn">
-            💾 Save Player
-        </button>
-
-        <button id="cancelPlayerBtn">
-            ❌ Cancel
-        </button>
-
-    `;
-
-
-    content.prepend(form);
-
-
-    loadTeamsIntoSelect(
-        "playerTeam"
-    );
-
-
-    document
-        .getElementById("savePlayerBtn")
-        .addEventListener(
-            "click",
-            savePlayer
-        );
-
-
-    document
-        .getElementById("cancelPlayerBtn")
-        .addEventListener(
-            "click",
-            () => form.remove()
-        );
-
-}
-
-
-/* =========================
-   LOAD TEAMS
-========================= */
-
-async function loadTeamsIntoSelect(selectId) {
-
-    const select =
-        document.getElementById(selectId);
-
-
-    if (!select) return;
-
+    list.innerHTML = "<p>⏳ Loading players...</p>";
 
     try {
 
         const snapshot =
-            await getDocs(
-                collection(db, "teams")
-            );
+            await getDocs(collection(db, "players"));
 
+        if (snapshot.empty) {
 
-        snapshot.forEach(teamDoc => {
+            list.innerHTML = "<p>No players found.</p>";
 
-            const team =
-                teamDoc.data();
+            return;
+        }
 
+        list.innerHTML = `<h3>👥 Players (${snapshot.size})</h3>`;
 
-            if (!team.name) return;
+        snapshot.forEach(playerDoc => {
 
+            const player = playerDoc.data();
 
-            const option =
-                document.createElement("option");
+            list.innerHTML += `
+                <div class="card">
 
+                    <h3>👤 ${player.name || "Unknown"}</h3>
 
-            option.value =
-                team.name;
+                    <p>Team: ${player.team || "-"}</p>
+                    <p>Number: ${player.number || "-"}</p>
+                    <p>Position: ${player.position || "-"}</p>
 
+                    <p>
+                        ${player.starting ? "⭐ Starting XI" : "🔄 Substitute"}
+                    </p>
 
-            option.textContent =
-                team.name;
+                    ${player.captain ? "<p>©️ Captain</p>" : ""}
 
+                    <button
+                        class="deletePlayer"
+                        data-id="${playerDoc.id}">
+                        🗑️ Delete
+                    </button>
 
-            select.appendChild(option);
-
+                </div>
+            `;
         });
 
-    }
+        document
+            .querySelectorAll(".deletePlayer")
+            .forEach(button => {
 
-    catch(error) {
+                button.addEventListener("click", async () => {
+
+                    if (!confirm("Delete this player?")) return;
+
+                    await deleteDoc(
+                        doc(db, "players", button.dataset.id)
+                    );
+
+                    await loadPlayers();
+                });
+
+            });
+
+    } catch (error) {
 
         console.error(error);
 
-        alert(
-            "Unable to load teams: " +
-            error.message
-        );
-
+        list.innerHTML =
+            `<p>❌ ${error.message}</p>`;
     }
-
 }
 
 
-/* =========================
-   SAVE PLAYER
-========================= */
+function showPlayerForm() {
+
+    content.insertAdjacentHTML("afterbegin", `
+
+        <div class="card" id="playerForm">
+
+            <h3>➕ Add Player</h3>
+
+            <input id="playerName"
+                placeholder="Player Name">
+
+            <input id="playerNumber"
+                type="number"
+                placeholder="Jersey Number">
+
+            <select id="playerTeam">
+                <option value="">Select Team</option>
+            </select>
+
+            <select id="playerPosition">
+                <option value="">Select Position</option>
+                <option value="GK">🧤 Goalkeeper</option>
+                <option value="DEF">🛡️ Defender</option>
+                <option value="MID">⚙️ Midfielder</option>
+                <option value="FW">⚡ Forward</option>
+            </select>
+
+            <label>
+                <input id="playerStarting" type="checkbox">
+                Starting XI
+            </label>
+
+            <label>
+                <input id="playerCaptain" type="checkbox">
+                Captain
+            </label>
+
+            <br>
+
+            <button id="savePlayer">
+                💾 Save
+            </button>
+
+            <button id="cancelPlayer">
+                ❌ Cancel
+            </button>
+
+        </div>
+
+    `);
+
+    loadTeamsSelect("playerTeam");
+
+    document.getElementById("savePlayer")
+        .addEventListener("click", savePlayer);
+
+    document.getElementById("cancelPlayer")
+        .addEventListener("click", () => {
+            document.getElementById("playerForm").remove();
+        });
+}
+
+
+async function loadTeamsSelect(id) {
+
+    const select = document.getElementById(id);
+
+    if (!select) return;
+
+    const snapshot =
+        await getDocs(collection(db, "teams"));
+
+    snapshot.forEach(teamDoc => {
+
+        const team = teamDoc.data();
+
+        if (!team.name) return;
+
+        select.innerHTML += `
+            <option value="${team.name}">
+                ${team.name}
+            </option>
+        `;
+    });
+}
+
 
 async function savePlayer() {
 
     const name =
-        document
-        .getElementById("playerName")
-        .value
-        .trim();
-
+        document.getElementById("playerName").value.trim();
 
     const team =
-        document
-        .getElementById("playerTeam")
-        .value;
-
+        document.getElementById("playerTeam").value;
 
     const number =
-        document
-        .getElementById("playerNumber")
-        .value;
-
+        document.getElementById("playerNumber").value;
 
     const position =
-        document
-        .getElementById("playerPosition")
-        .value;
-
+        document.getElementById("playerPosition").value;
 
     const starting =
-        document
-        .getElementById("playerStarting")
-        .checked;
-
+        document.getElementById("playerStarting").checked;
 
     const captain =
-        document
-        .getElementById("playerCaptain")
-        .checked;
-
+        document.getElementById("playerCaptain").checked;
 
     if (!name || !team || !position) {
 
-        alert(
-            "Please fill Player Name, Team and Position."
-        );
+        alert("Fill Player Name, Team and Position.");
 
         return;
-
     }
-
 
     try {
 
-        await addDoc(
-            collection(db, "players"),
-            {
-                name: name,
-                team: team,
-                number: number,
-                position: position,
-                starting: starting,
-                captain: captain
-            }
-        );
+        await addDoc(collection(db, "players"), {
+            name,
+            team,
+            number,
+            position,
+            starting,
+            captain
+        });
 
-
-        alert(
-            "✅ Player saved successfully!"
-        );
-
+        alert("✅ Player saved!");
 
         await showPlayers();
 
-    }
+    } catch (error) {
 
-    catch(error) {
-
-        console.error(error);
-
-        alert(
-            "❌ Firebase error: " +
-            error.message
-        );
+        alert("❌ " + error.message);
 
     }
-
 }
 
 
 /* =========================
-   DISPLAY PLAYERS
+   FIXTURES
 ========================= */
 
-async function loadPlayers() {
+async function showFixtures() {
 
-    const playersList =
-        document.getElementById("playersList");
+    content.innerHTML = `
+        <div class="card">
+
+            <h3>📅 Fixtures Management</h3>
+
+            <button id="addFixture">
+                ➕ Add Fixture
+            </button>
+
+            <button id="refreshFixtures">
+                🔄 Refresh
+            </button>
+
+            <div id="fixturesList">
+                Loading fixtures...
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById("addFixture")
+        .addEventListener("click", showFixtureForm);
+
+    document.getElementById("refreshFixtures")
+        .addEventListener("click", loadFixtures);
+
+    await loadFixtures();
+}
 
 
-    if (!playersList) return;
+async function loadFixtures() {
 
+    const list = document.getElementById("fixturesList");
 
-    playersList.innerHTML =
-        "<p>⏳ Loading players...</p>";
-
+    if (!list) return;
 
     try {
 
         const snapshot =
-            await getDocs(
-                collection(db, "players")
-            );
-
+            await getDocs(collection(db, "fixtures"));
 
         if (snapshot.empty) {
 
-            playersList.innerHTML = `
-                <div class="card">
-                    <h3>👤 No Players Yet</h3>
-                    <p>Add your first player.</p>
-                </div>
-            `;
+            list.innerHTML = "<p>No fixtures found.</p>";
 
             return;
-
         }
 
+        list.innerHTML = "";
 
-        playersList.innerHTML = `
+        snapshot.forEach(fixtureDoc => {
 
-            <h3>
-                👥 Registered Players
-                (${snapshot.size})
-            </h3>
+            const f = fixtureDoc.data();
 
-        `;
+            list.innerHTML += `
+                <div class="card">
 
+                    <h3>
+                        ${f.homeTeam || f.home || "-"}
+                        🆚
+                        ${f.awayTeam || f.away || "-"}
+                    </h3>
 
-        snapshot.forEach(playerDoc => {
+                    <p>📅 ${f.date || "-"}</p>
+                    <p>⏰ ${f.time || "-"}</p>
+                    <p>📍 ${f.venue || "-"}</p>
 
-            const player =
-                playerDoc.data();
+                    <button
+                        class="deleteFixture"
+                        data-id="${fixtureDoc.id}">
+                        🗑️ Delete
+                    </button>
 
-
-            const card =
-                document.createElement("div");
-
-
-            card.className = "card";
-
-
-            card.innerHTML = `
-
-                <h3>
-                    👤 ${player.name || "Unknown Player"}
-                </h3>
-
-                <p>
-                    🏆 <strong>Team:</strong>
-                    ${player.team || "-"}
-                </p>
-
-                <p>
-                    🔢 <strong>Number:</strong>
-                    ${player.number || "-"}
-                </p>
-
-                <p>
-                    ⚽ <strong>Position:</strong>
-                    ${player.position || "-"}
-                </p>
-
-                <p>
-                    ${
-                        player.starting
-                        ? "⭐ Starting XI"
-                        : "🔄 Substitute"
-                    }
-                </p>
-
-                ${
-                    player.captain
-                    ? "<p>©️ Captain</p>"
-                    : ""
-                }
-
-                <br>
-
-                <button
-                    class="editPlayerBtn"
-                    data-id="${playerDoc.id}"
-                >
-                    ✏️ Edit
-                </button>
-
-                <button
-                    class="deletePlayerBtn"
-                    data-id="${playerDoc.id}"
-                >
-                    🗑️ Delete
-                </button>
-
+                </div>
             `;
-
-
-            playersList.appendChild(card);
-
         });
 
-
         document
-            .querySelectorAll(".editPlayerBtn")
+            .querySelectorAll(".deleteFixture")
             .forEach(button => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                button.addEventListener("click", async () => {
 
-                        editPlayer(
-                            button.dataset.id
-                        );
+                    if (!confirm("Delete this fixture?")) return;
 
-                    }
-                );
+                    await deleteDoc(
+                        doc(db, "fixtures", button.dataset.id)
+                    );
+
+                    await loadFixtures();
+                });
 
             });
 
-
-        document
-            .querySelectorAll(".deletePlayerBtn")
-            .forEach(button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        deletePlayer(
-                            button.dataset.id
-                        );
-
-                    }
-                );
-
-            });
-
-    }
-
-    catch(error) {
+    } catch (error) {
 
         console.error(error);
 
-        playersList.innerHTML = `
-            <div class="card">
-                <p>❌ Failed to load players.</p>
-                <p>${error.message}</p>
-            </div>
-        `;
-
+        list.innerHTML =
+            `<p>❌ ${error.message}</p>`;
     }
-
 }
 
 
-/* =========================
-   EDIT PLAYER
-========================= */
+function showFixtureForm() {
 
-async function editPlayer(id) {
+    content.insertAdjacentHTML("afterbegin", `
 
-    try {
+        <div class="card" id="fixtureForm">
 
-        const playerRef =
-            doc(db, "players", id);
+            <h3>➕ Add Fixture</h3>
 
-
-        const snapshot =
-            await getDocs(
-                collection(db, "players")
-            );
-
-
-        let player = null;
-
-
-        snapshot.forEach(playerDoc => {
-
-            if (playerDoc.id === id) {
-
-                player =
-                    playerDoc.data();
-
-            }
-
-        });
-
-
-        if (!player) {
-
-            alert("Player not found.");
-
-            return;
-
-        }
-
-
-        const form =
-            document.createElement("div");
-
-
-        form.className =
-            "card";
-
-
-        form.innerHTML = `
-
-            <h3>✏️ Edit Player</h3>
-
-            <label>Player Name</label>
-
-            <input
-                id="editName"
-                type="text"
-                value="${player.name || ""}"
-            >
-
-            <br><br>
-
-            <label>Team</label>
-
-            <select id="editTeam">
-
-                <option value="">
-                    Select Team
-                </option>
-
+            <select id="homeTeam">
+                <option value="">Home Team</option>
             </select>
 
-            <br><br>
-
-            <label>Jersey Number</label>
-
-            <input
-                id="editNumber"
-                type="number"
-                value="${player.number || ""}"
-            >
-
-            <br><br>
-
-            <label>Position</label>
-
-            <select id="editPosition">
-
-                <option value="GK">
-                    🧤 Goalkeeper
-                </option>
-
-                <option value="DEF">
-                    🛡️ Defender
-                </option>
-
-                <option value="MID">
-                    ⚙️ Midfielder
-                </option>
-
-                <option value="FW">
-                    ⚡ Forward
-                </option>
-
+            <select id="awayTeam">
+                <option value="">Away Team</option>
             </select>
 
-            <br><br>
+            <input id="fixtureDate"
+                type="date">
 
-            <label>
+            <input id="fixtureTime"
+                type="time">
 
-                <input
-                    id="editStarting"
-                    type="checkbox"
-                    ${player.starting ? "checked" : ""}
-                >
+            <input id="fixtureVenue"
+                placeholder="Venue">
 
-                Starting XI
+            <br>
 
-            </label>
-
-            <br><br>
-
-            <label>
-
-                <input
-                    id="editCaptain"
-                    type="checkbox"
-                    ${player.captain ? "checked" : ""}
-                >
-
-                Captain
-
-            </label>
-
-            <br><br>
-
-            <button id="updatePlayerBtn">
-                💾 Update Player
+            <button id="saveFixture">
+                💾 Save Fixture
             </button>
 
-            <button id="cancelEditBtn">
+            <button id="cancelFixture">
                 ❌ Cancel
             </button>
 
-        `;
+        </div>
+    `);
+
+    loadTeamsSelect("homeTeam");
+    loadTeamsSelect("awayTeam");
+
+    document.getElementById("saveFixture")
+        .addEventListener("click", saveFixture);
+
+    document.getElementById("cancelFixture")
+        .addEventListener("click", () => {
+            document.getElementById("fixtureForm").remove();
+        });
+}
 
 
-        content.prepend(form);
+async function saveFixture() {
 
+    const home =
+        document.getElementById("homeTeam").value;
 
-        await loadTeamsIntoSelect(
-            "editTeam"
-        );
+    const away =
+        document.getElementById("awayTeam").value;
 
+    const date =
+        document.getElementById("fixtureDate").value;
 
-        document.getElementById(
-            "editTeam"
-        ).value =
-            player.team || "";
+    const time =
+        document.getElementById("fixtureTime").value;
 
+    const venue =
+        document.getElementById("fixtureVenue").value.trim();
 
-        document.getElementById(
-            "editPosition"
-        ).value =
-            player.position || "";
+    if (!home || !away || !date) {
 
+        alert("Select both teams and date.");
 
-        document
-            .getElementById("updatePlayerBtn")
-            .addEventListener(
-                "click",
-                async () => {
-
-                    const updatedData = {
-
-                        name:
-                            document
-                            .getElementById("editName")
-                            .value
-                            .trim(),
-
-                        team:
-                            document
-                            .getElementById("editTeam")
-                            .value,
-
-                        number:
-                            document
-                            .getElementById("editNumber")
-                            .value,
-
-                        position:
-                            document
-                            .getElementById("editPosition")
-                            .value,
-
-                        starting:
-                            document
-                            .getElementById("editStarting")
-                            .checked,
-
-                        captain:
-                            document
-                            .getElementById("editCaptain")
-                            .checked
-
-                    };
-
-
-                    if (
-                        !updatedData.name ||
-                        !updatedData.team ||
-                        !updatedData.position
-                    ) {
-
-                        alert(
-                            "Please fill Player Name, Team and Position."
-                        );
-
-                        return;
-
-                    }
-
-
-                    try {
-
-                        await updateDoc(
-                            playerRef,
-                            updatedData
-                        );
-
-
-                        alert(
-                            "✅ Player updated successfully!"
-                        );
-
-
-                        form.remove();
-
-
-                        await loadPlayers();
-
-                    }
-
-                    catch(error) {
-
-                        console.error(error);
-
-                        alert(
-                            "❌ Firebase error: " +
-                            error.message
-                        );
-
-                    }
-
-                }
-            );
-
-
-        document
-            .getElementById("cancelEditBtn")
-            .addEventListener(
-                "click",
-                () => form.remove()
-            );
-
+        return;
     }
 
-    catch(error) {
+    if (home === away) {
 
-        console.error(error);
+        alert("Home and Away teams cannot be the same.");
 
-        alert(
-            "❌ " + error.message
-        );
-
+        return;
     }
 
+    try {
+
+        await addDoc(collection(db, "fixtures"), {
+            homeTeam: home,
+            awayTeam: away,
+            date,
+            time,
+            venue,
+            status: "upcoming"
+        });
+
+        alert("✅ Fixture saved!");
+
+        await showFixtures();
+
+    } catch (error) {
+
+        alert("❌ " + error.message);
+
+    }
 }
 
 
 /* =========================
-   DELETE PLAYER
+   RESULTS
 ========================= */
 
-async function deletePlayer(id) {
+async function showResults() {
 
-    if (
-        !confirm(
-            "Are you sure you want to delete this player?"
-        )
-    ) {
+    content.innerHTML = `
+        <div class="card">
 
-        return;
+            <h3>🥅 Results Management</h3>
 
-    }
+            <button id="addResult">
+                ➕ Add Result
+            </button>
 
+            <button id="refreshResults">
+                🔄 Refresh
+            </button>
+
+            <div id="resultsList">
+                Loading results...
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById("addResult")
+        .addEventListener("click", showResultForm);
+
+    document.getElementById("refreshResults")
+        .addEventListener("click", loadResults);
+
+    await loadResults();
+}
+
+
+async function loadResults() {
+
+    const list = document.getElementById("resultsList");
+
+    if (!list) return;
 
     try {
 
-        await deleteDoc(
-            doc(db, "players", id)
-        );
+        const snapshot =
+            await getDocs(collection(db, "results"));
+
+        if (snapshot.empty) {
+
+            list.innerHTML = "<p>No results found.</p>";
+
+            return;
+        }
+
+        list.innerHTML = "";
+
+        snapshot.forEach(resultDoc => {
+
+            const r = resultDoc.data();
+
+            list.innerHTML += `
+                <div class="card">
+
+                    <h3>
+                        ${r.homeTeam || r.home || "-"}
+                        ${r.homeScore ?? 0}
+                        -
+                        ${r.awayScore ?? 0}
+                        ${r.awayTeam || r.away || "-"}
+                    </h3>
+
+                    <p>📅 ${r.date || "-"}</p>
+
+                    <button
+                        class="deleteResult"
+                        data-id="${resultDoc.id}">
+                        🗑️ Delete
+                    </button>
+
+                </div>
+            `;
+        });
+
+        document
+            .querySelectorAll(".deleteResult")
+            .forEach(button => {
+
+                button.addEventListener("click", async () => {
+
+                    if (!confirm("Delete this result?")) return;
+
+                    await deleteDoc(
+                        doc(db, "results", button.dataset.id)
+                    );
+
+                    await loadResults();
+                });
+
+            });
+
+    } catch (error) {
+
+        list.innerHTML =
+            `<p>❌ ${error.message}</p>`;
+    }
+}
 
 
-        alert(
-            "✅ Player deleted!"
-        );
+function showResultForm() {
+
+    content.insertAdjacentHTML("afterbegin", `
+
+        <div class="card" id="resultForm">
+
+            <h3>➕ Add Match Result</h3>
+
+            <select id="resultHome">
+                <option value="">Home Team</option>
+            </select>
+
+            <input id="homeScore"
+                type="number"
+                min="0"
+                placeholder="Home Score">
+
+            <select id="resultAway">
+                <option value="">Away Team</option>
+            </select>
+
+            <input id="awayScore"
+                type="number"
+                min="0"
+                placeholder="Away Score">
+
+            <input id="resultDate"
+                type="date">
+
+            <br>
+
+            <button id="saveResult">
+                💾 Save Result
+            </button>
+
+            <button id="cancelResult">
+                ❌ Cancel
+            </button>
+
+        </div>
+    `);
+
+    loadTeamsSelect("resultHome");
+    loadTeamsSelect("resultAway");
+
+    document.getElementById("saveResult")
+        .addEventListener("click", saveResult);
+
+    document.getElementById("cancelResult")
+        .addEventListener("click", () => {
+            document.getElementById("resultForm").remove();
+        });
+}
 
 
-        await loadPlayers();
+async function saveResult() {
 
+    const home =
+        document.getElementById("resultHome").value;
+
+    const away =
+        document.getElementById("resultAway").value;
+
+    const homeScore =
+        Number(document.getElementById("homeScore").value);
+
+    const awayScore =
+        Number(document.getElementById("awayScore").value);
+
+    const date =
+        document.getElementById("resultDate").value;
+
+    if (!home || !away || !date) {
+
+        alert("Fill all result details.");
+
+        return;
     }
 
-    catch(error) {
+    if (home === away) {
 
-        console.error(error);
+        alert("Teams cannot be the same.");
 
-        alert(
-            "❌ Firebase error: " +
-            error.message
-        );
-
+        return;
     }
 
+    try {
+
+        await addDoc(collection(db, "results"), {
+            homeTeam: home,
+            awayTeam: away,
+            homeScore,
+            awayScore,
+            date
+        });
+
+        alert("✅ Result saved!");
+
+        await showResults();
+
+    } catch (error) {
+
+        alert("❌ " + error.message);
+
+    }
+}
+
+
+/* =========================
+   TOP SCORERS
+========================= */
+
+async function showScorers() {
+
+    content.innerHTML = `
+        <div class="card">
+
+            <h3>⚽ Top Scorers</h3>
+
+            <button id="addScorer">
+                ➕ Add Scorer
+            </button>
+
+            <button id="refreshScorers">
+                🔄 Refresh
+            </button>
+
+            <div id="scorersList">
+                Loading scorers...
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById("addScorer")
+        .addEventListener("click", showScorerForm);
+
+    document.getElementById("refreshScorers")
+        .addEventListener("click", loadScorers);
+
+    await loadScorers();
+}
+
+
+async function loadScorers() {
+
+    const list = document.getElementById("scorersList");
+
+    if (!list) return;
+
+    const snapshot =
+        await getDocs(collection(db, "scorers"));
+
+    if (snapshot.empty) {
+
+        list.innerHTML = "<p>No scorers found.</p>";
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    snapshot.forEach(scorerDoc => {
+
+        const s = scorerDoc.data();
+
+        list.innerHTML += `
+            <div class="card">
+
+                <h3>⚽ ${s.name || "-"}</h3>
+
+                <p>Team: ${s.team || "-"}</p>
+
+                <p>Goals: ${s.goals || 0}</p>
+
+                <button
+                    class="deleteScorer"
+                    data-id="${scorerDoc.id}">
+                    🗑️ Delete
+                </button>
+
+            </div>
+        `;
+    });
+
+    document
+        .querySelectorAll(".deleteScorer")
+        .forEach(button => {
+
+            button.addEventListener("click", async () => {
+
+                if (!confirm("Delete scorer?")) return;
+
+                await deleteDoc(
+                    doc(db, "scorers", button.dataset.id)
+                );
+
+                await loadScorers();
+            });
+
+        });
+}
+
+
+function showScorerForm() {
+
+    content.insertAdjacentHTML("afterbegin", `
+
+        <div class="card" id="scorerForm">
+
+            <h3>➕ Add Top Scorer</h3>
+
+            <input id="scorerName"
+                placeholder="Player Name">
+
+            <input id="scorerTeam"
+                placeholder="Team">
+
+            <input id="scorerGoals"
+                type="number"
+                min="0"
+                placeholder="Goals">
+
+            <br>
+
+            <button id="saveScorer">
+                💾 Save
+            </button>
+
+            <button id="cancelScorer">
+                ❌ Cancel
+            </button>
+
+        </div>
+    `);
+
+    document.getElementById("saveScorer")
+        .addEventListener("click", saveScorer);
+
+    document.getElementById("cancelScorer")
+        .addEventListener("click", () => {
+            document.getElementById("scorerForm").remove();
+        });
+}
+
+
+async function saveScorer() {
+
+    const name =
+        document.getElementById("scorerName").value.trim();
+
+    const team =
+        document.getElementById("scorerTeam").value.trim();
+
+    const goals =
+        Number(document.getElementById("scorerGoals").value);
+
+    if (!name || !team) {
+
+        alert("Enter player name and team.");
+
+        return;
+    }
+
+    try {
+
+        await addDoc(collection(db, "scorers"), {
+            name,
+            team,
+            goals
+        });
+
+        alert("✅ Scorer saved!");
+
+        await showScorers();
+
+    } catch (error) {
+
+        alert("❌ " + error.message);
+
+    }
+}
+
+
+/* =========================
+   TEAM LOGOS
+========================= */
+
+async function showLogos() {
+
+    content.innerHTML = `
+        <div class="card">
+
+            <h3>🖼️ Team Logos</h3>
+
+            <p>
+                Team logos can be managed from the
+                Teams collection.
+            </p>
+
+            <div id="logosList">
+                Loading teams...
+            </div>
+
+        </div>
+    `;
+
+    await loadLogos();
+}
+
+
+async function loadLogos() {
+
+    const list =
+        document.getElementById("logosList");
+
+    if (!list) return;
+
+    const snapshot =
+        await getDocs(collection(db, "teams"));
+
+    if (snapshot.empty) {
+
+        list.innerHTML = "<p>No teams found.</p>";
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    snapshot.forEach(teamDoc => {
+
+        const team = teamDoc.data();
+
+        list.innerHTML += `
+            <div class="card">
+
+                <h3>${team.name || "-"}</h3>
+
+                ${
+                    team.logo
+                    ? `<img src="${team.logo}"
+                            style="width:80px;height:80px;object-fit:contain;">`
+                    : "<p>No logo</p>"
+                }
+
+            </div>
+        `;
+    });
+}
+
+
+/* =========================
+   LINEUPS
+========================= */
+
+async function showLineups() {
+
+    content.innerHTML = `
+        <div class="card">
+
+            <h3>📋 Lineups</h3>
+
+            <p>
+                Select players from the Players collection
+                when preparing a match lineup.
+            </p>
+
+            <button id="refreshLineups">
+                🔄 Refresh Players
+            </button>
+
+            <div id="lineupsList">
+                Loading players...
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById("refreshLineups")
+        .addEventListener("click", loadLineupPlayers);
+
+    await loadLineupPlayers();
+}
+
+
+async function loadLineupPlayers() {
+
+    const list =
+        document.getElementById("lineupsList");
+
+    if (!list) return;
+
+    const snapshot =
+        await getDocs(collection(db, "players"));
+
+    if (snapshot.empty) {
+
+        list.innerHTML = "<p>No players available.</p>";
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    snapshot.forEach(playerDoc => {
+
+        const p = playerDoc.data();
+
+        list.innerHTML += `
+            <div class="card">
+
+                <h3>
+                    ${p.name || "-"}
+                </h3>
+
+                <p>
+                    ${p.team || "-"} |
+                    ${p.position || "-"}
+                </p>
+
+            </div>
+        `;
+    });
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+function showSettings() {
+
+    content.innerHTML = `
+        <div class="card">
+
+            <h3>⚙️ Settings</h3>
+
+            <p>
+                LWPL Admin Settings
+            </p>
+
+            <p>
+                Firebase connection is active.
+            </p>
+
+            <button id="logoutSettings">
+                🚪 Logout
+            </button>
+
+        </div>
+    `;
+
+    document
+        .getElementById("logoutSettings")
+        .addEventListener("click", logout);
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logout() {
+
+    localStorage.removeItem("adminLoggedIn");
+
+    window.location.href = "login.html";
+}
+
+
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener(
+        "click",
+        logout
+    );
 }
 
 
@@ -947,90 +1276,5 @@ async function deletePlayer(id) {
 ========================= */
 
 showDashboard();
-/* =========================
-   TEAMS PAGE
-========================= */
 
-async function showTeams() {
 
-    content.innerHTML = `
-        <div class="card">
-
-            <h3>⚽ Teams Management</h3>
-
-            <button id="refreshTeamsBtn">
-                🔄 Refresh Teams
-            </button>
-
-            <br><br>
-
-            <div id="teamsList">
-                Loading teams...
-            </div>
-
-        </div>
-    `;
-
-    document
-        .getElementById("refreshTeamsBtn")
-        .addEventListener("click", loadTeams);
-
-    await loadTeams();
-}
-
-async function loadTeams() {
-
-    const teamsList =
-        document.getElementById("teamsList");
-
-    teamsList.innerHTML = "<p>Loading teams...</p>";
-
-    try {
-
-        const snapshot =
-            await getDocs(collection(db, "teams"));
-
-        if (snapshot.empty) {
-
-            teamsList.innerHTML =
-                "<p>No teams found.</p>";
-
-            return;
-
-        }
-
-        teamsList.innerHTML = "";
-
-        snapshot.forEach(teamDoc => {
-
-            const team = teamDoc.data();
-
-            teamsList.innerHTML += `
-                <div class="card">
-                    <h3>${team.name}</h3>
-
-                    <p>Played: ${team.played || 0}</p>
-                    <p>Won: ${team.won || 0}</p>
-                    <p>Draw: ${team.draw || 0}</p>
-                    <p>Lost: ${team.lost || 0}</p>
-                    <p>Points: ${team.points || 0}</p>
-                </div>
-            `;
-        });
-
-    } catch(error) {
-
-        teamsList.innerHTML =
-            "<p>Failed to load teams.</p>";
-
-        console.error(error);
-    }
-}
-const logoutBtn = document.getElementById("logoutBtn");
-
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("adminLoggedIn");
-        window.location.href = "login.html";
-    });
-}

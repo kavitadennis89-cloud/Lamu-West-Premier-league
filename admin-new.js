@@ -1137,77 +1137,952 @@ async function loadLogos() {
 
 
 /* =========================
-   LINEUPS
+   LINEUPS BUILDER
 ========================= */
+
+let lineupPlayers = [];
+let selectedHomePlayers = [];
+let selectedAwayPlayers = [];
+let currentFormation = "4-3-3";
+
 
 async function showLineups() {
 
     content.innerHTML = `
-        <div class="card">
+        <div class="card lineup-builder">
 
-            <h3>📋 Lineups</h3>
+            <h3>📋 LWPL Lineup Builder</h3>
 
             <p>
-                Select players from the Players collection
-                when preparing a match lineup.
+                Create and save a lineup without editing code.
             </p>
 
-            <button id="refreshLineups">
-                🔄 Refresh Players
+            <hr>
+
+            <div class="lineup-controls">
+
+                <div>
+                    <label>🏠 Home Team</label>
+
+                    <select id="lineupHomeTeam">
+                        <option value="">Select Home Team</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>✈️ Away Team</label>
+
+                    <select id="lineupAwayTeam">
+                        <option value="">Select Away Team</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>📐 Formation</label>
+
+                    <select id="formationSelect">
+
+                        <option value="4-3-3">
+                            4 - 3 - 3
+                        </option>
+
+                        <option value="4-4-2">
+                            4 - 4 - 2
+                        </option>
+
+                        <option value="3-5-2">
+                            3 - 5 - 2
+                        </option>
+
+                        <option value="4-2-3-1">
+                            4 - 2 - 3 - 1
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <br>
+
+            <button id="loadLineupPlayers">
+                👥 Load Players
             </button>
 
-            <div id="lineupsList">
-                Loading players...
+            <button id="saveLineup">
+                💾 Save Lineup
+            </button>
+
+            <div id="lineupBuilderArea">
+
+                <p>
+                    Select both teams and click
+                    <strong>Load Players</strong>.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>💾 Saved Lineups</h3>
+
+            <button id="refreshSavedLineups">
+                🔄 Refresh
+            </button>
+
+            <div id="savedLineups">
+                Loading saved lineups...
             </div>
 
         </div>
     `;
 
-    document.getElementById("refreshLineups")
-        .addEventListener("click", loadLineupPlayers);
 
-    await loadLineupPlayers();
+    await loadTeamsSelect("lineupHomeTeam");
+    await loadTeamsSelect("lineupAwayTeam");
+
+
+    document
+        .getElementById("loadLineupPlayers")
+        .addEventListener(
+            "click",
+            loadLineupBuilder
+        );
+
+
+    document
+        .getElementById("formationSelect")
+        .addEventListener(
+            "change",
+            () => {
+
+                currentFormation =
+                    document.getElementById(
+                        "formationSelect"
+                    ).value;
+
+                if (
+                    selectedHomePlayers.length > 0 ||
+                    selectedAwayPlayers.length > 0
+                ) {
+                    renderLineupBuilder();
+                }
+
+            }
+        );
+
+
+    document
+        .getElementById("saveLineup")
+        .addEventListener(
+            "click",
+            saveLineup
+        );
+
+
+    document
+        .getElementById("refreshSavedLineups")
+        .addEventListener(
+            "click",
+            loadSavedLineups
+        );
+
+
+    await loadSavedLineups();
+
 }
 
 
-async function loadLineupPlayers() {
+/* =========================
+   LOAD PLAYERS
+========================= */
 
-    const list =
-        document.getElementById("lineupsList");
+async function loadLineupBuilder() {
 
-    if (!list) return;
+    const home =
+        document.getElementById(
+            "lineupHomeTeam"
+        ).value;
 
-    const snapshot =
-        await getDocs(collection(db, "players"));
+    const away =
+        document.getElementById(
+            "lineupAwayTeam"
+        ).value;
 
-    if (snapshot.empty) {
 
-        list.innerHTML = "<p>No players available.</p>";
+    if (!home || !away) {
+
+        alert(
+            "Select both Home Team and Away Team."
+        );
 
         return;
     }
 
-    list.innerHTML = "";
 
-    snapshot.forEach(playerDoc => {
+    if (home === away) {
 
-        const p = playerDoc.data();
+        alert(
+            "Home and Away teams cannot be the same."
+        );
 
-        list.innerHTML += `
-            <div class="card">
+        return;
+    }
+
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "players")
+            );
+
+
+        lineupPlayers = [];
+
+
+        snapshot.forEach(playerDoc => {
+
+            lineupPlayers.push({
+                id: playerDoc.id,
+                ...playerDoc.data()
+            });
+
+        });
+
+
+        selectedHomePlayers =
+            lineupPlayers.filter(
+                player =>
+                    player.team === home &&
+                    (
+                        player.starting === true ||
+                        player.starting === "true"
+                    )
+            );
+
+
+        selectedAwayPlayers =
+            lineupPlayers.filter(
+                player =>
+                    player.team === away &&
+                    (
+                        player.starting === true ||
+                        player.starting === "true"
+                    )
+            );
+
+
+        /*
+         * If admin has not marked Starting XI,
+         * automatically use first 11 players.
+         */
+
+        if (
+            selectedHomePlayers.length === 0
+        ) {
+
+            selectedHomePlayers =
+                lineupPlayers
+                    .filter(
+                        player =>
+                            player.team === home
+                    )
+                    .slice(0, 11);
+
+        }
+
+
+        if (
+            selectedAwayPlayers.length === 0
+        ) {
+
+            selectedAwayPlayers =
+                lineupPlayers
+                    .filter(
+                        player =>
+                            player.team === away
+                    )
+                    .slice(0, 11);
+
+        }
+
+
+        renderLineupBuilder();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "❌ Failed to load players."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   RENDER BUILDER
+========================= */
+
+function renderLineupBuilder() {
+
+    const area =
+        document.getElementById(
+            "lineupBuilderArea"
+        );
+
+
+    if (!area) return;
+
+
+    const home =
+        document.getElementById(
+            "lineupHomeTeam"
+        ).value;
+
+
+    const away =
+        document.getElementById(
+            "lineupAwayTeam"
+        ).value;
+
+
+    area.innerHTML = `
+
+        <div class="builder-layout">
+
+            <div class="builder-team">
 
                 <h3>
-                    ${p.name || "-"}
+                    🏠 ${home}
                 </h3>
 
-                <p>
-                    ${p.team || "-"} |
-                    ${p.position || "-"}
-                </p>
+                <div
+                    id="homePlayerPool"
+                    class="player-pool">
+                </div>
 
             </div>
-        `;
-    });
+
+
+            <div>
+
+                <div class="builder-pitch">
+
+                    <div class="pitch-line center"></div>
+
+                    <div class="pitch-circle"></div>
+
+                    <div class="pitch-box top"></div>
+
+                    <div class="pitch-box bottom"></div>
+
+                    <div
+                        id="homePitch"
+                        class="pitch-team">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="builder-team">
+
+                <h3>
+                    ✈️ ${away}
+                </h3>
+
+                <div
+                    id="awayPlayerPool"
+                    class="player-pool">
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    renderPlayerPools();
+
+}
+
+
+/* =========================
+   PLAYER POOLS
+========================= */
+
+function renderPlayerPools() {
+
+    const homePool =
+        document.getElementById(
+            "homePlayerPool"
+        );
+
+
+    const awayPool =
+        document.getElementById(
+            "awayPlayerPool"
+        );
+
+
+    if (!homePool || !awayPool) return;
+
+
+    homePool.innerHTML = "";
+
+    awayPool.innerHTML = "";
+
+
+    selectedHomePlayers.forEach(
+        (player, index) => {
+
+            homePool.innerHTML += `
+
+                <div
+                    class="builder-player"
+                    draggable="true"
+                    data-team="home"
+                    data-index="${index}">
+
+                    <strong>
+                        #${player.number || "-"}
+                    </strong>
+
+                    <span>
+                        ${player.name}
+                    </span>
+
+                    <small>
+                        ${player.position || ""}
+                    </small>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    selectedAwayPlayers.forEach(
+        (player, index) => {
+
+            awayPool.innerHTML += `
+
+                <div
+                    class="builder-player"
+                    draggable="true"
+                    data-team="away"
+                    data-index="${index}">
+
+                    <strong>
+                        #${player.number || "-"}
+                    </strong>
+
+                    <span>
+                        ${player.name}
+                    </span>
+
+                    <small>
+                        ${player.position || ""}
+                    </small>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    document
+        .querySelectorAll(
+            ".builder-player"
+        )
+        .forEach(player => {
+
+            player.addEventListener(
+                "dragstart",
+                handlePlayerDrag
+            );
+
+        });
+
+}
+
+
+/* =========================
+   DRAG PLAYER
+========================= */
+
+let draggedPlayer = null;
+
+
+function handlePlayerDrag(event) {
+
+    const team =
+        event.currentTarget.dataset.team;
+
+    const index =
+        Number(
+            event.currentTarget.dataset.index
+        );
+
+
+    draggedPlayer = {
+        team,
+        index
+    };
+
+}
+
+
+/* =========================
+   PITCH DROP
+========================= */
+
+document.addEventListener(
+    "dragover",
+    event => {
+
+        const pitch =
+            event.target.closest(
+                "#homePitch"
+            );
+
+        if (pitch) {
+            event.preventDefault();
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "drop",
+    event => {
+
+        const pitch =
+            event.target.closest(
+                "#homePitch"
+            );
+
+
+        if (!pitch || !draggedPlayer) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        if (
+            draggedPlayer.team !== "home"
+        ) {
+            alert(
+                "This pitch is for the Home Team."
+            );
+
+            draggedPlayer = null;
+
+            return;
+        }
+
+
+        const player =
+            selectedHomePlayers[
+                draggedPlayer.index
+            ];
+
+
+        if (!player) {
+            draggedPlayer = null;
+            return;
+        }
+
+
+        const rect =
+            pitch.getBoundingClientRect();
+
+
+        const x =
+            ((event.clientX - rect.left)
+                / rect.width) * 100;
+
+
+        const y =
+            100 -
+            (
+                ((event.clientY - rect.top)
+                    / rect.height) * 100
+            );
+
+
+        player.pitchX =
+            Math.max(
+                5,
+                Math.min(95, x)
+            );
+
+
+        player.pitchY =
+            Math.max(
+                5,
+                Math.min(95, y)
+            );
+
+
+        renderPitchPlayers();
+
+
+        draggedPlayer = null;
+
+    }
+);
+
+
+/* =========================
+   RENDER PITCH PLAYERS
+========================= */
+
+function renderPitchPlayers() {
+
+    const pitch =
+        document.getElementById(
+            "homePitch"
+        );
+
+
+    if (!pitch) return;
+
+
+    pitch
+        .querySelectorAll(
+            ".placed-player"
+        )
+        .forEach(
+            player => player.remove()
+        );
+
+
+    selectedHomePlayers.forEach(
+        (player, index) => {
+
+            if (
+                player.pitchX === undefined
+            ) {
+
+                const defaults = [
+
+                    [50, 8],
+
+                    [15, 28],
+                    [38, 25],
+                    [62, 25],
+                    [85, 28],
+
+                    [28, 45],
+                    [50, 48],
+                    [72, 45],
+
+                    [18, 68],
+                    [50, 75],
+                    [82, 68]
+
+                ];
+
+
+                if (defaults[index]) {
+
+                    player.pitchX =
+                        defaults[index][0];
+
+                    player.pitchY =
+                        defaults[index][1];
+
+                }
+
+            }
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "placed-player";
+
+
+            card.style.left =
+                player.pitchX + "%";
+
+
+            card.style.bottom =
+                player.pitchY + "%";
+
+
+            card.innerHTML = `
+
+                <div class="placed-number">
+                    ${player.number || "-"}
+                </div>
+
+                <span>
+                    ${player.name}
+                </span>
+
+            `;
+
+
+            pitch.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* =========================
+   SAVE LINEUP
+========================= */
+
+async function saveLineup() {
+
+    const home =
+        document.getElementById(
+            "lineupHomeTeam"
+        ).value;
+
+
+    const away =
+        document.getElementById(
+            "lineupAwayTeam"
+        ).value;
+
+
+    if (!home || !away) {
+
+        alert(
+            "Select Home and Away teams."
+        );
+
+        return;
+    }
+
+
+    if (
+        selectedHomePlayers.length === 0
+    ) {
+
+        alert(
+            "Home team has no players."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        await addDoc(
+            collection(db, "lineups"),
+            {
+
+                homeTeam: home,
+
+                awayTeam: away,
+
+                formation:
+                    currentFormation,
+
+                homePlayers:
+                    selectedHomePlayers.map(
+                        player => ({
+                            id: player.id,
+                            name: player.name,
+                            number: player.number,
+                            position: player.position,
+                            pitchX: player.pitchX,
+                            pitchY: player.pitchY
+                        })
+                    ),
+
+                awayPlayers:
+                    selectedAwayPlayers.map(
+                        player => ({
+                            id: player.id,
+                            name: player.name,
+                            number: player.number,
+                            position: player.position
+                        })
+                    ),
+
+                createdAt:
+                    new Date().toISOString()
+
+            }
+        );
+
+
+        alert(
+            "✅ Lineup saved successfully!"
+        );
+
+
+        await loadSavedLineups();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "❌ Failed to save lineup: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================
+   SAVED LINEUPS
+========================= */
+
+async function loadSavedLineups() {
+
+    const list =
+        document.getElementById(
+            "savedLineups"
+        );
+
+
+    if (!list) return;
+
+
+    list.innerHTML =
+        "<p>⏳ Loading saved lineups...</p>";
+
+
+    try {
+
+        const snapshot =
+            await getDocs(
+                collection(db, "lineups")
+            );
+
+
+        if (snapshot.empty) {
+
+            list.innerHTML =
+                "<p>No saved lineups yet.</p>";
+
+            return;
+
+        }
+
+
+        list.innerHTML = "";
+
+
+        snapshot.forEach(
+            lineupDoc => {
+
+                const lineup =
+                    lineupDoc.data();
+
+
+                list.innerHTML += `
+
+                    <div class="card">
+
+                        <h3>
+                            🏠 ${lineup.homeTeam}
+                            🆚
+                            ${lineup.awayTeam}
+                        </h3>
+
+                        <p>
+                            Formation:
+                            <strong>
+                                ${lineup.formation}
+                            </strong>
+                        </p>
+
+                        <button
+                            class="deleteLineup"
+                            data-id="${lineupDoc.id}">
+
+                            🗑️ Delete Lineup
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        document
+            .querySelectorAll(
+                ".deleteLineup"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        if (
+                            !confirm(
+                                "Delete this lineup?"
+                            )
+                        ) {
+                            return;
+                        }
+
+
+                        await deleteDoc(
+                            doc(
+                                db,
+                                "lineups",
+                                button.dataset.id
+                            )
+                        );
+
+
+                        await loadSavedLineups();
+
+                    }
+                );
+
+            });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        list.innerHTML =
+            `<p>❌ ${error.message}</p>`;
+
+    }
+
+        }
 }
 
 
